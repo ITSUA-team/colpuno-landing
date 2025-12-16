@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "strict": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "types": ["astro/client", "node"],
+    "baseUrl": "."
+  },
+  "include": ["src", "astro.config.mjs"]
+}

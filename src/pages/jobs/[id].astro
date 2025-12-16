@@ -1,0 +1,234 @@
+---
+import { MOCK_JOBS } from '../../mock';
+ 
+export function getStaticPaths() {
+  return MOCK_JOBS.map((job) => ({
+    params: { id: String(job.id) },
+  }));
+}
+
+const jobId = Astro.params.id;
+const openConfirm = Astro.url.searchParams.get('openConfirmApplication') === '1';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>COLPUNO | Job {{ jobId }}</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Magra:wght@400;700&family=Open+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-page: #f9fafb;
+        --bg-card: #ffffff;
+        --border-subtle: #e5e7eb;
+        --text-main: #111827;
+        --text-subtle: #4b5563;
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --primary-soft: #eff6ff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: radial-gradient(circle at top, #e0f2fe 0, #f9fafb 40%, #f3f4f6 100%);
+        color: var(--text-main);
+      }
+      main {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+      }
+      .card {
+        background: var(--bg-card);
+        border-radius: 1.5rem;
+        padding: 2rem;
+        max-width: 640px;
+        width: 100%;
+        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+        border: 1px solid var(--border-subtle);
+      }
+      .tag-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.75rem;
+        color: var(--text-subtle);
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.15rem 0.75rem;
+        border-radius: 999px;
+        background: var(--primary-soft);
+        color: var(--primary-dark);
+        font-weight: 600;
+      }
+      .job-id {
+        font-size: 0.75rem;
+        color: var(--text-subtle);
+      }
+      .title {
+        font-size: 1.7rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem;
+      }
+      .subtitle {
+        margin: 0 0 1.5rem;
+        color: var(--text-subtle);
+        font-size: 0.9rem;
+      }
+      .section {
+        margin-bottom: 1.25rem;
+      }
+      .section-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+      .section-body {
+        font-size: 0.85rem;
+        color: var(--text-subtle);
+        line-height: 1.5;
+      }
+      .code {
+        display: inline-flex;
+        padding: 0.1rem 0.4rem;
+        border-radius: 999px;
+        background: #111827;
+        color: #e5e7eb;
+        font-size: 0.75rem;
+      }
+      .divider {
+        margin: 1.25rem 0;
+        border-top: 1px dashed var(--border-subtle);
+      }
+      .buttons {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 0.5rem;
+      }
+      button {
+        flex: 1;
+        padding: 0.7rem 1rem;
+        border-radius: 9999px;
+        border: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
+      }
+      .btn-secondary {
+        background: #ffffff;
+        border: 1px solid var(--border-subtle);
+        color: var(--text-main);
+      }
+      .btn-secondary:hover {
+        background: #f9fafb;
+      }
+      .btn-primary {
+        background: linear-gradient(to right, var(--primary), var(--primary-dark));
+        color: #ffffff;
+        box-shadow: 0 16px 30px rgba(37, 99, 235, 0.5);
+      }
+      .btn-primary:hover {
+        background: linear-gradient(to right, var(--primary-dark), #1e40af);
+        transform: translateY(-1px);
+        box-shadow: 0 20px 40px rgba(30, 64, 175, 0.6);
+      }
+      .hint {
+        margin-top: 0.85rem;
+        font-size: 0.8rem;
+        color: var(--text-subtle);
+      }
+      @media (max-width: 600px) {
+        .card {
+          padding: 1.5rem;
+          border-radius: 1.25rem;
+        }
+        .title {
+          font-size: 1.4rem;
+        }
+        .buttons {
+          flex-direction: column-reverse;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="card">
+        <div class="tag-row">
+          <div class="pill">
+            <span>Demo preview</span>
+          </div>
+          <span class="job-id">Job ID: {jobId}</span>
+        </div>
+
+        <h1 class="title">Confirm your application</h1>
+        <p class="subtitle">
+          This is a demo job page inside the ASTRO landing repo so you can click through
+          the full campaign flow end‑to‑end with a clean, COLPUNO‑style UI.
+        </p>
+
+        <div class="section">
+          <p class="section-title">What happens next</p>
+          <p class="section-body">
+            In the real COLPUNO platform this step would show you the full job details and
+            let you confirm your application for this specific job. After confirmation,
+            the platform should track <strong>application_created({jobId})</strong>.
+          </p>
+        </div>
+
+        <div class="section">
+          <p class="section-title">Deep link contract</p>
+          <p class="section-body">
+            You landed here because the landing page passed
+            <span class="code">openConfirmApplication=1</span>
+            together with this job ID. That&apos;s the deep link behaviour we expect the
+            main product to support.
+          </p>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="buttons">
+          <button type="button" class="btn-secondary" onclick="window.location.href='/'">
+            Back to landing
+          </button>
+          <button
+            type="button"
+            class="btn-primary"
+            onclick={`alert('Demo only: application_created would be tracked here for job ' + ${JSON.stringify(
+              jobId
+            )});`}
+          >
+            Confirm application
+          </button>
+        </div>
+
+        <p class="hint">
+          In production this page lives in the main COLPUNO platform. Here it is only used
+          to visualise and test the deep link coming from the campaign landing.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>
+
+
