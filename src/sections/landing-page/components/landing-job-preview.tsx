@@ -41,10 +41,13 @@ function LandingJobPreview() {
 
                     if (!job) {
                         return (
-                            <Box key={index}>
+                            <Box
+                                key={index}
+                                sx={{ width: '100%', maxWidth: 420 }}
+                            >
                                 <Box
                                     sx={{
-                                        width: '50%',
+                                        width: '60%',
                                         height: 16,
                                         bgcolor: 'grey.100',
                                         borderRadius: 1,
@@ -53,7 +56,7 @@ function LandingJobPreview() {
                                 />
                                 <Box
                                     sx={{
-                                        width: '40%',
+                                        width: '50%',
                                         height: 16,
                                         bgcolor: 'grey.100',
                                         borderRadius: 1,
@@ -62,7 +65,7 @@ function LandingJobPreview() {
                                 />
                                 <Box
                                     sx={{
-                                        width: '30%',
+                                        width: '40%',
                                         height: 14,
                                         bgcolor: 'grey.200',
                                         borderRadius: 999,
@@ -75,12 +78,14 @@ function LandingJobPreview() {
                     return (
                         <Box
                             key={job.id}
+                            sx={{ width: '100%' }}
                         >
                             <LandingJobsCard
                                 job={job}
                                 index={index}
                                 onClick={() => handleJobClick(job)}
                                 compact
+                                variant='preview'
                             />
                         </Box>
                     );

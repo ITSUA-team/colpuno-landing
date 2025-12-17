@@ -1,0 +1,624 @@
+/* Form Styles */
+
+/* Form Container */
+.form {
+    width: 100%;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+    margin-bottom: var(--space-8);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Add vertical spacing between consecutive form groups */
+.form-group + .form-group {
+    margin-top: var(--space-8);
+}
+
+/* Add extra spacing above form-actions when following a form-group */
+.form-group + .form-actions {
+    margin-top: var(--space-8);
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+/* Labels */
+.form-group label {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--color-gray-700);
+    margin-bottom: var(--space-2);
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.form-group label:not(.radio-option):not(.checkbox-option)::after {
+    content: ' *';
+    color: var(--color-error);
+    opacity: 0;
+}
+
+.form-group label:not(.radio-option):not(.checkbox-option)[for*="required"]::after,
+.form-group input[required] + label:not(.radio-option):not(.checkbox-option)::after,
+.form-group select[required] + label:not(.radio-option):not(.checkbox-option)::after {
+    opacity: 1;
+}
+
+/* Input Fields */
+.form-group input,
+.form-group select,
+.form-group textarea {
+    height: var(--input-height);
+    padding: var(--input-padding);
+    border: var(--input-border-width) solid var(--input-border-color);
+    border-radius: var(--input-border-radius);
+    font-size: var(--text-base);
+    background-color: var(--color-white);
+    transition: all var(--transition-fast);
+    color: var(--color-gray-900);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--input-focus-border-color);
+    box-shadow: 0 0 0 3px var(--input-focus-ring-color);
+}
+
+.form-group input:hover,
+.form-group select:hover,
+.form-group textarea:hover {
+    border-color: var(--color-gray-400);
+}
+
+/* Textarea */
+.form-group textarea {
+    height: auto;
+    min-height: 120px;
+    resize: vertical;
+    line-height: var(--leading-normal);
+}
+
+/* Select Styling */
+.form-group select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right var(--space-3) center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: calc(var(--space-3) + 1.5em + var(--space-2));
+}
+
+/* Multiple Select */
+.form-group select[multiple] {
+    height: auto;
+    min-height: 120px;
+    background-image: none;
+    padding-right: var(--input-padding);
+}
+
+/* File Input */
+.form-group input[type="file"] {
+    padding: var(--space-3);
+    border: 2px dashed var(--color-gray-300);
+    background-color: var(--color-gray-50);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.form-group input[type="file"]:hover {
+    border-color: var(--color-primary);
+    background-color: var(--color-primary-light);
+    background-color: rgba(0, 58, 168, 0.05);
+}
+
+.form-group input[type="file"]:focus {
+    border-color: var(--color-primary);
+    background-color: rgba(0, 58, 168, 0.1);
+}
+
+/* File Input Helper Text */
+.form-group small {
+    font-size: var(--text-xs);
+    color: var(--color-gray-500);
+    margin-top: var(--space-1);
+    line-height: var(--leading-normal);
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: var(--space-4);
+    justify-content: flex-end;
+    align-items: center;
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-gray-200);
+}
+
+/* Validation States */
+.form-group input:invalid:not(:placeholder-shown),
+.form-group select:invalid:not(:placeholder-shown),
+.form-group textarea:invalid:not(:placeholder-shown) {
+    border-color: var(--color-error);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.form-group input:valid:not(:placeholder-shown),
+.form-group select:valid:not(:placeholder-shown),
+.form-group textarea:valid:not(:placeholder-shown) {
+    border-color: var(--color-success);
+}
+
+/* Error Messages */
+.form-group .error-message {
+    font-size: var(--text-xs);
+    color: var(--color-error);
+    margin-top: var(--space-1);
+    display: none;
+}
+
+.form-group input:invalid:not(:placeholder-shown) + .error-message,
+.form-group select:invalid:not(:placeholder-shown) + .error-message,
+.form-group textarea:invalid:not(:placeholder-shown) + .error-message {
+    display: block;
+}
+
+/* Success Messages */
+.form-group .success-message {
+    font-size: var(--text-xs);
+    color: var(--color-success);
+    margin-top: var(--space-1);
+    display: none;
+}
+
+.form-group input:valid:not(:placeholder-shown) + .success-message,
+.form-group select:valid:not(:placeholder-shown) + .success-message,
+.form-group textarea:valid:not(:placeholder-shown) + .success-message {
+    display: block;
+}
+
+/* Disabled State */
+.form-group input:disabled,
+.form-group select:disabled,
+.form-group textarea:disabled {
+    background-color: var(--color-gray-100);
+    color: var(--color-gray-500);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Placeholder Styling */
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: var(--color-gray-400);
+    font-style: italic;
+}
+
+/* Date Input Specific */
+.form-group input[type="date"] {
+    position: relative;
+}
+
+.form-group input[type="date"]::-webkit-calendar-picker-indicator {
+    background: transparent;
+    bottom: 0;
+    color: transparent;
+    cursor: pointer;
+    height: auto;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: auto;
+}
+
+/* Tel Input Specific */
+.form-group input[type="tel"] {
+    font-family: var(--font-family-mono);
+}
+
+/* Email Input Specific */
+.form-group input[type="email"] {
+    text-transform: lowercase;
+}
+
+/* Separator between question and form content */
+.form-step h3::after {
+    content: '';
+    display: block;
+    width: 80%;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--color-primary) 20%, 
+        var(--color-primary) 80%, 
+        transparent 100%);
+    margin: var(--space-4) auto 0;
+    border-radius: 1px;
+    opacity: 0;
+    transform: scaleX(0);
+    animation: separatorFadeIn 0.6s ease-out 0.3s forwards;
+}
+
+@keyframes separatorFadeIn {
+    0% {
+        opacity: 0;
+        transform: scaleX(0);
+    }
+    50% {
+        opacity: 1;
+        transform: scaleX(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+}
+
+/* Responsive Form Layout */
+@media (max-width: 768px) {
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-4);
+    }
+    
+    .form-actions {
+        flex-direction: column-reverse;
+        gap: var(--space-3);
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+    }
+    
+    /* Reduce spacing above form-actions on mobile */
+    .form-group + .form-actions {
+        margin-top: var(--space-4);
+    }
+    
+    /* Mobile adjustments for two-column layouts */
+    .radio-group.two-column,
+    .checkbox-group.two-column {
+        grid-template-columns: 1fr;
+        gap: var(--space-2);
+    }
+    
+    .radio-group.square-cells .radio-option {
+        aspect-ratio: auto;
+        min-height: 3rem;
+    }
+    
+    /* Mobile adjustments for yes/no buttons */
+    .yes-no-buttons .radio-option {
+        min-height: 4rem;
+        transform: scale(1);
+        padding: var(--space-4);
+    }
+    
+    .yes-no-buttons .option-symbol {
+        font-size: var(--text-2xl);
+    }
+    
+    .yes-no-buttons .option-text {
+        font-size: var(--text-base);
+    }
+    
+    .yes-no-buttons .radio-option:has(input:checked) {
+        transform: scale(1.02);
+    }
+    
+    .yes-no-buttons:has(input:checked) .radio-option:not(:has(input:checked)) {
+        transform: scale(0.95);
+        opacity: 0.5;
+    }
+    
+    /* Improve mobile radio/checkbox options */
+    .form-group .radio-option,
+    .form-group .checkbox-option {
+        padding: var(--space-4);
+        gap: var(--space-3);
+        font-size: var(--text-base);
+        min-height: 3rem;
+        align-items: center;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: var(--text-base);
+        /* Prevent zoom on iOS */
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        height: 3rem;
+        padding: var(--space-3);
+    }
+    
+    .form-group textarea {
+        min-height: 100px;
+    }
+}
+
+/* Custom Checkbox and Radio (if needed) */
+.form-group input[type="checkbox"],
+.form-group input[type="radio"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-right: var(--space-2);
+    accent-color: var(--color-primary);
+}
+
+/* Form Group with Checkbox/Radio */
+.form-group.checkbox-group,
+.form-group.radio-group {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.form-group.checkbox-group label,
+.form-group.radio-group label {
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+/* Radio and Checkbox Groups */
+.radio-group,
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+}
+
+/* Two-column layout for specific groups */
+.radio-group.two-column,
+.checkbox-group.two-column {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+    justify-items: stretch;
+}
+
+/* Make the "None" option span two columns */
+.checkbox-group.two-column .none-option {
+    grid-column: 1 / -1;
+}
+
+/* Square cells for yes/no questions */
+.radio-group.square-cells .radio-option {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: var(--font-semibold);
+    max-height: 200px;
+}
+
+/* Enhanced Yes/No buttons with symbols */
+.yes-no-buttons .radio-option {
+    flex-direction: column;
+    gap: var(--space-2);
+    transition: all var(--transition-normal);
+    transform: scale(0.95);
+    opacity: 0.7;
+    border-width: 2px;
+    position: relative;
+    overflow: hidden;
+}
+
+.yes-no-buttons .radio-option::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.yes-no-buttons .radio-option:hover::before {
+    opacity: 1;
+}
+
+.yes-no-buttons .option-symbol {
+    font-size: var(--text-3xl);
+    font-weight: var(--font-bold);
+    line-height: 1;
+    transition: all var(--transition-fast);
+}
+
+.yes-no-buttons .option-text {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.yes-no-buttons .radio-custom {
+    display: none;
+}
+
+/* Yes option styling */
+.yes-no-buttons .yes-option .option-symbol {
+    color: var(--color-secondary);
+}
+
+.yes-no-buttons .yes-option .option-text {
+    color: var(--color-secondary);
+}
+
+.yes-no-buttons .no-option .option-symbol {
+    color: var(--color-error);
+}
+
+.yes-no-buttons .no-option .option-text {
+    color: var(--color-error);
+}
+
+/* Selected state - expand and highlight */
+.yes-no-buttons .radio-option:has(input:checked) {
+    transform: scale(1.05);
+    opacity: 1;
+    box-shadow: var(--shadow-lg);
+    border-width: 3px;
+}
+
+.yes-no-buttons .yes-option:has(input:checked) {
+    border-color: var(--color-secondary);
+    background-color: rgba(16, 185, 129, 0.05);
+}
+
+.yes-no-buttons .yes-option:has(input:checked) .option-symbol {
+    color: var(--color-secondary-dark);
+    transform: scale(1.2);
+}
+
+.yes-no-buttons .no-option:has(input:checked) {
+    border-color: var(--color-error);
+    background-color: rgba(239, 68, 68, 0.05);
+}
+
+.yes-no-buttons .no-option:has(input:checked) .option-symbol {
+    color: var(--color-error);
+    transform: scale(1.2);
+}
+
+/* Unselected state when something is selected */
+.yes-no-buttons:has(input:checked) .radio-option:not(:has(input:checked)) {
+    transform: scale(0.85);
+    opacity: 0.4;
+}
+
+.form-group .radio-option,
+.form-group .checkbox-option {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    padding: var(--space-3);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    background-color: var(--color-white);
+}
+
+.form-group .radio-option:hover,
+.form-group .checkbox-option:hover {
+    border-color: var(--color-primary);
+    background-color: var(--color-gray-50);
+}
+
+.form-group .radio-option input[type="radio"],
+.form-group .checkbox-option input[type="checkbox"] {
+    display: none;
+}
+
+.radio-custom,
+.checkbox-custom {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid var(--color-gray-300);
+    border-radius: 50%;
+    position: relative;
+    flex-shrink: 0;
+    transition: all var(--transition-fast);
+}
+
+.checkbox-custom {
+    border-radius: var(--radius-sm);
+}
+
+.form-group .radio-option input[type="radio"]:checked + .radio-custom,
+.form-group .checkbox-option input[type="checkbox"]:checked + .checkbox-custom {
+    border-color: var(--color-primary);
+    background-color: var(--color-primary);
+}
+
+.form-group .radio-option input[type="radio"]:checked + .radio-custom::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: var(--color-white);
+    border-radius: 50%;
+}
+
+.form-group .checkbox-option input[type="checkbox"]:checked + .checkbox-custom::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--color-white);
+    font-size: var(--text-xs);
+    font-weight: var(--font-bold);
+}
+
+/* Terms checkbox specific styling to handle inline links properly */
+.checkbox-terms .checkbox-text {
+    line-height: 1.4;
+}
+
+.checkbox-terms .checkbox-text a {
+    text-decoration: underline;
+    color: var(--color-primary);
+    transition: color var(--transition-fast);
+}
+
+.checkbox-terms .checkbox-text a:hover {
+    color: var(--color-primary-dark, var(--color-primary));
+}
+
+/* Form Help Text */
+.form-help {
+    font-size: var(--text-sm);
+    color: var(--color-gray-600);
+    margin-bottom: var(--space-3);
+    font-style: italic;
+}
+
+.form-intro {
+    font-size: var(--text-lg);
+    color: var(--color-gray-700);
+    margin-bottom: var(--space-6);
+    line-height: var(--leading-relaxed);
+}
+
+/* Form Validation Animation */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.form-group input:invalid:not(:placeholder-shown),
+.form-group select:invalid:not(:placeholder-shown),
+.form-group textarea:invalid:not(:placeholder-shown) {
+    animation: shake 0.3s ease-in-out;
+} 

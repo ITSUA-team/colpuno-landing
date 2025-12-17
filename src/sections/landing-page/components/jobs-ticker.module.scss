@@ -1,0 +1,121 @@
+// ============================================================================
+// Variables
+// ============================================================================
+$bg-item: rgba(15, 23, 42, 0.85); // тёмный фон ТОЛЬКО для айтемов
+
+$text-main: #ffffff;
+$text-muted: rgba(255, 255, 255, 0.7);
+
+$radius-pill: 999px;
+
+$gap-desktop: 32px;
+$gap-tablet: 20px;
+
+$padding-y-desktop: 12px;
+$padding-x-desktop: 20px;
+
+$padding-y-tablet: 10px;
+$padding-x-tablet: 16px;
+
+$padding-y-mobile: 8px;
+$padding-x-mobile: 14px;
+
+$font-size-base: 14px;
+$font-size-sm: 13px;
+$font-size-xs: 12px;
+
+// ============================================================================
+// Wrapper (БЕЗ фона)
+// ============================================================================
+.wrapper {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+
+  // ❌ убрали background
+  background: transparent;
+
+  contain: layout paint;
+}
+
+// ============================================================================
+// Track
+// ============================================================================
+.track {
+  display: flex;
+  align-items: center;
+  gap: $gap-desktop;
+
+  white-space: nowrap;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+// ============================================================================
+// Item (ТЁМНЫЙ pill)
+// ============================================================================
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: $padding-y-desktop $padding-x-desktop;
+  border-radius: $radius-pill;
+
+  background-color: $bg-item;
+  color: $text-main;
+
+  font-size: $font-size-base;
+  font-weight: 500;
+  line-height: 1;
+
+  user-select: none;
+  pointer-events: none;
+
+  backdrop-filter: blur(6px);
+}
+
+.flag {
+  font-size: 18px;
+}
+
+.country {
+  white-space: nowrap;
+}
+
+.count {
+  font-weight: 700;
+}
+
+.label {
+  font-size: $font-size-sm;
+  color: $text-muted;
+}
+
+// ============================================================================
+// Responsive
+// ============================================================================
+@media (max-width: 768px) {
+  .track {
+    gap: $gap-tablet;
+  }
+
+  .item {
+    padding: $padding-y-tablet $padding-x-tablet;
+    font-size: 13px;
+
+    .label {
+      font-size: $font-size-xs;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .item {
+    padding: $padding-y-mobile $padding-x-mobile;
+
+    .country {
+      display: none;
+    }
+  }
+}

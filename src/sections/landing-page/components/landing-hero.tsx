@@ -6,7 +6,7 @@ import StyledModal from '../../../components/styled-modal';
 import { trackRegStarted } from '../utils/tracking';
 import LandingJobPreview from './landing-job-preview';
 import IconStar2 from "../../../assets/icon-components/icon-star";
-import IconMatchingPilotRocket from "../../../assets/icon-components/icon-rocket";
+
 
 function LandingHero() {
     const [email, setEmail] = useState('');
@@ -90,6 +90,7 @@ function LandingHero() {
                                     mx: 'auto',
                                 }}
                             >
+                                {/* Module 1 — Hero: headline + subhead (spec copy) */}
                                 <Typography
                                     variant='h2'
                                     sx={{
@@ -99,7 +100,7 @@ function LandingHero() {
                                         color: 'common.white',
                                     }}
                                 >
-                                    Your first nursing job shouldn&apos;t be a guessing game.
+                                    Newly Registered Nurse? Start your career with verified opportunities.
                                 </Typography>
                                 <Typography
                                     variant='body1'
@@ -109,8 +110,8 @@ function LandingHero() {
                                         color: (theme) => theme.palette.font.white60,
                                     }}
                                 >
-                                    Colpuno is your digital career mentor built for Filipino nurses, helping you build your
-                                    profile, understand your strengths, and apply to trusted job openings faster.
+                                    COLPUNO helps newly registered Filipino nurses build an employer-ready profile and apply
+                                    to verified job opportunities faster, with less stress and less guessing.
                                 </Typography>
 
                                 <Box sx={{
@@ -124,6 +125,7 @@ function LandingHero() {
                                      }}>
                                     <Box component='form' onSubmit={handleSubmit} sx={{ maxWidth: '395px', width: '100%', textAlign: 'center' }}>
 
+                                        {/* Email entry (starts onboarding) */}
                                         <TextField
                                             fullWidth
                                             sx={{
@@ -151,12 +153,8 @@ function LandingHero() {
                                                 mt: 2,
                                             }}
                                         >
-                                          Unlock  jobs
+                                            Unlock jobs
                                         </Button>
-
-                                        <Box sx={{ position: 'absolute', top: '20px', right: '20px' }}>
-                                            <IconMatchingPilotRocket />
-                                        </Box>
                                     </Box>
                                     <Stack spacing={1.25}>
                                         <Typography
@@ -186,6 +184,7 @@ function LandingHero() {
                                                 Log in
                                             </Button>
                                         </Typography>
+                                        {/* Microcopy — verification email link only */}
                                         <Typography
                                             variant='caption'
                                             sx={{
@@ -195,18 +194,60 @@ function LandingHero() {
                                                 lineHeight: 1.5,
                                             }}
                                         >
-                                            By continuing, you&apos;ll receive a verification link/code and updates from
-                                            Colpuno.
+                                            By continuing, you&apos;ll receive a verification email link and updates from COLPUNO.
                                         </Typography>
+                                        {/* Time reducer отдельной строкой */}
                                         <Box sx={{ textAlign: 'center', pt: 0.5 }}>
                                             <Typography
                                                 variant='caption'
-                                                sx={{ color: (theme) => theme.palette.font.white60, fontSize: '0.8125rem' }}
+                                                sx={{
+                                                    color: 'common.white',
+                                                    fontSize: '0.8125rem',
+                                                    fontWeight: 600,
+                                                }}
                                             >
-                                                It takes 2 minutes to get started • Free to join • Data-protected • Verified
-                                                job listings
+                                                It takes 2 minutes to get started.
                                             </Typography>
                                         </Box>
+                                        {/* Trust badges как список “бейджей” */}
+                                        <Stack
+                                            direction='row'
+                                            spacing={1}
+                                            justifyContent='center'
+                                            flexWrap='wrap'
+                                            sx={{ pt: 0.5 }}
+                                        >
+                                            {[
+                                                'Free to join',
+                                                'Data-protected',
+                                                'Verified job listings',
+                                            ].map((label) => (
+                                                <Box
+                                                    key={label}
+                                                    sx={{
+                                                        px: 1.5,
+                                                        py: 0.5,
+                                                        borderRadius: 999,
+                                                        border: '1px solid',
+                                                        borderColor: (theme) =>
+                                                            alpha(theme.palette.common.white, 0.18),
+                                                        backgroundColor: (theme) =>
+                                                            alpha(theme.palette.common.black, 0.16),
+                                                    }}
+                                                >
+                                                    <Typography
+                                                        variant='caption'
+                                                        sx={{
+                                                            color: (theme) => theme.palette.font.white60,
+                                                            fontSize: '0.75rem',
+                                                            fontWeight: 500,
+                                                        }}
+                                                    >
+                                                        {label}
+                                                    </Typography>
+                                                </Box>
+                                            ))}
+                                        </Stack>
                                     </Stack>
                                 </Box>
                             </Box>

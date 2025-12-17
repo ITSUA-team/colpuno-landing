@@ -3,22 +3,54 @@ import dayjs from 'dayjs';
 import { motion } from 'framer-motion';
 
 import type { Job } from '../../../interfaces';
+import IconJobImages from "../../../public/icon-job-images";
 
 type Props = {
     job: Job;
     index: number;
     onClick?: () => void;
     compact?: boolean;
+    // variant: 'full' — main jobs list, 'preview' — compact cards in hero section
+    variant?: 'full' | 'preview';
 };
 
-const LandingJobsCard = ({ job, index, onClick, compact }: Props) => {
+const LandingJobsCard = ({ job, index, onClick, compact, variant = 'full' }: Props) => {
     const theme = useTheme();
     const bgTones = [
         theme.palette.secondary.lighter,
         theme.palette.primary.lighter,
         theme.palette.neutral[100],
     ];
-    const bg = bgTones[index % bgTones.length];
+    const bg =
+        variant === 'preview'
+            ? bgTones[index % bgTones.length]
+            : theme.palette.common.white;
+
+    // Module 2 — helper fields (role title, facility, location, optional shift, start window)
+    const facilityType = job.facilityTypeExperience?.name || job.workplace || 'Not specified';
+    const location =
+        job.region?.name || job.country?.name || 'Location TBD';
+    const shifts =
+        job.jobShiftPatterns
+            ?.map((sp: any) => sp.shiftPattern?.name)
+            .filter(Boolean)
+            .join(', ') || null;
+
+    let startWindow: string | undefined = undefined;
+    if (job.startDate) {
+        const date = new Date(job.startDate);
+        const now = new Date();
+        const diffMonths =
+            (date.getFullYear() - now.getFullYear()) * 12 +
+            (date.getMonth() - now.getMonth());
+        if (diffMonths <= 0) {
+            startWindow = 'Immediate';
+        } else if (diffMonths <= 1) {
+            startWindow = 'This month';
+        } else if (diffMonths <= 3) {
+            startWindow = 'Within 3 months';
+        }
+    }
 
     return (
         <motion.div 
@@ -45,21 +77,18 @@ const LandingJobsCard = ({ job, index, onClick, compact }: Props) => {
                         width: { xs: compact ? 48 : 56, md: compact ? 56 : 64 }, 
                         gap: compact ? { xs: 1, md: 1.5 } : { xs: 1.5, md: 2 }, 
                         flexDirection: { xs: 'row', md: 'column' },
-                        alignItems: { xs: 'center', md: 'flex-start' },
+                        alignItems: { xs: 'center'},
                     }}
                 >
                     <Avatar
                         alt={job.title}
-                        src={job.employer?.logo?.contentUrl}
                         sx={{
                             width: { xs: compact ? 48 : 56, md: compact ? 56 : 64 },
                             height: { xs: compact ? 48 : 56, md: compact ? 56 : 64 },
-                            backgroundColor: 'common.white',
-                            borderRadius: 1,
-                            fontWeight: 600,
+                            bgcolor: 'transparent',
                         }}
                     >
-                        {(job.employer?.title || job.title || 'C')[0]}
+                        <IconJobImages />
                     </Avatar>
                 </Stack>
 
@@ -89,44 +118,70 @@ const LandingJobsCard = ({ job, index, onClick, compact }: Props) => {
                     </Stack>
 
                     <Stack spacing={0.5}>
-                        <Stack direction='row' flexWrap={{ xs: 'wrap', md: 'nowrap' }}>
-                            <Typography 
-                                variant='body2' 
-                                sx={{ 
-                                    width: { xs: compact ? 60 : 70, md: compact ? 80 : 96 },
-                                    fontSize: { xs: '0.75rem', md: '0.875rem' },
-                                }}
-                            >
-                                Posted
-                            </Typography>
-                            <Typography 
-                                variant='body2' 
-                                sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}
-                            >
-                                {dayjs(job.createdAt).format('MMM D, YYYY')}
-                            </Typography>
-                        </Stack>
-                        {job.expirationDate && (
+                        {/* In preview variant карточки укороченные — без дат/сроков действия */}
+                        {variant === 'full' && (
+                            <>
+                                <Stack direction='row' flexWrap={{ xs: 'wrap', md: 'nowrap' }}>
+                                    <Typography 
+                                        variant='body2' 
+                                        sx={{ 
+                                            width: { xs: compact ? 60 : 70, md: compact ? 80 : 96 },
+                                            fontSize: { xs: '0.75rem', md: '0.875rem' },
+                                        }}
+                                    >
+                                        Posted
+                                    </Typography>
+                                    <Typography 
+                                        variant='body2' 
+                                        sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}
+                                    >
+                                        {dayjs(job.createdAt).format('MMM D, YYYY')}
+                                    </Typography>
+                                </Stack>
+                                {job.expirationDate && (
+                                    <Stack direction='row' flexWrap={{ xs: 'wrap', md: 'nowrap' }}>
+                                        <Typography 
+                                            variant='body2' 
+                                            sx={{ 
+                                                color: 'text.secondary',
+                                                width: { xs: compact ? 60 : 70, md: compact ? 80 : 96 },
+                                                fontSize: { xs: '0.75rem', md: '0.875rem' },
+                                            }}
+                                        >
+                                            Expires
+                                        </Typography>
+                                        <Typography 
+                                            variant='body2' 
+                                            sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}
+                                        >
+                                            {dayjs(job.expirationDate).format('MMM D, YYYY')}
+                                        </Typography>
+                                    </Stack>
+                                )}
+                            </>
+                        )}
+                        {/* Location (Module 2 — location) */}
+                        {location && (
                             <Stack direction='row' flexWrap={{ xs: 'wrap', md: 'nowrap' }}>
                                 <Typography 
                                     variant='body2' 
                                     sx={{ 
-                                        color: 'text.secondary',
                                         width: { xs: compact ? 60 : 70, md: compact ? 80 : 96 },
                                         fontSize: { xs: '0.75rem', md: '0.875rem' },
                                     }}
                                 >
-                                    Expires
+                                    Location
                                 </Typography>
                                 <Typography 
                                     variant='body2' 
                                     sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}
                                 >
-                                    {dayjs(job.expirationDate).format('MMM D, YYYY')}
+                                    {location}
                                 </Typography>
                             </Stack>
                         )}
-                        {job.country?.name && (
+                        {/* Facility type */}
+                        {facilityType && (
                             <Stack direction='row' flexWrap={{ xs: 'wrap', md: 'nowrap' }}>
                                 <Typography 
                                     variant='body2' 
@@ -135,38 +190,37 @@ const LandingJobsCard = ({ job, index, onClick, compact }: Props) => {
                                         fontSize: { xs: '0.75rem', md: '0.875rem' },
                                     }}
                                 >
-                                    Country
-                                </Typography>
-                                <Typography 
-                                    variant='body2' 
-                                    sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}
-                                >
-                                    {job.country.name}
-                                </Typography>
-                            </Stack>
-                        )}
-                        {job.region?.name && (
-                            <Stack direction='row' flexWrap={{ xs: 'wrap', md: 'nowrap' }}>
-                                <Typography 
-                                    variant='body2' 
-                                    sx={{ 
-                                        color: 'text.secondary',
-                                        width: { xs: compact ? 60 : 70, md: compact ? 80 : 96 },
-                                        fontSize: { xs: '0.75rem', md: '0.875rem' },
-                                    }}
-                                >
-                                    Region
+                                    Facility
                                 </Typography>
                                 <Typography
                                     variant='body2'
                                     sx={{
-                                        textAlign: 'left',
+                                        fontSize: { xs: '0.75rem', md: '0.875rem' },
                                         wordBreak: 'break-word',
-                                        flex: 1,
+                                    }}
+                                >
+                                    {facilityType}
+                                </Typography>
+                            </Stack>
+                        )}
+                        {/* Optional: Shift */}
+                        {shifts && (
+                            <Stack direction='row' flexWrap={{ xs: 'wrap', md: 'nowrap' }}>
+                                <Typography 
+                                    variant='body2' 
+                                    sx={{ 
+                                        color: 'text.secondary',
+                                        width: { xs: compact ? 60 : 70, md: compact ? 80 : 96 },
                                         fontSize: { xs: '0.75rem', md: '0.875rem' },
                                     }}
                                 >
-                                    {job.region.name}
+                                    Shift
+                                </Typography>
+                                <Typography 
+                                    variant='body2' 
+                                    sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}
+                                >
+                                    {shifts}
                                 </Typography>
                             </Stack>
                         )}
@@ -228,6 +282,27 @@ const LandingJobsCard = ({ job, index, onClick, compact }: Props) => {
                                 </Typography>
                             </Stack>
                         )}
+                        {/* Start window */}
+                        {startWindow && (
+                            <Stack direction='row' flexWrap={{ xs: 'wrap', md: 'nowrap' }}>
+                                <Typography 
+                                    variant='body2' 
+                                    sx={{ 
+                                        color: 'text.secondary',
+                                        width: { xs: compact ? 60 : 70, md: compact ? 80 : 96 },
+                                        fontSize: { xs: '0.75rem', md: '0.875rem' },
+                                    }}
+                                >
+                                    Start
+                                </Typography>
+                                <Typography 
+                                    variant='body2' 
+                                    sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}
+                                >
+                                    {startWindow}
+                                </Typography>
+                            </Stack>
+                        )}
                     </Stack>
                 </Stack>
 
@@ -238,15 +313,50 @@ const LandingJobsCard = ({ job, index, onClick, compact }: Props) => {
                         width: { xs: '100%', sm: 'auto' },
                     }}
                 >
-                    <Button
-                        variant='contained'
-                        onClick={onClick}
-                        sx={{
-                            width: { xs: '100%', sm: 'auto' },
-                        }}
-                    >
-                        View job details
-                    </Button>
+                    {variant === 'preview' ? (
+                        <Button
+                            variant='contained'
+                            onClick={onClick}
+                            sx={{
+                                width: { xs: '100%', sm: 'auto' },
+                            }}
+                        >
+                            View job details
+                        </Button>
+                    ) : (
+                        <Stack
+                            direction='column'
+                            spacing={1}
+                            sx={{ width: { xs: '100%', sm: 220 } }}
+                        >
+                            <Button
+                                variant='contained'
+                                color='primary'
+                                onClick={onClick}
+                                sx={{
+                                    textTransform: 'none',
+                                    fontWeight: 600,
+                                    borderRadius: 3,
+                                    width: '100%',
+                                }}
+                            >
+                                Apply now
+                            </Button>
+                            <Button
+                                variant='text'
+                                color='primary'
+                                onClick={onClick}
+                                sx={{
+                                    textTransform: 'none',
+                                    fontWeight: 500,
+                                    width: '100%',
+                                    justifyContent: 'center',
+                                }}
+                            >
+                                View job details
+                            </Button>
+                        </Stack>
+                    )}
                 </Stack>
             </Stack>
         </motion.div>

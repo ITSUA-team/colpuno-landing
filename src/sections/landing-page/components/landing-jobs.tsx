@@ -1,5 +1,5 @@
-import { Box, Stack, Typography } from '@mui/material';
-import { useState } from 'react';
+import { Box, Stack, Tab, Tabs, Typography } from '@mui/material';
+import { SyntheticEvent, useState } from 'react';
 
 import type { Job } from '../../../interfaces';
 import { MOCK_JOBS } from '../../../mock';
@@ -9,7 +9,31 @@ import LandingJobDetailModal from './landing-job-detail-modal';
 
 function LandingJobs() {
     const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-    const currentJobs: Job[] = MOCK_JOBS.slice(0, 10);
+    // Simple tabs per spec: National (PH) | International (Preview)
+    const [tab, setTab] = useState<'national' | 'international'>('national');
+    const allJobs: Job[] = MOCK_JOBS;
+
+    // Backend note: в реальных данных различие National/International будет по country.name или похожему полю.
+    const nationalJobs: Job[] = allJobs.filter(
+        (job) => job.country?.name === 'Philippines',
+    ).slice(0, 10);
+
+    let internationalJobs: Job[] = allJobs.filter(
+        (job) => job.country && job.country.name !== 'Philippines',
+    ).slice(0, 10);
+
+    // Mock‑fallback: если нет реальных international в моках, показываем "preview" как вторую выборку из того же списка
+    if (internationalJobs.length === 0 && allJobs.length > 0) {
+        const half = Math.floor(allJobs.length / 2) || 1;
+        internationalJobs = allJobs.slice(half, half + 10);
+    }
+
+    const currentJobs: Job[] = tab === 'national' ? nationalJobs : internationalJobs;
+
+    const handleTabChange = (_e: SyntheticEvent, value: 'national' | 'international') => {
+        setTab(value);
+        setSelectedJob(null);
+    };
 
     const handleJobClick = (job: Job) => {
         trackJobView(job.id);
@@ -51,29 +75,50 @@ function LandingJobs() {
             >
                 Real jobs ready for newly registered nurses
             </Typography>
+            <Tabs
+                value={tab}
+                onChange={handleTabChange}
+                centered
+                sx={{ mb: 2 }}
+            >
+                <Tab
+                    label='National (PH)'
+                    value='national'
+                    sx={{ textTransform: 'none' }}
+                />
+                <Tab
+                    label='International (Preview)'
+                    value='international'
+                    sx={{ textTransform: 'none' }}
+                />
+            </Tabs>
+            {/* Module 2 — Jobs Preview on Page (copy from spec) */}
             <Typography variant='body1' sx={{ mb: 2, textAlign: 'center' }}>
-                These are example Colpuno-style jobs to demonstrate how your listings will look.
+                Start onboarding to unlock full details and apply.
             </Typography>
             <Typography variant='body2' sx={{ mb: 4, textAlign: 'center' }}>
-                Tap any job to view details. Tap Apply to confirm after signup.
+                Tap any job to view details. Tap Apply to continue after signup.
             </Typography>
 
             <Stack
-                direction='column'
+                direction='row'
+                flexWrap='wrap'
                 sx={{
                     mb: 3,
                     rowGap: 3,
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    columnGap: 3,
+                    justifyContent: { xs: 'center' },
                 }}
             >
                 {currentJobs.map((job, index) => (
                     <Box
                         key={job.id}
                         sx={{
-                            width: { xs: '100%', md: '100%' },
-                            maxWidth: { xs: '100%', md: '600px' },
+                            width: { xs: '100%', sm: '100%', md: '100%' },
+                            maxWidth: { xs: '100%', md: 720 },
                             display: 'flex',
+
+                            justifyContent: 'center',
                         }}
                     >
                         <LandingJobsCard

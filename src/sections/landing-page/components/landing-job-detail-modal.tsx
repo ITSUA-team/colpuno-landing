@@ -29,8 +29,8 @@ function LandingJobDetailModal({ job, open, onClose }: LandingJobDetailModalProp
     };
 
     const facilityType = job.facilityTypeExperience?.name || 'Not specified';
-
     const location = job.region?.name || job.country?.name || 'Location TBD';
+    const employmentType = job.jobType || 'Full-time';
 
     const shifts = job.jobShiftPatterns?.map((sp: any) => sp.shiftPattern?.name).filter(Boolean).join(', ') || 'Not specified';
 
@@ -53,8 +53,10 @@ function LandingJobDetailModal({ job, open, onClose }: LandingJobDetailModalProp
         lic.licence?.name?.toLowerCase().includes('prc')
     ) ? 'Required' : 'Preferred';
 
+    const isEntryLevel = !job.yearsOfExperience || job.yearsOfExperience === 0;
+
     const experienceRequired = job.yearsOfExperience && job.yearsOfExperience > 0
-        ? `${job.yearsOfExperience} years required`
+        ? 'Required'
         : 'Not required';
 
     const jobSummary = job.description
@@ -64,20 +66,38 @@ function LandingJobDetailModal({ job, open, onClose }: LandingJobDetailModalProp
     return (
         <StyledModal open={open} onClose={onClose}>
             <Stack spacing={3}>
+                {/* Module 2A — Job Detail Modal (copy + structure) */}
                 <Box>
                     <Typography variant='h5' sx={{ mb: 1 }}>
                         {job.title}
                     </Typography>
                     <Typography variant='body2'>
-                        {location} • {facilityType} • {job.jobType || 'Full-time'}
+                        {location} • {facilityType} • {employmentType}
                     </Typography>
+                    {isEntryLevel && (
+                        <Box
+                            sx={{
+                                mt: 1.5,
+                                display: 'inline-flex',
+                                px: 1.5,
+                                py: 0.5,
+                                borderRadius: 999,
+                                bgcolor: 'success.50',
+                                color: 'success.800',
+                                fontSize: 12,
+                                fontWeight: 600,
+                            }}
+                        >
+                            Entry-level friendly — no prior experience required
+                        </Box>
+                    )}
                 </Box>
 
                 <Divider />
 
                 <Box>
                     <Typography variant='subtitle2' sx={{ mb: 1 }}>
-                        Job snapshot
+                        Snapshot
                     </Typography>
                     <Typography variant='body2'>
                         {jobSummary}
@@ -96,7 +116,7 @@ function LandingJobDetailModal({ job, open, onClose }: LandingJobDetailModalProp
                             <strong>Experience:</strong> {experienceRequired}
                         </Typography>
                         <Typography variant='body2'>
-                            <strong>Documents:</strong> CV (upload now or later), PRC ID (if available)
+                            <strong>Documents:</strong> CV, PRC ID (upload now or later if available)
                         </Typography>
                         {shifts !== 'Not specified' && (
                             <Typography variant='body2'>
@@ -120,15 +140,12 @@ function LandingJobDetailModal({ job, open, onClose }: LandingJobDetailModalProp
                         What happens next:
                     </Typography>
                     <Typography variant='body2'>
-                        Click Apply to register/login. After verification, you&apos;ll return to confirm your application.
+                        Click Apply to start onboarding. After you verify your email and create your account, you&apos;ll
+                        return to confirm your application.
                     </Typography>
                 </Box>
 
-                {!user && (
-                    <Typography variant='caption' sx={{ fontStyle: 'italic' }}>
-                        Some details may appear after login.
-                    </Typography>
-                )}
+                {/* Login‑related microcopy скрываем в V1, как обсуждали */}
 
                 <Stack direction='row' spacing={2}>
                     <Button 
