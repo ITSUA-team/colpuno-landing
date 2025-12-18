@@ -16,7 +16,7 @@ function LandingJobPreview() {
         queryFn: () => JobOfferService.getJobOffers('1'),
         staleTime: 5 * 60 * 1000,
     });
- 
+
     const jobs: Job[] = data?.member?.slice(0, 3) || [];
 
     const handleJobClick = (job: Job) => {

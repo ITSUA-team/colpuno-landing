@@ -224,54 +224,47 @@ const LandingJobsCard = ({ job, index, onClick, compact, variant = 'full' }: Pro
                                 </Typography>
                             </Stack>
                         )}
-                        {job.salary && (
-                            <Stack direction='row' flexWrap={{ xs: 'wrap', md: 'nowrap' }}>
-                                <Typography 
-                                    variant='body2' 
-                                    sx={{ 
-                                        width: { xs: compact ? 60 : 70, md: compact ? 80 : 96 },
-                                        fontSize: { xs: '0.75rem', md: '0.875rem' },
+                        {/* Employer / agency icons row */}
+                        <Stack
+                            direction="row"
+                            spacing={1.5}
+                            sx={{ pt: 1 }}
+                        >
+                            <Stack direction="row" spacing={0.75} alignItems="center">
+                                <Box
+                                    sx={{
+                                        width: 20,
+                                        height: 20,
+                                        borderRadius: '50%',
+                                        bgcolor: 'primary.main',
                                     }}
+                                />
+                                <Typography
+                                    variant="caption"
+                                    sx={{ fontSize: { xs: '0.75rem', md: '0.8125rem' } }}
                                 >
-                                    Salary range
+                                    Company
                                 </Typography>
-                                <Stack direction='row' alignItems='center' spacing={0.5} flexWrap={{ xs: 'wrap', md: 'nowrap' }}>
-                                    {job.salary.currency?.code && (
-                                        <Typography 
-                                            variant='body2' 
-                                            sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}
-                                        >
-                                            {job.salary.currency.code}
-                                        </Typography>
-                                    )}
-                                    <Typography 
-                                        variant='body2' 
-                                        sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}
-                                    >
-                                        {job.salary.salaryLower > 0
-                                            ? job.salary.salaryLower.toLocaleString()
-                                            : 'N/A'}
-                                    </Typography>
-                                    <Typography 
-                                        variant='body2' 
-                                        sx={{ 
-                                            mx: 0.5,
-                                            fontSize: { xs: '0.75rem', md: '0.875rem' },
-                                        }}
-                                    >
-                                        –
-                                    </Typography>
-                                    <Typography 
-                                        variant='body2' 
-                                        sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}
-                                    >
-                                        {job.salary.salaryHigher > 0
-                                            ? job.salary.salaryHigher.toLocaleString()
-                                            : 'N/A'}
-                                    </Typography>
-                                </Stack>
                             </Stack>
-                        )}
+
+                            <Stack direction="row" spacing={0.75} alignItems="center">
+                                <Box
+                                    sx={{
+                                        width: 20,
+                                        height: 20,
+                                        borderRadius: '50%',
+                                        bgcolor: 'secondary.main',
+                                        opacity: job.agency ? 1 : 0.3,
+                                    }}
+                                />
+                                <Typography
+                                    variant="caption"
+                                    sx={{ fontSize: { xs: '0.75rem', md: '0.8125rem' } }}
+                                >
+                                    Agency
+                                </Typography>
+                            </Stack>
+                        </Stack>
                         {!!job.numberOfVacancies && (
                             <Stack direction='row' spacing={1} pt={1}>
                                 <Typography 

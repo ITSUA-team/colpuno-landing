@@ -5,7 +5,8 @@ import AppRegistration from '../../../AppRegistration';
 import StyledModal from '../../../components/styled-modal';
 import { trackRegStarted } from '../utils/tracking';
 import LandingJobPreview from './landing-job-preview';
-import IconStar2 from "../../../assets/icon-components/icon-star";
+import IconStar2 from '../../../assets/icon-components/icon-star';
+import { JobBadge } from './index';
 
 
 function LandingHero() {
@@ -260,6 +261,9 @@ function LandingHero() {
                                 p: { xs: 2, md: 3 },
                             }}
                         >
+                            <Box sx={{ width: '100%', my: 3 }}>
+                                <JobBadge text="5000+ Job Vacancies" />
+                            </Box>
                             <LandingJobPreview />
                         </Box>
                     </Stack>
