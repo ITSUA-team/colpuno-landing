@@ -7,6 +7,7 @@ import { trackRegStarted } from '../utils/tracking';
 import LandingJobPreview from './landing-job-preview';
 import IconStar2 from '../../../assets/icon-components/icon-star';
 import { JobBadge } from './index';
+import TrustBadgesImg from '../../../assets/img.png';
 
 
 function LandingHero() {
@@ -210,13 +211,14 @@ function LandingHero() {
                                                 It takes 2 minutes to get started.
                                             </Typography>
                                         </Box>
-                                        {/* Trust badges как список “бейджей” */}
+                                        {/* Trust badges — текстовые (mobile) + графические (desktop) */}
+                                        {/* Mobile: текстовые бейджи */}
                                         <Stack
                                             direction='row'
                                             spacing={1}
                                             justifyContent='center'
                                             flexWrap='wrap'
-                                            sx={{ pt: 0.5 }}
+                                            sx={{ pt: 0.5, display: { xs: 'flex', md: 'none' } }}
                                         >
                                             {[
                                                 'Free to join',
@@ -249,6 +251,26 @@ function LandingHero() {
                                                 </Box>
                                             ))}
                                         </Stack>
+                                        {/* Desktop: стикеры‑бейджи картинкой */}
+                                        <Box
+                                            sx={{
+                                                mt: 1.5,
+                                                display: { xs: 'none', md: 'flex' },
+                                                justifyContent: 'center',
+                                            }}
+                                        >
+                                            <Box
+                                                component="img"
+                                                src={typeof TrustBadgesImg === 'string' ? TrustBadgesImg : (TrustBadgesImg as any).src}
+                                                alt="Free to join, data protected, verified job listings"
+                                                sx={{
+                                                    maxWidth: 360,
+                                                    width: '100%',
+                                                    height: 'auto',
+                                                    borderRadius: 2,
+                                                }}
+                                            />
+                                        </Box>
                                     </Stack>
                                 </Box>
                             </Box>

@@ -224,47 +224,6 @@ const LandingJobsCard = ({ job, index, onClick, compact, variant = 'full' }: Pro
                                 </Typography>
                             </Stack>
                         )}
-                        {/* Employer / agency icons row */}
-                        <Stack
-                            direction="row"
-                            spacing={1.5}
-                            sx={{ pt: 1 }}
-                        >
-                            <Stack direction="row" spacing={0.75} alignItems="center">
-                                <Box
-                                    sx={{
-                                        width: 20,
-                                        height: 20,
-                                        borderRadius: '50%',
-                                        bgcolor: 'primary.main',
-                                    }}
-                                />
-                                <Typography
-                                    variant="caption"
-                                    sx={{ fontSize: { xs: '0.75rem', md: '0.8125rem' } }}
-                                >
-                                    Company
-                                </Typography>
-                            </Stack>
-
-                            <Stack direction="row" spacing={0.75} alignItems="center">
-                                <Box
-                                    sx={{
-                                        width: 20,
-                                        height: 20,
-                                        borderRadius: '50%',
-                                        bgcolor: 'secondary.main',
-                                        opacity: job.agency ? 1 : 0.3,
-                                    }}
-                                />
-                                <Typography
-                                    variant="caption"
-                                    sx={{ fontSize: { xs: '0.75rem', md: '0.8125rem' } }}
-                                >
-                                    Agency
-                                </Typography>
-                            </Stack>
-                        </Stack>
                         {!!job.numberOfVacancies && (
                             <Stack direction='row' spacing={1} pt={1}>
                                 <Typography 
