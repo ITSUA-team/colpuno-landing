@@ -1,4 +1,4 @@
-import { Box, Stack, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Button, Stack, Tab, Tabs, Typography } from '@mui/material';
 import { SyntheticEvent, useState } from 'react';
 
 import type { Job } from '../../../interfaces';
@@ -110,24 +110,107 @@ function LandingJobs() {
                     justifyContent: { xs: 'center' },
                 }}
             >
-                {currentJobs.map((job, index) => (
-                    <Box
-                        key={job.id}
-                        sx={{
-                            width: { xs: '100%', sm: '100%', md: '100%' },
-                            maxWidth: { xs: '100%', md: 720 },
-                            display: 'flex',
+                {currentJobs.map((job, index) => {
+                    const isTeaserCard =
+                        currentJobs.length === 10 && index === currentJobs.length - 1;
 
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <LandingJobsCard
-                            job={job}
-                            index={index}
-                            onClick={() => handleJobClick(job)}
-                        />
-                    </Box>
-                ))}
+                    return (
+                        <Box
+                            key={job.id}
+                            sx={{
+                                width: { xs: '100%', sm: '100%', md: '100%' },
+                                maxWidth: { xs: '100%', md: 720 },
+                                display: 'flex',
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    position: isTeaserCard ? 'relative' : 'static',
+                                    width: '100%',
+                                }}
+                            >
+                                <Box
+                                    sx={{
+                                        filter: isTeaserCard ? 'blur(3px)' : 'none',
+                                        pointerEvents: isTeaserCard ? 'none' : 'auto',
+                                        transition: 'filter 0.25s ease',
+                                    }}
+                                >
+                                    <LandingJobsCard
+                                        job={job}
+                                        index={index}
+                                        onClick={() => handleJobClick(job)}
+                                    />
+                                </Box>
+
+                                {isTeaserCard && (
+                                    <Box
+                                        sx={{
+                                            position: 'absolute',
+                                            inset: 0,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            px: { xs: 1.5, md: 2 },
+                                            pointerEvents: 'none',
+                                        }}
+                                    >
+                                        <Box
+                                            sx={{
+                                                maxWidth: 420,
+                                                width: '100%',
+                                                borderRadius: 2,
+                                                bgcolor: 'common.white',
+                                                boxShadow: 4,
+                                                p: { xs: 2, md: 2.5 },
+                                                textAlign: 'center',
+                                                pointerEvents: 'auto',
+                                            }}
+                                        >
+                                            <Typography
+                                                variant='subtitle1'
+                                                sx={{
+                                                    fontWeight: 600,
+                                                    mb: 1,
+                                                }}
+                                            >
+                                                More jobs are available after signup
+                                            </Typography>
+                                            <Typography
+                                                variant='body2'
+                                                sx={{
+                                                    mb: 2,
+                                                }}
+                                            >
+                                                Register to unlock more listings and apply faster.
+                                            </Typography>
+                                            <Button
+                                                variant='contained'
+                                                color='primary'
+                                                size='small'
+                                                sx={{
+                                                    textTransform: 'none',
+                                                    fontWeight: 600,
+                                                }}
+                                                onClick={() => {
+                                                    const hero = document.getElementById('landing-hero');
+                                                    if (hero) {
+                                                        hero.scrollIntoView({ behavior: 'smooth' });
+                                                    } else {
+                                                        window.location.href = '/register';
+                                                    }
+                                                }}
+                                            >
+                                                Unlock jobs
+                                            </Button>
+                                        </Box>
+                                    </Box>
+                                )}
+                            </Box>
+                        </Box>
+                    );
+                })}
             </Stack>
 
             {selectedJob && (

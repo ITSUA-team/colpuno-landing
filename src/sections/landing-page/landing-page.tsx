@@ -92,13 +92,9 @@ function LandingPage() {
                             display: 'block',
                         }}
                     />
-                    <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
-                        <JobBadge text="5000+ Job Vacancies" />
-                    </Box>
                 </Box>
             </Box>
 
-            {/* Jobs ticker */}
             <JobsTicker items={vacancies} />
 
             <LandingHero />
@@ -110,12 +106,12 @@ function LandingPage() {
             </Box>
 
             {/* Career features */}
-            <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
+            <Container maxWidth="lg">
                 <CareerFeatures />
             </Container>
 
             {/* Trust / Why COLPUNO */}
-            <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
+            <Container maxWidth="lg">
                 <LandingTrust />
             </Container>
 
