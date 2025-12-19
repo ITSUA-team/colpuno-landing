@@ -115,10 +115,11 @@ export default function LogoCarousel({ logos = MOCK_LOGOS, speedPxPerSec = 60 }:
                     <Typography
                         variant="h4"
                         sx={{
-                            fontSize: { xs: '1.5rem', md: '2rem' },
-                            fontWeight: 600,
+                            fontSize: { xs: '24px', md: '32px' },
+                            fontWeight: 700,
                             color: theme.palette.text.primary,
                             mb: 1,
+                            textAlign: 'center',
                         }}
                     >
                         Trusted by Leaders

@@ -55,10 +55,10 @@ function LandingProfileMotivator() {
                             <Typography
                                 variant="h4"
                                 sx={{
-                                    fontSize: { xs: '22px', md: '28px' },
+                                    fontSize: { xs: '24px', md: '32px' },
+                                    fontWeight: 700,
                                     mb: 1.5,
-                                    textAlign: 'left',
-                                    fontWeight: 600,
+                                    textAlign: { xs: 'center', md: 'left' },
                                 }}
                             >
                                 A stronger profile = better matches

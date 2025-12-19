@@ -50,6 +50,38 @@ export const trackApplicationCreated = (jobId: string | number) => {
     trackEvent('application_created', { job_id: jobId });
 };
 
+export const trackOnboardingStarted = (source: 'cta' | 'apply', jobId?: string | number) => {
+    trackEvent('onboarding_started', { source, job_id: jobId });
+};
+
+export const trackOnboardingStepCompleted = (stepName: string) => {
+    trackEvent('onboarding_step_completed', { step_name: stepName });
+};
+
+export const trackEmailVerificationSent = () => {
+    trackEvent('email_verification_sent', {});
+};
+
+export const trackEmailVerified = () => {
+    trackEvent('email_verified', {});
+};
+
+export const trackCtaUnlockJobsClicked = () => {
+    trackEvent('cta_unlock_jobs_clicked', {});
+};
+
+export const trackJobModalOpened = (jobId: string | number) => {
+    trackEvent('job_modal_opened', { job_id: jobId });
+};
+
+export const trackApplyClicked = (jobId: string | number) => {
+    trackEvent('apply_clicked', { job_id: jobId });
+};
+
+export const trackConfirmApplicationOpened = (jobId: string | number) => {
+    trackEvent('confirm_application_opened', { job_id: jobId });
+};
+
 export const trackKPIPoint = async (
     type: string,
     page?: string,

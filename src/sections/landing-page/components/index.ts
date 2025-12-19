@@ -14,3 +14,4 @@ export { default as CareerFeatures} from './career-feauture';
 export { default as LandingJobs } from './landing-jobs';
 export { default as LogoCarousel } from './logo-carousel';
 export { default as JobBadge } from './job-badge';
+export { default as ScrollToTop } from './scroll-to-top';

@@ -43,7 +43,9 @@ function LandingFinalCTA() {
                 variant='h4'
                 sx={{
                     fontSize: { xs: '24px', md: '32px' },
+                    fontWeight: 700,
                     mb: 2,
+                    textAlign: 'center',
                     color: 'common.white',
                 }}
             >

@@ -1,91 +1,42 @@
-import { Box, Button, Stack, Typography } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import { alpha } from '@mui/material/styles';
-
-export type CareerFeature = {
-    title: string;
-    description: string;
-};
+import { Box, Typography } from '@mui/material';
+import CareerSupportImg from '../../../assets/img_1.png';
 
 type Props = {
-    items?: CareerFeature[];
     onRegisterClick?: (source: 'top' | 'bottom') => void;
 };
 
-const MOCK_CAREER_FEATURES: CareerFeature[] = [
-    { title: '100% Career Support', description: 'Through tech-powered features.' },
-    { title: '360° Career View', description: 'Know yourself. Find your job match.' },
-    { title: '12+ Countries', description: 'Opening doors worldwide – from Asia to Europe and US.' },
-    { title: '5000+ Verified Jobs', description: 'From DMW recruiters and local employers.' },
-    { title: '1 Perfect Job Match', description: 'Just for you.' },
-];
-
-export default function CareerFeatures({ items = MOCK_CAREER_FEATURES, onRegisterClick }: Props) {
-    const theme = useTheme();
-
+export default function CareerFeatures({ onRegisterClick }: Props) {
     return (
         <Box component="section" sx={{ textAlign: 'center', py: { xs: 5, md: 8 } }}>
-            <Stack
-                direction={{ xs: 'column', md: 'row' }}
-                spacing={{ xs: 3, md: 6 }} // больше gap между карточками
+            <Typography
+                variant="h4"
+                sx={{
+                    fontSize: { xs: '24px', md: '32px' },
+                    fontWeight: 700,
+                    mb: 3,
+                    textAlign: 'center',
+                }}
+            >
+                CAREER SUPPORT ECOSYSTEM
+            </Typography>
+            <Box
                 sx={{
                     maxWidth: 720,
                     mx: 'auto',
-                    bgcolor: theme.palette.background.paper,
-                    borderRadius: 3,
-                    p: { xs: 3, md: 5 }, // увеличенный padding
-                    border: 1,
-                    borderColor: theme.palette.grey[200],
-                    boxShadow: 3,
-                    flexWrap: 'wrap',
+                    px: { xs: 2, md: 0 },
                 }}
             >
-                {items.map((item, index) => (
-                    <Box
-                        key={index}
-                        sx={{
-                            flex: '1 1 240px',
-                            minWidth: 0,
-                            textAlign: 'center',
-                            p: { xs: 2, md: 3 },
-                            borderBottom: { xs: 1, md: 0 },
-                            borderColor: alpha(theme.palette.grey[200], 0.5),
-                            '&:last-child': { borderBottom: 0 },
-                        }}
-                    >
-                        <Typography
-                            variant="h5"
-                            component="span"
-                            sx={{
-                                display: 'block',
-                                fontWeight: 600,
-                                color: theme.palette.primary.main,
-                                lineHeight: 1.3,
-                                wordBreak: 'break-word',
-                            }}
-                        >
-                            {item.title}
-                        </Typography>
-                        <Typography
-                            variant="body2"
-                            component="span"
-
-                        >
-                            {item.description}
-                        </Typography>
-                    </Box>
-                ))}
-            </Stack>
-
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: { xs: 4, md: 6 } }}>
-                <Button
-                    variant="contained"
-                    size="large"
-
-                    onClick={() => onRegisterClick?.('bottom')}
-                >
-                    REGISTER NOW
-                </Button>
+                <Box
+                    component="img"
+                    src={typeof CareerSupportImg === 'string' ? CareerSupportImg : (CareerSupportImg as any).src}
+                    alt="Career Support Ecosystem"
+                    sx={{
+                        width: '100%',
+                        maxWidth: '100%',
+                        height: 'auto',
+                        borderRadius: 2,
+                    }}
+                />
             </Box>
         </Box>
     );

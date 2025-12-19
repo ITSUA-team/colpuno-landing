@@ -123,6 +123,17 @@ export async function getOnboardData(
     return apiFetch<unknown[]>(`/onboard/data?${params.toString()}`);
 }
 
+export async function sendVerificationEmail(email: string): Promise<ApiResponse<unknown>> {
+    return apiFetch<unknown>('/auth/send-verification-email', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+    });
+}
+
+export async function checkEmailVerified(email: string): Promise<ApiResponse<{ verified: boolean }>> {
+    return apiFetch<{ verified: boolean }>(`/auth/check-email-verified?email=${encodeURIComponent(email)}`);
+}
+
 export interface KPIPoint {
     type: string;
     page?: string;
