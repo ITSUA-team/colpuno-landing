@@ -46,7 +46,6 @@ function LandingHero() {
                     right: '50%',
                     marginLeft: '-50vw',
                     marginRight: '-50vw',
-                    backgroundColor: 'common.white',
                     px: { xs: 2, md: 3 },
                     py: { xs: 4, md: 6 },
                 }}

@@ -1,4 +1,5 @@
 import { Box, Button, Stack, Tab, Tabs, Typography } from '@mui/material';
+import { AnimatePresence, motion } from 'framer-motion';
 import { SyntheticEvent, useState } from 'react';
 
 import type { Job } from '../../../interfaces';
@@ -28,7 +29,7 @@ function LandingJobs() {
         internationalJobs = allJobs.slice(half, half + 10);
     }
 
-    const currentJobs: Job[] = tab === 'national' ? nationalJobs : internationalJobs;
+    const currentJobs: Job[] = (tab === 'national' ? nationalJobs : internationalJobs).slice(0, 10);
 
     const handleTabChange = (_e: SyntheticEvent, value: 'national' | 'international') => {
         setTab(value);
@@ -69,6 +70,7 @@ function LandingJobs() {
                 variant='h4'
                 sx={{
                     fontSize: { xs: '24px', md: '32px' },
+                    fontWeight: 700,
                     mb: 1,
                     textAlign: 'center',
                 }}
@@ -100,118 +102,154 @@ function LandingJobs() {
                 Tap any job to view details. Tap Apply to continue after signup.
             </Typography>
 
-            <Stack
-                direction='row'
-                flexWrap='wrap'
+            <Box
                 sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
                     mb: 3,
-                    rowGap: 3,
-                    columnGap: 3,
-                    justifyContent: { xs: 'center' },
+                    position: 'relative',
+                    minHeight: 400,
                 }}
             >
-                {currentJobs.map((job, index) => {
-                    const isTeaserCard =
-                        currentJobs.length === 10 && index === currentJobs.length - 1;
-
-                    return (
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={tab}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.3 }}
+                        style={{
+                            width: '100%',
+                            maxWidth: '1200px',
+                        }}
+                    >
                         <Box
-                            key={job.id}
                             sx={{
-                                width: { xs: '100%', sm: '100%', md: '100%' },
-                                maxWidth: { xs: '100%', md: 720 },
-                                display: 'flex',
-                                justifyContent: 'center',
+                                display: 'grid',
+                                gridTemplateColumns: { 
+                                    xs: '1fr', 
+                                    sm: 'repeat(2, 1fr)', 
+                                    md: 'repeat(2, 1fr)' 
+                                },
+                                gap: { xs: 2, sm: 2.5, md: 3 },
+                                width: '100%',
                             }}
                         >
-                            <Box
-                                sx={{
-                                    position: isTeaserCard ? 'relative' : 'static',
-                                    width: '100%',
-                                }}
-                            >
-                                <Box
-                                    sx={{
-                                        filter: isTeaserCard ? 'blur(3px)' : 'none',
-                                        pointerEvents: isTeaserCard ? 'none' : 'auto',
-                                        transition: 'filter 0.25s ease',
-                                    }}
-                                >
+                            {currentJobs.map((job, index) => (
+                                <Box key={job.id}>
                                     <LandingJobsCard
                                         job={job}
                                         index={index}
                                         onClick={() => handleJobClick(job)}
                                     />
                                 </Box>
-
-                                {isTeaserCard && (
+                            ))}
+                            
+                            {/* Teaser card - контейнер на всю ширину с заблюренной карточкой внутри */}
+                            <Box
+                                sx={{
+                                    gridColumn: { 
+                                        xs: '1 / -1', 
+                                        sm: '1 / -1', 
+                                        md: '1 / -1' 
+                                    },
+                                    position: 'relative',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    minHeight: 200,
+                                }}
+                            >
+                                {/* Заблюренная карточка джобы обычного размера (центрированная) */}
+                                <Box
+                                    sx={{
+                                        filter: 'blur(3px)',
+                                        pointerEvents: 'none',
+                                        opacity: 0.6,
+                                        width: '100%',
+                                        maxWidth: {
+                                            xs: '100%',
+                                            sm: 'calc(50% - 12px)',
+                                            md: 'calc(50% - 18px)',
+                                        },
+                                    }}
+                                >
+                                    {currentJobs.length > 0 && (
+                                        <LandingJobsCard
+                                            job={currentJobs[currentJobs.length - 1]}
+                                            index={currentJobs.length - 1}
+                                            onClick={() => {}}
+                                        />
+                                    )}
+                                </Box>
+                                
+                                {/* Оверлей с тизером */}
+                                <Box
+                                    sx={{
+                                        position: 'absolute',
+                                        inset: 0,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        px: { xs: 1.5, md: 2 },
+                                        pointerEvents: 'none',
+                                    }}
+                                >
                                     <Box
                                         sx={{
-                                            position: 'absolute',
-                                            inset: 0,
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            px: { xs: 1.5, md: 2 },
-                                            pointerEvents: 'none',
+                                            maxWidth: 420,
+                                            width: '100%',
+                                            borderRadius: 2,
+                                            bgcolor: 'common.white',
+                                            boxShadow: 4,
+                                            p: { xs: 2, md: 2.5 },
+                                            textAlign: 'center',
+                                            pointerEvents: 'auto',
                                         }}
                                     >
-                                        <Box
+                                        <Typography
+                                            variant='subtitle1'
                                             sx={{
-                                                maxWidth: 420,
-                                                width: '100%',
-                                                borderRadius: 2,
-                                                bgcolor: 'common.white',
-                                                boxShadow: 4,
-                                                p: { xs: 2, md: 2.5 },
-                                                textAlign: 'center',
-                                                pointerEvents: 'auto',
+                                                fontWeight: 600,
+                                                mb: 1,
                                             }}
                                         >
-                                            <Typography
-                                                variant='subtitle1'
-                                                sx={{
-                                                    fontWeight: 600,
-                                                    mb: 1,
-                                                }}
-                                            >
-                                                More jobs are available after signup
-                                            </Typography>
-                                            <Typography
-                                                variant='body2'
-                                                sx={{
-                                                    mb: 2,
-                                                }}
-                                            >
-                                                Register to unlock more listings and apply faster.
-                                            </Typography>
-                                            <Button
-                                                variant='contained'
-                                                color='primary'
-                                                size='small'
-                                                sx={{
-                                                    textTransform: 'none',
-                                                    fontWeight: 600,
-                                                }}
-                                                onClick={() => {
-                                                    const hero = document.getElementById('landing-hero');
-                                                    if (hero) {
-                                                        hero.scrollIntoView({ behavior: 'smooth' });
-                                                    } else {
-                                                        window.location.href = '/register';
-                                                    }
-                                                }}
-                                            >
-                                                Unlock jobs
-                                            </Button>
-                                        </Box>
+                                            More jobs are available after signup
+                                        </Typography>
+                                        <Typography
+                                            variant='body2'
+                                            sx={{
+                                                mb: 2,
+                                            }}
+                                        >
+                                            Register to unlock more listings and apply faster.
+                                        </Typography>
+                                        <Button
+                                            variant='contained'
+                                            color='primary'
+                                            size='small'
+                                            sx={{
+                                                textTransform: 'none',
+                                                fontWeight: 600,
+                                            }}
+                                            onClick={() => {
+                                                const hero = document.getElementById('landing-hero');
+                                                if (hero) {
+                                                    hero.scrollIntoView({ behavior: 'smooth' });
+                                                } else {
+                                                    window.location.href = '/register';
+                                                }
+                                            }}
+                                        >
+                                            Unlock jobs
+                                        </Button>
                                     </Box>
-                                )}
+                                </Box>
                             </Box>
                         </Box>
-                    );
-                })}
-            </Stack>
+                    </motion.div>
+                </AnimatePresence>
+            </Box>
 
             {selectedJob && (
                 <LandingJobDetailModal

@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import LogoBlue from '../../assets/logo-blue.png';
 import {
     CareerFeatures,
-    JobBadge,
     JobsTicker,
     LandingFAQ,
     LandingFinalCTA,
@@ -16,6 +15,7 @@ import {
     LandingStickyCTA,
     LandingTrust,
     LogoCarousel,
+    ScrollToTop,
 } from './components';
 import { trackPageVisit } from './utils/tracking';
 
@@ -45,7 +45,7 @@ function LandingPage() {
         <Box
             sx={{
                 minHeight: '100vh',
-                backgroundColor: 'common.white',
+                background: 'linear-gradient(rgba(23, 58, 168, 0.2) 45%, rgba(206, 17, 39, 0.2) 75%), rgb(255, 255, 255)',
                 display: 'flex',
                 flexDirection: 'column',
             }}
@@ -59,7 +59,6 @@ function LandingPage() {
                     right: '50%',
                     marginLeft: '-50vw',
                     marginRight: '-50vw',
-                    backgroundColor: 'common.white',
                     px: { xs: 2, md: 3 },
                     py: { xs: 1, md: 1.5 },
                     height: { xs: 120, md: 160 },
@@ -99,56 +98,133 @@ function LandingPage() {
 
             <LandingHero />
 
-            <Box sx={{ backgroundColor: 'common.white', py: { xs: 4, md: 6 } }}>
-                <Container maxWidth="lg">
+            {/* Jobs */}
+            <Box sx={{ py: { xs: 4, md: 6 }, display: 'flex', justifyContent: 'center' }}>
+                <Box
+                    sx={{
+                        justifyContent: 'center',
+                        backgroundColor: 'common.white',
+                        borderRadius: 2,
+                        maxWidth: { xs: '100%', md: '1260px' },
+                        alignItems: 'center',
+                        width: '100%',
+                        px: { xs: 2, md: 3 },
+                        py: { xs: 3, md: 4 },
+                    }}
+                >
                     <LandingJobs />
-                </Container>
+                </Box>
             </Box>
 
             {/* Career features */}
-            <Container maxWidth="lg">
-                <CareerFeatures />
-            </Container>
+            <Box sx={{ py: { xs: 4, md: 6 }, display: 'flex', justifyContent: 'center' }}>
+                <Box
+                    sx={{
+                        backgroundColor: 'common.white',
+                        borderRadius: 2,
+                        width: '100%',
+                        maxWidth: { xs: '100%', md: '980px' },
+                        px: { xs: 2, md: 3 },
+                        py: { xs: 3, md: 4 },
+                    }}
+                >
+                    <CareerFeatures />
+                </Box>
+            </Box>
 
-            {/* Trust / Why COLPUNO */}
-            <Container maxWidth="lg">
-                <LandingTrust />
-            </Container>
+            <Box sx={{ py: { xs: 4, md: 6 }, display: 'flex', justifyContent: 'center' }}>
+                <Box
+                    sx={{
+                        backgroundColor: 'common.white',
+                        borderRadius: 2,
+                        width: '100%',
+                        maxWidth: { xs: '100%', md: '1260px' },
+                        px: { xs: 2, md: 3 },
+                        py: { xs: 3, md: 4 },
+                    }}
+                >
+                    <LandingTrust />
+                </Box>
+            </Box>
 
             {/* Partner logos carousel */}
-            <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
-                <LogoCarousel />
-            </Container>
+            <Box sx={{ py: { xs: 4, md: 6 }, display: 'flex', justifyContent: 'center' }}>
+                <Box
+                    sx={{
+                        backgroundColor: 'common.white',
+                        borderRadius: 2,
+                        width: '100%',
+                        maxWidth: { xs: '100%', md: '1260px' },
+                        px: { xs: 2, md: 3 },
+                        py: { xs: 3, md: 4 },
+                    }}
+                >
+                    <LogoCarousel />
+                </Box>
+            </Box>
 
-            {/* How it works */}
-            <Box sx={{ backgroundColor: 'common.white', py: { xs: 4, md: 6 } }}>
-                <Container maxWidth="lg">
+            <Box sx={{ py: { xs: 4, md: 6 }, display: 'flex', justifyContent: 'center' }}>
+                <Box
+                    sx={{
+                        backgroundColor: 'common.white',
+                        borderRadius: 2,
+                        width: '100%',
+                        maxWidth: { xs: '100%', md: '1260px' },
+                        px: { xs: 2, md: 3 },
+                        py: { xs: 3, md: 4 },
+                    }}
+                >
                     <LandingHowItWorks />
-                </Container>
+                </Box>
             </Box>
 
-            {/* Profile completion motivator */}
-            <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
-                <LandingProfileMotivator />
-            </Container>
-
-            {/* FAQ */}
-            <Box sx={{ backgroundColor: 'common.white', py: { xs: 4, md: 6 } }}>
-                <Container maxWidth="lg">
+            <Box sx={{ py: { xs: 4, md: 6 }, display: 'flex', justifyContent: 'center' }}>
+                <Box
+                    sx={{
+                        borderRadius: 2,
+                        width: '100%',
+                        maxWidth: { xs: '100%', md: '980px' },
+                        px: { xs: 2, md: 3 },
+                        py: { xs: 3, md: 4 },
+                    }}
+                >
+                    <LandingProfileMotivator />
+                </Box>
+            </Box>
+            <Box sx={{ py: { xs: 4, md: 6 }, display: 'flex', justifyContent: 'center' }}>
+                <Box
+                    sx={{
+                        backgroundColor: 'common.white',
+                        borderRadius: 2,
+                        width: '100%',
+                        maxWidth: { xs: '100%', md: '1260px' },
+                        px: { xs: 2, md: 3 },
+                        py: { xs: 3, md: 4 },
+                    }}
+                >
                     <LandingFAQ />
-                </Container>
+                </Box>
             </Box>
 
-            {/* Final CTA */}
-            <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
-                <LandingFinalCTA />
-            </Container>
+            <Box sx={{ py: { xs: 4, md: 6 }, display: 'flex', justifyContent: 'center' }}>
+                <Box
+                    sx={{
+                        borderRadius: 2,
+                        width: '100%',
+                        maxWidth: { xs: '100%', md: '1260px' },
+                        px: { xs: 2, md: 3 },
+                        py: { xs: 3, md: 4 },
+                    }}
+                >
+                    <LandingFinalCTA />
+                </Box>
+            </Box>
 
-            {/* Footer */}
             <LandingFooter />
 
-            {/* Sticky CTA */}
             <LandingStickyCTA />
+
+            <ScrollToTop />
         </Box>
     );
 }

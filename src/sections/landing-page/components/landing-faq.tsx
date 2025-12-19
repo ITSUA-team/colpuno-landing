@@ -3,7 +3,6 @@ import {
     AccordionDetails,
     AccordionSummary, alpha,
     Box,
-    Button,
     Container,
     Link,
     Typography,
@@ -11,14 +10,11 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 
-import AppRegistration from '../../../AppRegistration';
-import StyledModal from '../../../components/styled-modal';
 import { IconAccordionExpended, IconPlus } from '../../../assets';
 
 function LandingFAQ() {
     const theme = useTheme();
     const [expanded, setExpanded] = useState<string | false>(false);
-    const [isRegOpen, setIsRegOpen] = useState(false);
 
     const handleChange =
         (panel: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
@@ -33,6 +29,7 @@ function LandingFAQ() {
                 mb: 2,
                 boxShadow: 2,
                 borderRadius: 2,
+                overflow: 'hidden',
                 '&:before': { display: 'none' },
             }}
         >
@@ -46,7 +43,7 @@ function LandingFAQ() {
                 }
                 sx={{
                     bgcolor: expanded === panel ? alpha(theme.palette.primary.main, 0.08) : theme.palette.grey[100],
-                    borderRadius: 2,
+
                     px: { xs: 2, md: 3 },
                     py: { xs: 1.5, md: 2 },
                 }}
@@ -81,6 +78,8 @@ function LandingFAQ() {
                 <Typography
                     variant="h4"
                     sx={{
+                        fontSize: { xs: '24px', md: '32px' },
+                        fontWeight: 700,
                         mb: { xs: 4, md: 5 },
                         textAlign: 'center',
                         color: theme.palette.font.black100,
@@ -123,38 +122,9 @@ function LandingFAQ() {
                 <Box
                     sx={{
                         textAlign: 'center',
-                        display: 'flex',
-                        gap: 3,
-                        flexDirection: 'column',
+                        mt: 4,
                     }}
                 >
-                    <Typography
-                        variant="subtitle2"
-                        sx={{
-                            color: theme.palette.font.black100,
-                            fontWeight: 500,
-                            fontSize: { xs: '0.875rem', md: '0.95rem' },
-                        }}
-                    >
-                        Join COLPUNO today and be part of the future of nursing!
-                    </Typography>
-
-                    <Button
-                        variant="contained"
-                        size="large"
-                        onClick={() => setIsRegOpen(true)}
-                        sx={{
-                            width: '100%',
-                            fontWeight: 600,
-                            fontSize: { xs: '0.875rem', md: '0.95rem' },
-                            textTransform: 'none',
-                            bgcolor: theme.palette.primary.main,
-                            '&:hover': { bgcolor: theme.palette.primary.dark },
-                        }}
-                    >
-                        Get started
-                    </Button>
-
                     <Typography variant="body2" sx={{ color: theme.palette.font.black60 }}>
                         If you have any questions, feel free to contact us:{' '}
                         <Link
@@ -165,21 +135,6 @@ function LandingFAQ() {
                         </Link>
                     </Typography>
                 </Box>
-
-                <StyledModal
-                    open={isRegOpen}
-                    onClose={() => setIsRegOpen(false)}
-                    smallHeightModal={false}
-                    style={{
-                        width: { xs: '95%', sm: '90%', md: '750px', lg: '850px' },
-                        maxWidth: '900px',
-                        p: { xs: 2, sm: 3, md: 3.5 },
-                        borderRadius: '16px',
-                        maxHeight: { xs: '95vh', md: '90vh' },
-                    }}
-                >
-                    <AppRegistration initialEmail="" embedded />
-                </StyledModal>
             </Box>
         </Container>
     );
