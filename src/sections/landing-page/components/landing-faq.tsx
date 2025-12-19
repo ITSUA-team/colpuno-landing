@@ -4,7 +4,6 @@ import {
     AccordionSummary, alpha,
     Box,
     Container,
-    Link,
     Typography,
     useTheme,
 } from '@mui/material';
@@ -117,23 +116,6 @@ function LandingFAQ() {
                         </Typography>,
                         'panel3'
                     )}
-                </Box>
-
-                <Box
-                    sx={{
-                        textAlign: 'center',
-                        mt: 4,
-                    }}
-                >
-                    <Typography variant="body2" sx={{ color: theme.palette.font.black60 }}>
-                        If you have any questions, feel free to contact us:{' '}
-                        <Link
-                            sx={{ textDecoration: 'none', color: theme.palette.primary.main }}
-                            href="mailto:info@colpuno.com"
-                        >
-                            info@colpuno.com
-                        </Link>
-                    </Typography>
                 </Box>
             </Box>
         </Container>

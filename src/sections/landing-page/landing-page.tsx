@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import LogoBlue from '../../assets/logo-blue.png';
 import {
     CareerFeatures,
-    JobsTicker,
     LandingFAQ,
     LandingFinalCTA,
     LandingFooter,
@@ -25,21 +24,6 @@ function LandingPage() {
         const utmSource = urlParams.get('utm_source') || urlParams.get('source') || 'direct';
         trackPageVisit('homepage', utmSource);
     }, []);
-
-    const vacancies = [
-        { flag: '🇰🇼', country: 'Kuwait', count: 200 },
-        { flag: '🇺🇸', country: 'United States', count: 1500 },
-        { flag: '🇵🇭', country: 'Philippines', count: 1000 },
-        { flag: '🇸🇬', country: 'Singapore', count: 2000 },
-        { flag: '🇳🇱', country: 'Netherlands', count: 10 },
-        { flag: '🇸🇦', country: 'Saudi Arabia', count: 2000 },
-        { flag: '🇶🇦', country: 'Qatar', count: 200 },
-        { flag: '🇦🇺', country: 'Australia', count: 100 },
-        { flag: '🇮🇪', country: 'Ireland', count: 100 },
-        { flag: '🇦🇪', country: 'United Arab Emirates', count: 100 },
-        { flag: '🇬🇺', country: 'Guam', count: 10 },
-        { flag: '🇯🇵', country: 'Japan', count: 20 },
-    ];
 
     return (
         <Box
@@ -94,12 +78,10 @@ function LandingPage() {
                 </Box>
             </Box>
 
-            <JobsTicker items={vacancies} />
-
             <LandingHero />
 
             {/* Jobs */}
-            <Box sx={{ py: { xs: 4, md: 6 }, display: 'flex', justifyContent: 'center' }}>
+            <Box sx={{ p: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'center' }}>
                 <Box
                     sx={{
                         justifyContent: 'center',
@@ -117,13 +99,13 @@ function LandingPage() {
             </Box>
 
             {/* Career features */}
-            <Box sx={{ py: { xs: 4, md: 6 }, display: 'flex', justifyContent: 'center' }}>
+            <Box sx={{ p: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'center' }}>
                 <Box
                     sx={{
                         backgroundColor: 'common.white',
                         borderRadius: 2,
                         width: '100%',
-                        maxWidth: { xs: '100%', md: '980px' },
+                        maxWidth: { xs: '100%', md: '1260px' },
                         px: { xs: 2, md: 3 },
                         py: { xs: 3, md: 4 },
                     }}
@@ -132,7 +114,7 @@ function LandingPage() {
                 </Box>
             </Box>
 
-            <Box sx={{ py: { xs: 4, md: 6 }, display: 'flex', justifyContent: 'center' }}>
+            <Box sx={{ p: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'center' }}>
                 <Box
                     sx={{
                         backgroundColor: 'common.white',
@@ -148,7 +130,7 @@ function LandingPage() {
             </Box>
 
             {/* Partner logos carousel */}
-            <Box sx={{ py: { xs: 4, md: 6 }, display: 'flex', justifyContent: 'center' }}>
+            <Box sx={{ p: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'center' }}>
                 <Box
                     sx={{
                         backgroundColor: 'common.white',
@@ -163,7 +145,7 @@ function LandingPage() {
                 </Box>
             </Box>
 
-            <Box sx={{ py: { xs: 4, md: 6 }, display: 'flex', justifyContent: 'center' }}>
+            <Box sx={{ p: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'center' }}>
                 <Box
                     sx={{
                         backgroundColor: 'common.white',
@@ -178,12 +160,13 @@ function LandingPage() {
                 </Box>
             </Box>
 
-            <Box sx={{ py: { xs: 4, md: 6 }, display: 'flex', justifyContent: 'center' }}>
+            <Box sx={{ p: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'center' }}>
                 <Box
                     sx={{
+                        backgroundColor: 'common.white',
                         borderRadius: 2,
                         width: '100%',
-                        maxWidth: { xs: '100%', md: '980px' },
+                        maxWidth: { xs: '100%', md: '1260px' },
                         px: { xs: 2, md: 3 },
                         py: { xs: 3, md: 4 },
                     }}
@@ -191,7 +174,7 @@ function LandingPage() {
                     <LandingProfileMotivator />
                 </Box>
             </Box>
-            <Box sx={{ py: { xs: 4, md: 6 }, display: 'flex', justifyContent: 'center' }}>
+            <Box sx={{ p: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'center' }}>
                 <Box
                     sx={{
                         backgroundColor: 'common.white',
@@ -206,9 +189,10 @@ function LandingPage() {
                 </Box>
             </Box>
 
-            <Box sx={{ py: { xs: 4, md: 6 }, display: 'flex', justifyContent: 'center' }}>
+            <Box sx={{ p: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'center' }}>
                 <Box
                     sx={{
+                        background: (theme) => `linear-gradient(0deg, ${theme.palette.secondary.main} -54.4%, ${theme.palette.primary.main} 100%)`,
                         borderRadius: 2,
                         width: '100%',
                         maxWidth: { xs: '100%', md: '1260px' },

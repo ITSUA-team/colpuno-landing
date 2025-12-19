@@ -8,7 +8,7 @@ function LandingFooter() {
             sx={{
                 backgroundColor: theme.palette.primary.main,
                 py: { xs: 3, md: 4 },
-                mt: 'auto',
+                mt: 6,
             }}
         >
             <Box

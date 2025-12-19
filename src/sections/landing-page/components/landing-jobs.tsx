@@ -225,8 +225,8 @@ function LandingJobs() {
                                             Register to unlock more listings and apply faster.
                                         </Typography>
                                         <Button
+                                            type='submit'
                                             variant='contained'
-                                            color='primary'
                                             size='small'
                                             sx={{
                                                 textTransform: 'none',

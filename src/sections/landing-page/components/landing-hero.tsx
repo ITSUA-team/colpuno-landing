@@ -9,6 +9,9 @@ import IconStar2 from '../../../assets/icon-components/icon-star';
 import { JobBadge } from './index';
 import TrustBadgesImg from '../../../assets/img.png';
 
+import {
+    JobsTicker,
+} from '../components';
 
 function LandingHero() {
     const [email, setEmail] = useState('');
@@ -34,6 +37,21 @@ function LandingHero() {
         trackRegStarted(email);
         setIsRegOpen(true);
     };
+
+    const vacancies = [
+        { flag: '🇰🇼', country: 'Kuwait', count: 200 },
+        { flag: '🇺🇸', country: 'United States', count: 1500 },
+        { flag: '🇵🇭', country: 'Philippines', count: 1000 },
+        { flag: '🇸🇬', country: 'Singapore', count: 2000 },
+        { flag: '🇳🇱', country: 'Netherlands', count: 10 },
+        { flag: '🇸🇦', country: 'Saudi Arabia', count: 2000 },
+        { flag: '🇶🇦', country: 'Qatar', count: 200 },
+        { flag: '🇦🇺', country: 'Australia', count: 100 },
+        { flag: '🇮🇪', country: 'Ireland', count: 100 },
+        { flag: '🇦🇪', country: 'United Arab Emirates', count: 100 },
+        { flag: '🇬🇺', country: 'Guam', count: 10 },
+        { flag: '🇯🇵', country: 'Japan', count: 20 },
+    ];
 
     return (
         <>
@@ -69,7 +87,6 @@ function LandingHero() {
 
                     <Stack
                         direction={{ xs: 'column', lg: 'row' }}
-                        spacing={{ xs: 4, lg: 4 }}
                         sx={{
                             alignItems: { xs: 'stretch', lg: 'flex-start' },
                         }}
@@ -102,17 +119,6 @@ function LandingHero() {
                                     }}
                                 >
                                     Newly Registered Nurse? Start your career with verified opportunities.
-                                </Typography>
-                                <Typography
-                                    variant='body1'
-                                    sx={{
-                                        mb: 3,
-                                        fontSize: { xs: '16px', md: '18px' },
-                                        color: (theme) => theme.palette.font.white60,
-                                    }}
-                                >
-                                    COLPUNO helps newly registered Filipino nurses build an employer-ready profile and apply
-                                    to verified job opportunities faster, with less stress and less guessing.
                                 </Typography>
 
                                 <Box sx={{
@@ -282,12 +288,24 @@ function LandingHero() {
                                 p: { xs: 2, md: 3 },
                             }}
                         >
-                            <Box sx={{ width: '100%', my: 3 }}>
+                            <Typography
+                                variant='body1'
+                                sx={{
+                                    mb: 3,
+                                    fontSize: { xs: '16px', md: '18px' },
+                                    color: (theme) => theme.palette.font.white60,
+                                }}
+                            >
+                                COLPUNO helps newly registered Filipino nurses build an employer-ready profile and apply
+                                to verified job opportunities faster, with less stress and less guessing.
+                            </Typography>
+                            <Box sx={{ width: '100%', mb: 3 }}>
                                 <JobBadge text="5000+ Job Vacancies" />
                             </Box>
                             <LandingJobPreview />
                         </Box>
                     </Stack>
+                    <JobsTicker items={vacancies} />
                 </Box>
             </Box>
             <StyledModal

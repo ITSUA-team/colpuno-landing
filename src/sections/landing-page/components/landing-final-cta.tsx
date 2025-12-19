@@ -1,4 +1,4 @@
-import { Box, Button, TextField, Typography } from '@mui/material';
+import { Box, Button, TextField,  Link, Typography, useTheme } from '@mui/material';
 import { useState } from 'react';
 
 import AppRegistration from '../../../AppRegistration';
@@ -6,6 +6,7 @@ import StyledModal from '../../../components/styled-modal';
 import { trackRegStarted } from '../utils/tracking';
 
 function LandingFinalCTA() {
+    const theme = useTheme();
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
     const [isRegOpen, setIsRegOpen] = useState(false);
@@ -33,8 +34,6 @@ function LandingFinalCTA() {
     return (
         <Box
             sx={{
-                backgroundColor: 'primary.main',
-                borderRadius: 4,
                 p: { xs: 4, md: 6 },
                 textAlign: 'center',
             }}
@@ -84,6 +83,16 @@ function LandingFinalCTA() {
                         {error}
                     </Typography>
                 )}
+
+                <Typography variant="body2" sx={{ color: 'white', my: 2 }}>
+                    If you have any questions, feel free to contact us:{' '}
+                    <Link
+                        sx={{ textDecoration: 'none', color: 'white' }}
+                        href="mailto:info@colpuno.com"
+                    >
+                        info@colpuno.com
+                    </Link>
+                </Typography>
 
                 <Button
                     type='submit'
