@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import AppRegistration from '../../../AppRegistration';
 import StyledModal from '../../../components/styled-modal';
-import { trackRegStarted } from '../utils/tracking';
+import { trackRegStarted, trackCtaUnlockJobsClicked } from '../utils/tracking';
 
 function LandingFinalCTA() {
     const theme = useTheme();
@@ -28,6 +28,7 @@ function LandingFinalCTA() {
         }
 
         trackRegStarted(email);
+        trackCtaUnlockJobsClicked();
         setIsRegOpen(true);
     };
 

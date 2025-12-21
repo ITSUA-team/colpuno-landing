@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import AppRegistration from '../../../AppRegistration';
 import StyledModal from '../../../components/styled-modal';
-import { trackRegStarted } from '../utils/tracking';
+import { trackRegStarted, trackCtaUnlockJobsClicked } from '../utils/tracking';
 import LandingJobPreview from './landing-job-preview';
 import IconStar2 from '../../../assets/icon-components/icon-star';
 import { JobBadge } from './index';
@@ -35,6 +35,7 @@ function LandingHero() {
         }
 
         trackRegStarted(email);
+        trackCtaUnlockJobsClicked();
         setIsRegOpen(true);
     };
 

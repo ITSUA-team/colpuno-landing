@@ -349,11 +349,11 @@ function MultiStepRegistrationForm({
 
     // Track onboarding started
     useEffect(() => {
-        if (currentStep === 0 && initialEmail) {
+        if (currentStep === 0) {
             const source = jobId ? 'apply' : 'cta';
             trackOnboardingStarted(source, jobId ? Number(jobId) : undefined);
         }
-    }, [initialEmail, jobId]);
+    }, [jobId]);
 
     const validateEmail = (email: string): boolean => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

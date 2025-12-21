@@ -1,9 +1,10 @@
 import { Box, Button, Divider, Stack, Typography } from '@mui/material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import AppRegistration from '../../../AppRegistration';
 import { StyledModal } from '../../../components';
 import type { Job } from '../../../interfaces';
+import { trackJobModalOpened, trackApplyClicked } from '../utils/tracking';
 
 interface LandingJobDetailModalProps {
     job: Job;
@@ -16,12 +17,19 @@ function LandingJobDetailModal({ job, open, onClose }: LandingJobDetailModalProp
     const user = null;
     const [isRegOpen, setIsRegOpen] = useState(false);
 
-    const handleApply = () => {
-        if (user) {
+    useEffect(() => {
+        if (open) {
             const jobId = job['@id']?.split('/').pop() || job.id;
+            trackJobModalOpened(jobId);
+        }
+    }, [open, job]);
+
+    const handleApply = () => {
+        const jobId = job['@id']?.split('/').pop() || job.id;
+        trackApplyClicked(jobId);
+        if (user) {
             window.location.href = `/jobs/${jobId}?openConfirmApplication=1`;
         } else {
-            const jobId = job['@id']?.split('/').pop() || job.id;
             sessionStorage.setItem('pendingJobApplication', jobId.toString());
             onClose();
             setIsRegOpen(true);
