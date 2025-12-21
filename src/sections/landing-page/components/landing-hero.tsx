@@ -121,6 +121,18 @@ function LandingHero() {
                                     Newly Registered Nurse? Start your career with verified opportunities.
                                 </Typography>
 
+                                <Typography
+                                    variant='body1'
+                                    sx={{
+                                        mb: 3,
+                                        fontSize: { xs: '16px', md: '18px' },
+                                        color: (theme) => theme.palette.font.white60,
+                                    }}
+                                >
+                                    COLPUNO helps newly registered Filipino nurses build an employer-ready profile and apply
+                                    to verified job opportunities faster, with less stress and less guessing.
+                                </Typography>
+
                                 <Box sx={{
                                     flex: 1,
                                     display: 'grid',
@@ -288,17 +300,6 @@ function LandingHero() {
                                 p: { xs: 2, md: 3 },
                             }}
                         >
-                            <Typography
-                                variant='body1'
-                                sx={{
-                                    mb: 3,
-                                    fontSize: { xs: '16px', md: '18px' },
-                                    color: (theme) => theme.palette.font.white60,
-                                }}
-                            >
-                                COLPUNO helps newly registered Filipino nurses build an employer-ready profile and apply
-                                to verified job opportunities faster, with less stress and less guessing.
-                            </Typography>
                             <Box sx={{ width: '100%', mb: 3 }}>
                                 <JobBadge text="5000+ Job Vacancies" />
                             </Box>

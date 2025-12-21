@@ -26,7 +26,7 @@ function LandingFooter() {
                         alignItems: 'center',
                     }}
                 >
-                    <MuiLink href="/privacy-notice" sx={{ textDecoration: 'none' }}>
+                    <MuiLink href="https://www.colpuno.com/terms-and-conditions" sx={{ textDecoration: 'none' }}>
                         <Typography
                             variant="body2"
                             sx={{
@@ -34,7 +34,7 @@ function LandingFooter() {
                                 '&:hover': { textDecoration: 'underline' },
                             }}
                         >
-                            Privacy
+                            Terms & Conditions
                         </Typography>
                     </MuiLink>
 
@@ -48,7 +48,7 @@ function LandingFooter() {
                         •
                     </Typography>
 
-                    <MuiLink href="/terms-and-conditions" sx={{ textDecoration: 'none' }}>
+                    <MuiLink href="https://www.colpuno.com/privacy-notice" sx={{ textDecoration: 'none' }}>
                         <Typography
                             variant="body2"
                             sx={{
@@ -56,7 +56,7 @@ function LandingFooter() {
                                 '&:hover': { textDecoration: 'underline' },
                             }}
                         >
-                            Terms
+                            Privacy Notice
                         </Typography>
                     </MuiLink>
 
@@ -70,7 +70,7 @@ function LandingFooter() {
                         •
                     </Typography>
 
-                    <MuiLink href="/data-legal" sx={{ textDecoration: 'none' }}>
+                    <MuiLink href="https://www.colpuno.com/disclaimer" sx={{ textDecoration: 'none' }}>
                         <Typography
                             variant="body2"
                             sx={{
@@ -78,7 +78,29 @@ function LandingFooter() {
                                 '&:hover': { textDecoration: 'underline' },
                             }}
                         >
-                            Data policy
+                            Disclaimer
+                        </Typography>
+                    </MuiLink>
+
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: theme.palette.font.white100,
+                            display: { xs: 'none', sm: 'block' },
+                        }}
+                    >
+                        •
+                    </Typography>
+
+                    <MuiLink href="https://www.colpuno.com/imprint" sx={{ textDecoration: 'none' }}>
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                color: theme.palette.font.white100,
+                                '&:hover': { textDecoration: 'underline' },
+                            }}
+                        >
+                            Imprint
                         </Typography>
                     </MuiLink>
                 </Stack>
