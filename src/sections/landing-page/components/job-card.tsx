@@ -47,6 +47,9 @@ const JobCard = ({
     const daysLeft = getDaysRemaining(job.expirationDate);
     const resolvedLocation = location || job.region?.name || job.country?.name || 'Location TBD';
     const resolvedWorkplace = job.workplace || facilityType || 'Not specified';
+    const isInternational = job.country?.name !== 'Philippines';
+    const employerLogo = job.employer?.logo?.contentUrl;
+    const agencyLogo = job.agency?.logo?.contentUrl;
 
     const bgTones = ['rgb(250, 231, 233)', 'rgb(232, 235, 246)', '#FFFFFF'];
     const cardBg = toneIndex !== undefined ? bgTones[toneIndex % bgTones.length] : '#FFFFFF';
@@ -105,8 +108,27 @@ const JobCard = ({
             }}
             onClick={onClick}
         >
-            <CardContent sx={{ p: 3 }}>
-                <Stack direction='row' justifyContent='space-between' alignItems='flex-start' sx={{ mb: 2 }}>
+            <CardContent sx={{ p: 3, display: 'flex', gap: 2 }}>
+                <Stack spacing={2} sx={{ width: 60, flexShrink: 0, pt: 1 }}>
+                    {employerLogo && (
+                        <Box
+                            component='img'
+                            src={employerLogo}
+                            alt={job.employer?.title}
+                            sx={{ width: '100%', borderRadius: 1, aspectRatio: '1/1', objectFit: 'contain' }}
+                        />
+                    )}
+                    {isInternational && agencyLogo && (
+                        <Box
+                            component='img'
+                            src={agencyLogo}
+                            alt={job.agency?.title}
+                            sx={{ width: '100%', borderRadius: 1, aspectRatio: '1/1', objectFit: 'contain' }}
+                        />
+                    )}
+                </Stack>
+                <Box sx={{ flexGrow: 1 }}>
+                    <Stack direction='row' justifyContent='space-between' alignItems='flex-start' sx={{ mb: 2 }}>
                     <Stack direction='row' spacing={1} flexWrap='wrap'>
                         {typeof daysLeft === 'number' && (
                             <Box
@@ -327,6 +349,7 @@ const JobCard = ({
                         Apply Now
                     </Button>
                 </Stack>
+                </Box>
             </CardContent>
         </Card>
     );

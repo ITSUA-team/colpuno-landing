@@ -59,9 +59,13 @@ function LandingJobDetailModal({ job, open, onClose }: LandingJobDetailModalProp
         ? 'Required'
         : 'Not required';
 
-    const jobSummary = job.description
-        ? job.description.split('\n').slice(0, 3).join(' ').substring(0, 200) + '...'
-        : 'Job details available after registration.';
+    const cleanDescription = (desc?: string) => {
+        if (!desc) return 'Job details available after registration.';
+        const parts = desc.split(/CONTACT PERSONS/i);
+        return parts[0].trim();
+    };
+
+    const description = cleanDescription(job.description);
 
     return (
         <StyledModal open={open} onClose={onClose}>
@@ -97,12 +101,23 @@ function LandingJobDetailModal({ job, open, onClose }: LandingJobDetailModalProp
 
                 <Box>
                     <Typography variant='subtitle2' sx={{ mb: 1 }}>
-                        Snapshot
+                        Job Description
                     </Typography>
-                    <Typography variant='body2'>
-                        {jobSummary}
+                    <Typography variant='body2' sx={{ whiteSpace: 'pre-line' }}>
+                        {description}
                     </Typography>
                 </Box>
+
+                {job.benefitsDescription && (
+                    <Box>
+                        <Typography variant='subtitle2' sx={{ mb: 1 }}>
+                            Benefits
+                        </Typography>
+                        <Typography variant='body2' sx={{ whiteSpace: 'pre-line' }}>
+                            {job.benefitsDescription}
+                        </Typography>
+                    </Box>
+                )}
 
                 <Box>
                     <Typography variant='subtitle2' sx={{ mb: 1 }}>
