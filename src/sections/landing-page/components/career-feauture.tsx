@@ -7,7 +7,7 @@ type Props = {
 
 export default function CareerFeatures({ onRegisterClick }: Props) {
     return (
-        <Box component="section" sx={{ textAlign: 'center', py: { xs: 5, md: 8 } }}>
+        <Box component="section" sx={{ textAlign: 'center' }}>
             <Typography
                 variant="h4"
                 sx={{
@@ -17,7 +17,7 @@ export default function CareerFeatures({ onRegisterClick }: Props) {
                     textAlign: 'center',
                 }}
             >
-                CAREER SUPPORT ECOSYSTEM
+                Career Support Ecosystem
             </Typography>
             <Box
                 sx={{

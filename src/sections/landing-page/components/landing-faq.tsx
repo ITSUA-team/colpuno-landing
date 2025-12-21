@@ -5,6 +5,7 @@ import {
     Box,
     Container,
     Typography,
+    Link,
     useTheme,
 } from '@mui/material';
 import { useState } from 'react';
@@ -87,7 +88,7 @@ function LandingFAQ() {
                     FAQ
                 </Typography>
 
-                <Box mb={{ xs: 6, md: 10 }}>
+                <Box mb={{ xs: 6, md: 6 }}>
                     {renderAccordion(
                         'Is COLPUNO a recruitment agency?',
                         <Typography variant="body2" sx={{ color: theme.palette.font.black60 }}>
@@ -117,6 +118,10 @@ function LandingFAQ() {
                         'panel3'
                     )}
                 </Box>
+
+                <Typography variant='body1' mb={{ xs: 6, md: 6 }} textAlign='center'>
+                    More questions? Check our full FAQs: <Link href="https://www.colpuno.com/faq">https://www.colpuno.com/faq</Link>
+                </Typography>
             </Box>
         </Container>
     );

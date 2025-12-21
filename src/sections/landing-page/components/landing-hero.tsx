@@ -64,8 +64,7 @@ function LandingHero() {
                     right: '50%',
                     marginLeft: '-50vw',
                     marginRight: '-50vw',
-                    px: { xs: 2, md: 3 },
-                    py: { xs: 4, md: 6 },
+                    p: { xs: 2, md: 3 }
                 }}
             >
                 <Box
@@ -175,7 +174,7 @@ function LandingHero() {
                                             Already have an account?{' '}
                                             <Button
                                                 variant='text'
-                                                onClick={() => (window.location.href = '/login')}
+                                                onClick={() => (window.location.href = 'https://www.colpuno.com/login')}
                                                 sx={{
                                                     p: 0,
                                                     minWidth: 'auto',

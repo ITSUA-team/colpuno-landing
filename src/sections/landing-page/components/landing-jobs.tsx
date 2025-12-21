@@ -75,7 +75,7 @@ function LandingJobs() {
                     textAlign: 'center',
                 }}
             >
-                Real jobs ready for newly registered nurses
+                Real jobs ready for newly registered nurses (*)
             </Typography>
             <Tabs
                 value={tab}
@@ -97,9 +97,6 @@ function LandingJobs() {
             {/* Module 2 — Jobs Preview on Page (copy from spec) */}
             <Typography variant='body1' sx={{ mb: 2, textAlign: 'center' }}>
                 Start onboarding to unlock full details and apply.
-            </Typography>
-            <Typography variant='body2' sx={{ mb: 4, textAlign: 'center' }}>
-                Tap any job to view details. Tap Apply to continue after signup.
             </Typography>
 
             <Box
@@ -214,7 +211,7 @@ function LandingJobs() {
                                                 mb: 1,
                                             }}
                                         >
-                                            More jobs are available after signup
+                                            More jobs are available after signup (*)
                                         </Typography>
                                         <Typography
                                             variant='body2'
@@ -250,6 +247,10 @@ function LandingJobs() {
                     </motion.div>
                 </AnimatePresence>
             </Box>
+
+            <Typography variant='body1' sx={{ mb: 2, fontSize: '0.75rem', textAlign: 'center' }}>
+                *** Job openings from DMW-accredited recruiters & national top-tier hospitals verified via rocketnurse.ph or via external sources.
+            </Typography>
 
             {selectedJob && (
                 <LandingJobDetailModal
