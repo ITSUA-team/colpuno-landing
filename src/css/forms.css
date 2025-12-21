@@ -225,7 +225,7 @@
 
 /* Tel Input Specific */
 .form-group input[type="tel"] {
-    font-family: var(--font-family-mono);
+    font-family: var(--font-family-primary);
 }
 
 /* Email Input Specific */
