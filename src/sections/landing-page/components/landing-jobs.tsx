@@ -4,7 +4,7 @@ import { SyntheticEvent, useState } from 'react';
 
 import type { Job } from '../../../interfaces';
 import { MOCK_JOBS } from '../../../mock';
-import { trackJobView } from '../utils/tracking';
+import { trackJobView, trackCtaUnlockJobsClicked } from '../utils/tracking';
 import LandingJobsCard from './landing-jobs-card';
 import LandingJobDetailModal from './landing-job-detail-modal';
 
@@ -230,6 +230,7 @@ function LandingJobs() {
                                                 fontWeight: 600,
                                             }}
                                             onClick={() => {
+                                                trackCtaUnlockJobsClicked();
                                                 const hero = document.getElementById('landing-hero');
                                                 if (hero) {
                                                     hero.scrollIntoView({ behavior: 'smooth' });

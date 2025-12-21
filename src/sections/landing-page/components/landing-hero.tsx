@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import AppRegistration from '../../../AppRegistration';
 import StyledModal from '../../../components/styled-modal';
-import { trackRegStarted } from '../utils/tracking';
+import { trackRegStarted, trackCtaUnlockJobsClicked } from '../utils/tracking';
 import LandingJobPreview from './landing-job-preview';
 import IconStar2 from '../../../assets/icon-components/icon-star';
 import { JobBadge } from './index';
@@ -35,6 +35,7 @@ function LandingHero() {
         }
 
         trackRegStarted(email);
+        trackCtaUnlockJobsClicked();
         setIsRegOpen(true);
     };
 
@@ -311,15 +312,17 @@ function LandingHero() {
                 open={isRegOpen}
                 onClose={() => setIsRegOpen(false)}
                 smallHeightModal={false}
+                noCloseIcon
                 style={{
                     width: { xs: '95%', sm: '90%', md: '750px', lg: '850px' },
                     maxWidth: '900px',
-                    p: { xs: 1.5, sm: 2, md: 2.5 },
+                    p: 0,
                     borderRadius: '16px',
                     maxHeight: { xs: '95vh', md: '90vh' },
+                    overflow: 'hidden'
                 }}
             >
-                <AppRegistration initialEmail={email} embedded />
+                <AppRegistration initialEmail={email} embedded onClose={() => setIsRegOpen(false)} />
             </StyledModal>
         </>
     );

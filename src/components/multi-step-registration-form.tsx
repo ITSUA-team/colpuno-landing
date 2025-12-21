@@ -22,20 +22,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import IconVisibility from '../assets/icon-components/icon-visibility';
 import IconVisibilityOff from '../assets/icon-components/icon-visibility-off';
 import IconCheckCircle from '../assets/icon-components/icon-check-circle';
-import IconLocation from '../assets/icon-components/icon-location';
+import IconCrossSmall from '../assets/icon-components/icon-cross-small';
 
 import {
     getOnboardData,
     registerNurse,
-    sendVerificationEmail,
-    checkEmailVerified,
     type NurseRegistrationData,
 } from '../services/api.service';
 import {
     trackOnboardingStarted,
     trackOnboardingStepCompleted,
-    trackEmailVerificationSent,
-    trackEmailVerified,
     trackRegCompleted,
 } from '../sections/landing-page/utils/tracking';
 
@@ -45,37 +41,45 @@ interface MultiStepRegistrationFormProps {
     jobId?: string;
     campaignId?: string;
     landingPageId?: string;
+    onClose?: () => void;
 }
 
 interface FormData {
-    // A1 - Email
+    // Step 1 - Account
     email: string;
-    // A2 - Email verification
-    emailVerified: boolean;
-    // A3 - Password
     password: string;
     confirmPassword: string;
-    // A4 - Name
+    // Step 2 - Name
     firstName: string;
     lastName: string;
-    // A5 - Journey stage
+    // Step 3 - Job Search
+    jobSearchStatus: string;
+    // Step 4 - Nursing Status
+    nursingStatus: string;
+    // Step 5 - Location
+    country: string;
+    isFilipino: boolean;
+    // Step 6 - Contact & Terms
+    mobile: string;
+    agreedToTerms: boolean;
+    
+    // Legacy/Unused but kept for type compatibility if needed temporarily
+    emailVerified: boolean;
     journeyStage: string;
-    // A6 - Location
     province: string;
     city: string;
-    // A7 - Mobile
-    mobile: string;
     optInViber: boolean;
     optInWhatsApp: boolean;
     optInMessenger: boolean;
 }
 
-const PRE_LOGIN_STEPS = [
-    { id: 'A1', name: 'Email', label: 'Enter your email', screenId: 'REG_FG_A1_EMAIL' },
-    { id: 'A2', name: 'Verify Email', label: 'Verify your email', screenId: 'REG_FG_A2_VERIFY_EMAIL' },
-    { id: 'A3', name: 'Account Details', label: 'Complete your profile', screenId: 'REG_FG_A3_PASSWORD' },
-    { id: 'A4', name: 'Location', label: 'Select your location', screenId: 'REG_FG_A6_LOCATION' },
-    { id: 'A5', name: 'Intent Bridge', label: 'Complete registration', screenId: 'REG_FG_A8_BRIDGE' },
+const FORM_STEPS = [
+    { id: 'S1', name: 'Account', label: 'Create your account', screenId: 'REG_S1_ACCOUNT' },
+    { id: 'S2', name: 'Personal', label: 'About you', screenId: 'REG_S2_PERSONAL' },
+    { id: 'S3', name: 'JobSearch', label: 'Job search status', screenId: 'REG_S3_JOB_SEARCH' },
+    { id: 'S4', name: 'NursingStatus', label: 'Nursing status', screenId: 'REG_S4_NURSING_STATUS' },
+    { id: 'S5', name: 'Location', label: 'Location', screenId: 'REG_S5_LOCATION' },
+    { id: 'S6', name: 'Contact', label: 'Contact details', screenId: 'REG_S6_CONTACT' },
 ];
 
 function MultiStepRegistrationForm({
@@ -84,21 +88,29 @@ function MultiStepRegistrationForm({
     jobId,
     campaignId,
     landingPageId,
+    onClose,
 }: MultiStepRegistrationFormProps) {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [currentStep, setCurrentStep] = useState(0);
     const [formData, setFormData] = useState<FormData>({
         email: initialEmail,
-        emailVerified: false,
         password: '',
         confirmPassword: '',
         firstName: '',
         lastName: '',
+        jobSearchStatus: '',
+        nursingStatus: '',
+        country: 'Philippines',
+        isFilipino: false,
+        mobile: '',
+        agreedToTerms: false,
+        
+        // Legacy
+        emailVerified: false,
         journeyStage: '',
         province: '',
         city: '',
-        mobile: '',
         optInViber: false,
         optInWhatsApp: false,
         optInMessenger: false,
@@ -110,8 +122,6 @@ function MultiStepRegistrationForm({
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [provinces, setProvinces] = useState<Array<{ id: string; name: string }>>([]);
     const [cities, setCities] = useState<Array<{ id: string; name: string }>>([]);
-    const [resendCooldown, setResendCooldown] = useState(0);
-    const [isVerifyingEmail, setIsVerifyingEmail] = useState(false);
 
     // Static fallback list of Philippines provinces
     const PH_PROVINCES = [
@@ -337,21 +347,13 @@ function MultiStepRegistrationForm({
         loadCities();
     }, [formData.province]);
 
-    // Resend cooldown timer
-    useEffect(() => {
-        if (resendCooldown > 0) {
-            const timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000);
-            return () => clearTimeout(timer);
-        }
-    }, [resendCooldown]);
-
     // Track onboarding started
     useEffect(() => {
-        if (currentStep === 0 && initialEmail) {
+        if (currentStep === 0) {
             const source = jobId ? 'apply' : 'cta';
             trackOnboardingStarted(source, jobId ? Number(jobId) : undefined);
         }
-    }, [initialEmail, jobId]);
+    }, [jobId]);
 
     const validateEmail = (email: string): boolean => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -389,29 +391,24 @@ function MultiStepRegistrationForm({
         const newErrors: Partial<Record<keyof FormData, string>> = {};
 
         if (step === 0) {
-            // A1 - Email
+            // Step 1 - Account
             if (!formData.email.trim()) {
                 newErrors.email = 'Email is required';
             } else if (!validateEmail(formData.email)) {
                 newErrors.email = 'Please enter a valid email address';
             }
-        } else if (step === 1) {
-            // A2 - Verify email
-            if (!formData.emailVerified) {
-                newErrors.emailVerified = 'Please verify your email before continuing';
-            }
-        } else if (step === 2) {
-            // A3 - Combined: Email (read-only), Password, Name, Journey Stage, Mobile
             if (!formData.password) {
                 newErrors.password = 'Password is required';
-            } else if (formData.password.length < 10) {
-                newErrors.password = 'Password must be at least 10 characters';
+            } else if (formData.password.length < 8) { // Screenshot says "Minimum 8 characters"
+                newErrors.password = 'Password must be at least 8 characters';
             }
             if (!formData.confirmPassword) {
                 newErrors.confirmPassword = 'Please confirm your password';
             } else if (formData.password !== formData.confirmPassword) {
                 newErrors.confirmPassword = 'Passwords do not match';
             }
+        } else if (step === 1) {
+            // Step 2 - Personal
             if (!formData.firstName.trim()) {
                 newErrors.firstName = 'First name is required';
             } else if (!validateName(formData.firstName)) {
@@ -422,21 +419,33 @@ function MultiStepRegistrationForm({
             } else if (!validateName(formData.lastName)) {
                 newErrors.lastName = 'Last name can only contain letters, hyphens, and apostrophes';
             }
-            if (!formData.journeyStage) {
-                newErrors.journeyStage = 'Please select your journey stage';
+        } else if (step === 2) {
+            // Step 3 - Job Search
+            if (!formData.jobSearchStatus) {
+                newErrors.jobSearchStatus = 'Please select an option';
             }
+        } else if (step === 3) {
+            // Step 4 - Nursing Status
+            if (!formData.nursingStatus) {
+                newErrors.nursingStatus = 'Please select your nursing status';
+            }
+        } else if (step === 4) {
+            // Step 5 - Location
+            if (!formData.country) {
+                newErrors.country = 'Please select your country';
+            }
+            if (!formData.isFilipino) {
+                newErrors.isFilipino = 'You must confirm that you are a Filipino national';
+            }
+        } else if (step === 5) {
+            // Step 6 - Contact
             if (!formData.mobile.trim()) {
                 newErrors.mobile = 'Mobile number is required';
             } else if (!validateMobile(formData.mobile)) {
-                newErrors.mobile = 'Please enter a valid Philippine mobile number (e.g., +63 912 345 6789 or 0912 345 6789)';
+                newErrors.mobile = 'Please enter a valid Philippine mobile number';
             }
-        } else if (step === 3) {
-            // A4 - Location
-            if (!formData.province) {
-                newErrors.province = 'Please select your province';
-            }
-            if (!formData.city) {
-                newErrors.city = 'Please select your city/municipality';
+            if (!formData.agreedToTerms) {
+                newErrors.agreedToTerms = 'You must agree to the Privacy Policy and Terms of Service';
             }
         }
 
@@ -444,56 +453,15 @@ function MultiStepRegistrationForm({
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleNext = async () => {
-        if (!validateStep(currentStep)) {
-            return;
-        }
-
-        // Special handling for A1 - send verification email
-        if (currentStep === 0) {
-            try {
-                setIsVerifyingEmail(true);
-                const response = await sendVerificationEmail(formData.email);
-                // Always continue to next step, even if API fails
-                if (!response.error) {
-                    trackEmailVerificationSent();
-                }
-                trackOnboardingStepCompleted('REG_FG_A1_EMAIL');
-                setCurrentStep(1);
-            } catch (error) {
-                // Continue even if API call fails
-                trackOnboardingStepCompleted('REG_FG_A1_EMAIL');
-                setCurrentStep(1);
-            } finally {
-                setIsVerifyingEmail(false);
+    const handleNext = () => {
+        if (validateStep(currentStep)) {
+            if (currentStep < FORM_STEPS.length - 1) {
+                const currentStepId = FORM_STEPS[currentStep].screenId;
+                trackOnboardingStepCompleted(currentStepId);
+                setCurrentStep(currentStep + 1);
+            } else {
+                handleSubmit();
             }
-            return;
-        }
-
-        // A2 verification is handled in the button click, not here
-        if (currentStep === 1) {
-            return;
-        }
-
-        // Track step completion
-        // For combined step A3, track all the individual steps that were combined
-        if (currentStep === 2) {
-            trackOnboardingStepCompleted('REG_FG_A3_PASSWORD');
-            trackOnboardingStepCompleted('REG_FG_A4_NAME');
-            trackOnboardingStepCompleted('REG_FG_A5_STAGE');
-            trackOnboardingStepCompleted('REG_FG_A7_MOBILE');
-        } else {
-            const stepId = PRE_LOGIN_STEPS[currentStep]?.screenId;
-            if (stepId) {
-                trackOnboardingStepCompleted(stepId);
-            }
-        }
-
-        if (currentStep < PRE_LOGIN_STEPS.length - 1) {
-            setCurrentStep(currentStep + 1);
-        } else {
-            // A5 - Intent bridge - submit form
-            await handleSubmit();
         }
     };
 
@@ -503,45 +471,26 @@ function MultiStepRegistrationForm({
         }
     };
 
-    const handleResendEmail = async () => {
-        if (resendCooldown > 0) return;
-        try {
-            setResendCooldown(30);
-            const response = await sendVerificationEmail(formData.email);
-            if (response.error) {
-                setErrors({ emailVerified: response.error || 'Failed to resend email. Please try again.' });
-            } else {
-                trackEmailVerificationSent();
-            }
-        } catch (error) {
-            setErrors({ emailVerified: 'Failed to resend email. Please try again.' });
-        }
-    };
-
     const handleSubmit = async () => {
-        if (!validateStep(currentStep)) {
-            return;
-        }
+        if (!validateStep(currentStep)) return;
 
         setIsSubmitting(true);
         setSubmitError(null);
 
         try {
-            // Get UTM parameters from sessionStorage
-            const utmParamsStr = sessionStorage.getItem('utm_params');
-            const utmParams = utmParamsStr ? JSON.parse(utmParamsStr) : {};
-
             const registrationData: NurseRegistrationData = {
-                email: formData.email.trim().toLowerCase(),
+                email: formData.email,
                 password: formData.password,
-                firstName: formData.firstName.trim(),
-                lastName: formData.lastName.trim(),
-                phone: normalizeMobile(formData.mobile),
-                currentLocationCountry: 'ph',
-                currentLocationRegion: formData.province,
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                jobSearchStatus: formData.jobSearchStatus,
+                nursingStatus: formData.nursingStatus,
+                country: formData.country,
+                isFilipino: formData.isFilipino,
+                mobile: normalizeMobile(formData.mobile),
+                termsAccepted: formData.agreedToTerms,
                 sourcingCenter: 'Landing Page Funnel',
-                // Add city if available
-                ...(formData.city && { currentLocationCity: formData.city }),
+                
                 // Add hidden fields if intent=APPLY
                 ...(jobId && { job_id: jobId }),
                 ...(campaignId && { campaign_id: campaignId }),
@@ -578,7 +527,7 @@ function MultiStepRegistrationForm({
             if (!response.error) {
                 trackRegCompleted(formData.email);
             }
-            trackOnboardingStepCompleted('REG_FG_A8_BRIDGE');
+            trackOnboardingStepCompleted('REG_COMPLETED');
 
             // Apply routing: after registration (or network error), redirect to login or job page
             if (jobId) {
@@ -591,7 +540,7 @@ function MultiStepRegistrationForm({
         } catch (error) {
             // Even on error, redirect to login page
             // User can try to log in with the credentials they entered
-            trackOnboardingStepCompleted('REG_FG_A8_BRIDGE');
+            trackOnboardingStepCompleted('REG_COMPLETED');
             
             if (jobId) {
                 window.location.href = `https://www.colpuno.com/jobs/${encodeURIComponent(jobId)}?openConfirmApplication=1`;
@@ -601,167 +550,70 @@ function MultiStepRegistrationForm({
         }
     };
 
+    // Get UTM params for submission
+    const utmParams = typeof window !== 'undefined' && sessionStorage.getItem('utm_params') 
+        ? JSON.parse(sessionStorage.getItem('utm_params') || '{}') 
+        : {};
+
     const renderStep = () => {
-        const step = PRE_LOGIN_STEPS[currentStep];
-        if (!step) return null;
+        const stepId = FORM_STEPS[currentStep]?.id;
 
-        switch (step.id) {
-            case 'A1':
+        switch (stepId) {
+            case 'S1': // Account
                 return (
-                    <Box sx={{ width: '100%', maxWidth: 500, mx: 'auto' }}>
-                        <Typography variant="h5" sx={{ mb: 1, fontWeight: 600, textAlign: 'center' }}>
-                            Start with your email
+                    <Box sx={{ width: '100%', maxWidth: 600, mx: 'auto' }}>
+                        <Typography variant="h4" sx={{ mb: 4, fontWeight: 600, textAlign: 'center', color: 'primary.main' }}>
+                            Create your account
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
-                            We&apos;ll send a verification email link. One email = one COLPUNO profile.
-                        </Typography>
-                        {errors.email && (
-                            <Alert severity="error" sx={{ mb: 2 }}>
-                                {errors.email}
-                            </Alert>
-                        )}
-                        <TextField
-                            fullWidth
-                            label="Email address"
-                            placeholder="you@example.com"
-                            type="email"
-                            value={formData.email}
-                            onChange={(e) => {
-                                setFormData({ ...formData, email: e.target.value });
-                                setErrors({ ...errors, email: '' });
-                            }}
-                            error={!!errors.email}
-                            helperText={errors.email ? '' : 'Enter your email address'}
-                            disabled={isVerifyingEmail}
-                        />
-                        <Box sx={{ mt: 2, textAlign: 'center' }}>
-                            <Button
-                                variant="text"
-                                onClick={() => (window.location.href = 'https://www.colpuno.com/login')}
-                                sx={{ textTransform: 'none' }}
-                            >
-                                I already have an account → Log in
-                            </Button>
-                        </Box>
-                    </Box>
-                );
-
-            case 'A2':
-                return (
-                    <Box sx={{ width: '100%', maxWidth: 500, mx: 'auto' }}>
-                        <Typography variant="h5" sx={{ mb: 1, fontWeight: 600, textAlign: 'center' }}>
-                            Check your email
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
-                            Click the verification link we sent (check Spam/Promotions).
-                        </Typography>
-                        <Alert severity="info" sx={{ mb: 2 }}>
-                            We sent a verification email link to <strong>{formData.email}</strong>
-                        </Alert>
-                        {errors.emailVerified && (
-                            <Alert severity="error" sx={{ mb: 2 }}>
-                                {errors.emailVerified}
-                            </Alert>
-                        )}
-                        <Stack spacing={2}>
-                            <Button
-                                variant="contained"
-                                fullWidth
-                                onClick={async () => {
-                                    try {
-                                        const response = await checkEmailVerified(formData.email);
-                                        // Always continue to next step, even if API fails
-                                        if (!response.error && response.data?.verified) {
-                                            trackEmailVerified();
-                                        }
-                                        setFormData({ ...formData, emailVerified: true });
-                                        trackOnboardingStepCompleted('REG_FG_A2_VERIFY_EMAIL');
-                                        setCurrentStep(2);
-                                    } catch (error) {
-                                        // Continue even if API call fails
-                                        setFormData({ ...formData, emailVerified: true });
-                                        trackOnboardingStepCompleted('REG_FG_A2_VERIFY_EMAIL');
-                                        setCurrentStep(2);
-                                    }
-                                }}
-                            >
-                                I&apos;ve verified → Continue
-                            </Button>
-                            <Button
-                                variant="outlined"
-                                fullWidth
-                                onClick={handleResendEmail}
-                                disabled={resendCooldown > 0}
-                            >
-                                {resendCooldown > 0 ? `Resend email (${resendCooldown}s)` : 'Resend email'}
-                            </Button>
-                            <Button
-                                variant="text"
-                                fullWidth
-                                onClick={() => {
-                                    setCurrentStep(0);
-                                    setErrors({});
-                                }}
-                                sx={{ textTransform: 'none' }}
-                            >
-                                Change email
-                            </Button>
-                        </Stack>
-                    </Box>
-                );
-
-            case 'A3':
-                return (
-                    <Box sx={{ width: '100%', maxWidth: 500, mx: 'auto' }}>
-                        <Typography variant="h5" sx={{ mb: 1, fontWeight: 600, textAlign: 'center' }}>
-                            Complete your profile
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
-                            Let&apos;s set up your account with your basic information.
-                        </Typography>
-                        <Stack spacing={2}>
-                            {/* Email - Read-only */}
+                        <Stack spacing={3} sx={{ mt: 3 }}>
                             <TextField
                                 fullWidth
-                                label="Email address"
+                                label="Where can we send your job matches? *"
+                                placeholder="your.email@example.com"
+                                type="email"
                                 value={formData.email}
-                                disabled
-                                sx={{
-                                    '& .MuiInputBase-input.Mui-disabled': {
-                                        WebkitTextFillColor: 'text.primary',
-                                    },
-                                }}
-                                helperText="This email was verified"
-                            />
-                            
-                            {/* Password */}
-                            <TextField
-                                fullWidth
-                                label="Password"
-                                type={showPassword ? 'text' : 'password'}
-                                value={formData.password}
                                 onChange={(e) => {
-                                    setFormData({ ...formData, password: e.target.value });
-                                    setErrors({ ...errors, password: '' });
+                                    setFormData({ ...formData, email: e.target.value });
+                                    setErrors({ ...errors, email: '' });
                                 }}
-                                error={!!errors.password}
-                                helperText={errors.password || 'Minimum 10 characters'}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                onClick={() => setShowPassword(!showPassword)}
-                                                edge="end"
-                                            >
-                                                {showPassword ? <IconVisibilityOff /> : <IconVisibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
+                                error={!!errors.email}
+                                helperText={errors.email}
+                                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                             />
+                            <Box>
+                                <TextField
+                                    fullWidth
+                                    label="Create your password *"
+                                    placeholder="Create a secure password"
+                                    type={showPassword ? 'text' : 'password'}
+                                    value={formData.password}
+                                    onChange={(e) => {
+                                        setFormData({ ...formData, password: e.target.value });
+                                        setErrors({ ...errors, password: '' });
+                                    }}
+                                    error={!!errors.password}
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    edge="end"
+                                                >
+                                                    {showPassword ? <IconVisibilityOff /> : <IconVisibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                                />
+                                <FormHelperText error={!!errors.password} sx={{ mt: 1, mx: 1.5 }}>
+                                    {errors.password || 'We care about your career -- but first, we care about your security. Minimum 8 characters.'}
+                                </FormHelperText>
+                            </Box>
                             <TextField
                                 fullWidth
-                                label="Confirm password"
+                                label="Confirm your password *"
+                                placeholder="Re-enter your password"
                                 type={showConfirmPassword ? 'text' : 'password'}
                                 value={formData.confirmPassword}
                                 onChange={(e) => {
@@ -782,23 +634,37 @@ function MultiStepRegistrationForm({
                                         </InputAdornment>
                                     ),
                                 }}
+                                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                             />
-                            
-                            {/* Name */}
+                        </Stack>
+                    </Box>
+                );
+
+            case 'S2': // Personal
+                return (
+                    <Box sx={{ width: '100%', maxWidth: 600, mx: 'auto' }}>
+                        <Typography variant="h4" sx={{ mb: 1, fontWeight: 600, textAlign: 'center', color: 'primary.main' }}>
+                            About you
+                        </Typography>
+                        <Typography variant="body1" color="text.secondary" sx={{ mb: 4, textAlign: 'center' }}>
+                            Thanks for sharing your nursing status! Let's start with your name.
+                        </Typography>
+                        <Stack spacing={3}>
                             <TextField
                                 fullWidth
-                                label="First name"
+                                label="What's your first name? *"
                                 value={formData.firstName}
                                 onChange={(e) => {
                                     setFormData({ ...formData, firstName: e.target.value });
                                     setErrors({ ...errors, firstName: '' });
                                 }}
                                 error={!!errors.firstName}
-                                helperText={errors.firstName || 'Letters, hyphens, and apostrophes allowed'}
+                                helperText={errors.firstName}
+                                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                             />
                             <TextField
                                 fullWidth
-                                label="Last name"
+                                label="What's your last name? *"
                                 value={formData.lastName}
                                 onChange={(e) => {
                                     setFormData({ ...formData, lastName: e.target.value });
@@ -806,194 +672,226 @@ function MultiStepRegistrationForm({
                                 }}
                                 error={!!errors.lastName}
                                 helperText={errors.lastName}
+                                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                             />
-                            
-                            {/* Journey Stage */}
-                            <FormControl error={!!errors.journeyStage} fullWidth>
-                                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-                                    Journey stage
-                                </Typography>
-                                <RadioGroup
-                                    value={formData.journeyStage}
-                                    onChange={(e) => {
-                                        setFormData({ ...formData, journeyStage: e.target.value });
-                                        setErrors({ ...errors, journeyStage: '' });
-                                    }}
-                                >
-                                    <FormControlLabel
-                                        value="newly_registered"
-                                        control={<Radio />}
-                                        label="Newly Registered RN (PRC Licensed)"
-                                    />
-                                    <FormControlLabel
-                                        value="waiting_results"
-                                        control={<Radio />}
-                                        label="Waiting for board results"
-                                    />
-                                    <FormControlLabel
-                                        value="student"
-                                        control={<Radio />}
-                                        label="Nursing student"
-                                    />
-                                </RadioGroup>
-                                {errors.journeyStage && (
-                                    <FormHelperText>{errors.journeyStage}</FormHelperText>
-                                )}
-                            </FormControl>
-                            
-                            {/* Mobile */}
+                        </Stack>
+                    </Box>
+                );
+
+            case 'S3': // Job Search
+                return (
+                    <Box sx={{ width: '100%', maxWidth: 600, mx: 'auto' }}>
+                        <Typography variant="h4" sx={{ mb: 4, fontWeight: 600, textAlign: 'center', color: 'primary.main' }}>
+                            Are you looking for a new job?
+                        </Typography>
+                        <FormControl error={!!errors.jobSearchStatus} fullWidth>
+                            <RadioGroup
+                                value={formData.jobSearchStatus}
+                                onChange={(e) => {
+                                    setFormData({ ...formData, jobSearchStatus: e.target.value });
+                                    setErrors({ ...errors, jobSearchStatus: '' });
+                                }}
+                            >
+                                <Stack spacing={2}>
+                                    {[
+                                        { value: 'actively_looking', label: 'Actively looking' },
+                                        { value: 'open_to_opportunities', label: 'Open to Opportunities' },
+                                        { value: 'not_looking', label: 'Not currently looking' },
+                                    ].map((option) => (
+                                        <Box
+                                            key={option.value}
+                                            sx={{
+                                                border: '1px solid',
+                                                borderColor: formData.jobSearchStatus === option.value ? 'primary.main' : 'grey.300',
+                                                borderRadius: 2,
+                                                p: 2,
+                                                transition: 'all 0.2s',
+                                                '&:hover': { borderColor: 'primary.main', bgcolor: 'primary.lighter' },
+                                                bgcolor: formData.jobSearchStatus === option.value ? 'primary.lighter' : 'transparent',
+                                            }}
+                                        >
+                                            <FormControlLabel
+                                                value={option.value}
+                                                control={<Radio />}
+                                                label={option.label}
+                                                sx={{ width: '100%', m: 0 }}
+                                            />
+                                        </Box>
+                                    ))}
+                                </Stack>
+                            </RadioGroup>
+                            {errors.jobSearchStatus && (
+                                <FormHelperText>{errors.jobSearchStatus}</FormHelperText>
+                            )}
+                        </FormControl>
+                    </Box>
+                );
+
+            case 'S4': // Nursing Status
+                return (
+                    <Box sx={{ width: '100%', maxWidth: 600, mx: 'auto' }}>
+                        <Typography variant="h4" sx={{ mb: 4, fontWeight: 600, textAlign: 'center', color: 'primary.main' }}>
+                            Which of the following best describes your current nursing status?
+                        </Typography>
+                        <FormControl error={!!errors.nursingStatus} fullWidth>
+                            <RadioGroup
+                                value={formData.nursingStatus}
+                                onChange={(e) => {
+                                    setFormData({ ...formData, nursingStatus: e.target.value });
+                                    setErrors({ ...errors, nursingStatus: '' });
+                                }}
+                            >
+                                <Stack spacing={2}>
+                                    {[
+                                        { value: 'student_bsn', label: 'Bachelor of Science in Nursing (BSN) – Student' },
+                                        { value: 'student_nle', label: 'Nurse Licensure Examination (NLE) – Student' },
+                                        { value: 'newly_graduated', label: 'Newly NLE graduated Nurse (without experience)' },
+                                        { value: 'experienced_ph', label: 'Experienced Nurse, in the Philippines' },
+                                        { value: 'experienced_abroad', label: 'Experienced Nurse, have worked abroad' },
+                                    ].map((option) => (
+                                        <Box
+                                            key={option.value}
+                                            sx={{
+                                                border: '1px solid',
+                                                borderColor: formData.nursingStatus === option.value ? 'primary.main' : 'grey.300',
+                                                borderRadius: 2,
+                                                p: 2,
+                                                transition: 'all 0.2s',
+                                                '&:hover': { borderColor: 'primary.main', bgcolor: 'primary.lighter' },
+                                                bgcolor: formData.nursingStatus === option.value ? 'primary.lighter' : 'transparent',
+                                            }}
+                                        >
+                                            <FormControlLabel
+                                                value={option.value}
+                                                control={<Radio />}
+                                                label={option.label}
+                                                sx={{ width: '100%', m: 0 }}
+                                            />
+                                        </Box>
+                                    ))}
+                                </Stack>
+                            </RadioGroup>
+                            {errors.nursingStatus && (
+                                <FormHelperText>{errors.nursingStatus}</FormHelperText>
+                            )}
+                        </FormControl>
+                    </Box>
+                );
+
+            case 'S5': // Location
+                return (
+                    <Box sx={{ width: '100%', maxWidth: 600, mx: 'auto' }}>
+                        <Typography variant="h4" sx={{ mb: 4, fontWeight: 600, textAlign: 'center', color: 'primary.main' }}>
+                            Where are you currently living?
+                        </Typography>
+                        <Stack spacing={3}>
+                            <TextField
+                                select
+                                fullWidth
+                                label="Country *"
+                                value={formData.country}
+                                onChange={(e) => {
+                                    setFormData({ ...formData, country: e.target.value });
+                                    setErrors({ ...errors, country: '' });
+                                }}
+                                error={!!errors.country}
+                                helperText={errors.country}
+                                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                            >
+                                <MenuItem value="Philippines">Philippines</MenuItem>
+                                <MenuItem value="United States">United States</MenuItem>
+                                <MenuItem value="United Kingdom">United Kingdom</MenuItem>
+                                <MenuItem value="Canada">Canada</MenuItem>
+                                <MenuItem value="Australia">Australia</MenuItem>
+                                <MenuItem value="United Arab Emirates">United Arab Emirates</MenuItem>
+                                <MenuItem value="Saudi Arabia">Saudi Arabia</MenuItem>
+                                <MenuItem value="Other">Other</MenuItem>
+                            </TextField>
+
+                            <Box
+                                sx={{
+                                    border: '1px solid',
+                                    borderColor: errors.isFilipino ? 'error.main' : 'grey.300',
+                                    borderRadius: 2,
+                                    p: 2,
+                                }}
+                            >
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={formData.isFilipino}
+                                            onChange={(e) => {
+                                                setFormData({ ...formData, isFilipino: e.target.checked });
+                                                setErrors({ ...errors, isFilipino: '' });
+                                            }}
+                                        />
+                                    }
+                                    label="I confirm that I am a Filipino national. *"
+                                />
+                            </Box>
+                            {errors.isFilipino && (
+                                <FormHelperText error>{errors.isFilipino}</FormHelperText>
+                            )}
+                        </Stack>
+                    </Box>
+                );
+
+            case 'S6': // Contact
+                return (
+                    <Box sx={{ width: '100%', maxWidth: 600, mx: 'auto' }}>
+                        <Typography variant="h4" sx={{ mb: 1, fontWeight: 600, textAlign: 'center', color: 'primary.main' }}>
+                            A bit more about you
+                        </Typography>
+                        <Stack spacing={3} sx={{ mt: 3 }}>
                             <TextField
                                 fullWidth
-                                label="Mobile number"
-                                placeholder="+63 912 345 6789 or 0912 345 6789"
+                                label="What's your phone number?"
+                                placeholder="+63 912 345 6789"
                                 value={formData.mobile}
                                 onChange={(e) => {
                                     setFormData({ ...formData, mobile: e.target.value });
                                     setErrors({ ...errors, mobile: '' });
                                 }}
                                 error={!!errors.mobile}
-                                helperText={errors.mobile || 'Philippine mobile format: +63 9XX XXX XXXX or 09XX XXX XXXX'}
+                                helperText={errors.mobile || 'Your phone number is optional, but it helps us and potential employers contact you. Please include your full country code (e.g. +63) - if you do not, we will try to add the Philippines country code for you.'}
+                                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                             />
-                            <Box sx={{ mt: 1 }}>
+
+                            <Box
+                                sx={{
+                                    border: '1px solid',
+                                    borderColor: errors.agreedToTerms ? 'error.main' : 'grey.300',
+                                    borderRadius: 2,
+                                    p: 2,
+                                    bgcolor: 'grey.50',
+                                }}
+                            >
                                 <FormControlLabel
                                     control={
                                         <Checkbox
-                                            checked={formData.optInViber}
-                                            onChange={(e) =>
-                                                setFormData({ ...formData, optInViber: e.target.checked })
-                                            }
+                                            checked={formData.agreedToTerms}
+                                            onChange={(e) => {
+                                                setFormData({ ...formData, agreedToTerms: e.target.checked });
+                                                setErrors({ ...errors, agreedToTerms: '' });
+                                            }}
                                         />
                                     }
-                                    label="Receive updates via Viber (when available)"
-                                />
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            checked={formData.optInWhatsApp}
-                                            onChange={(e) =>
-                                                setFormData({ ...formData, optInWhatsApp: e.target.checked })
-                                            }
-                                        />
+                                    label={
+                                        <Typography variant="body2">
+                                            I agree to the <a href="https://www.colpuno.com/privacy-policy" target="_blank" rel="noreferrer">Privacy Policy</a> and <a href="https://www.colpuno.com/terms-of-service" target="_blank" rel="noreferrer">Terms of Service</a> of COLPUNO. *
+                                        </Typography>
                                     }
-                                    label="Receive updates via WhatsApp (when available)"
-                                />
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            checked={formData.optInMessenger}
-                                            onChange={(e) =>
-                                                setFormData({ ...formData, optInMessenger: e.target.checked })
-                                            }
-                                        />
-                                    }
-                                    label="Receive updates via Messenger (when available)"
                                 />
                             </Box>
+                            {errors.agreedToTerms && (
+                                <FormHelperText error>{errors.agreedToTerms}</FormHelperText>
+                            )}
                         </Stack>
-                    </Box>
-                );
-
-            case 'A4':
-                return (
-                    <Box sx={{ width: '100%', maxWidth: 500, mx: 'auto' }}>
-                        <Typography variant="h5" sx={{ mb: 1, fontWeight: 600, textAlign: 'center' }}>
-                            Your location
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
-                            Where in the Philippines are you based?
-                        </Typography>
-                        <Stack spacing={2}>
-                            <TextField
-                                select
-                                fullWidth
-                                label="Province"
-                                value={formData.province}
-                                onChange={(e) => {
-                                    setFormData({ ...formData, province: e.target.value, city: '' });
-                                    setErrors({ ...errors, province: '' });
-                                }}
-                                error={!!errors.province}
-                                helperText={errors.province || 'Select your province'}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <IconLocation sx={{ color: 'text.secondary', fontSize: 20 }} />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            >
-                                {provinces.map((province) => (
-                                    <MenuItem key={province.id} value={province.id}>
-                                        {province.name}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
-                            <TextField
-                                select
-                                fullWidth
-                                label="City/Municipality"
-                                value={formData.city}
-                                onChange={(e) => {
-                                    setFormData({ ...formData, city: e.target.value });
-                                    setErrors({ ...errors, city: '' });
-                                }}
-                                error={!!errors.city}
-                                helperText={
-                                    errors.city ||
-                                    (formData.province
-                                        ? cities.length > 0
-                                            ? 'Select your city or municipality'
-                                            : 'Loading cities...'
-                                        : 'Please select a province first')
-                                }
-                                disabled={!formData.province || cities.length === 0}
-                                placeholder={!formData.province ? 'Select province first' : 'Select city'}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <IconLocation sx={{ color: 'text.secondary', fontSize: 20 }} />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            >
-                                {cities.length > 0 ? (
-                                    cities.map((city) => (
-                                        <MenuItem key={city.id} value={city.id}>
-                                            {city.name}
-                                        </MenuItem>
-                                    ))
-                                ) : (
-                                    <MenuItem disabled value="">
-                                        {formData.province ? 'No cities available' : 'Select province first'}
-                                    </MenuItem>
-                                )}
-                            </TextField>
-                        </Stack>
-                    </Box>
-                );
-
-            case 'A5':
-                return (
-                    <Box sx={{ width: '100%', maxWidth: 500, mx: 'auto', textAlign: 'center' }}>
-                        <Typography variant="h5" sx={{ mb: 1, fontWeight: 600, textAlign: 'center' }}>
-                            {jobId
-                                ? "You're almost done... Continue to confirm application"
-                                : 'Welcome... Go to my dashboard'}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
-                            {jobId
-                                ? 'Complete your registration to apply for this job.'
-                                : 'Your profile is ready. Start exploring opportunities.'}
-                        </Typography>
-                        {submitError && !submitError.includes('Unable to connect') && (
-                            <Alert severity="error" sx={{ mb: 2 }}>
+                        
+                        {submitError && (
+                            <Alert severity="error" sx={{ mt: 2 }}>
                                 {submitError}
                             </Alert>
-                        )}
-                        {isSubmitting && (
-                            <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-                                Redirecting to {jobId ? 'job page' : 'login page'}...
-                            </Typography>
                         )}
                     </Box>
                 );
@@ -1010,161 +908,117 @@ function MultiStepRegistrationForm({
                 height: '100%',
                 maxWidth: { xs: '100%', md: 1200 },
                 mx: 'auto',
-                px: { xs: 2, md: 3 },
-                py: { xs: 3, md: 4 },
                 display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                minHeight: { xs: 'auto', md: '100%' },
+                flexDirection: 'column',
+                bgcolor: 'background.paper',
+                borderRadius: 2,
+                overflow: 'hidden',
+                boxShadow: 1,
             }}
         >
-            <Stack
-                direction={{ xs: 'column', md: 'row' }}
-                spacing={{ xs: 3, md: 4 }}
-                sx={{
-                    alignItems: { xs: 'stretch', md: 'center' },
-                    width: '100%',
-                    justifyContent: 'center',
-                }}
-            >
-                {/* Vertical Stepper */}
-                <Box
-                    sx={{
-                        width: { xs: '100%', md: 280 },
-                        flexShrink: 0,
-                    }}
-                >
-                    <Typography
-                        variant="h6"
-                        sx={{
-                            mb: 3,
-                            fontWeight: 600,
-                            fontSize: { xs: '1.125rem', md: '1.25rem' },
+            {/* Header with Horizontal Stepper */}
+            <Box sx={{ bgcolor: 'primary.main', color: 'white', p: { xs: 2, md: 3 }, position: 'relative' }}>
+                {onClose && (
+                    <IconButton 
+                        onClick={onClose}
+                        sx={{ 
+                            position: 'absolute', 
+                            top: 16, 
+                            right: 16, 
+                            color: 'white',
+                            zIndex: 10
                         }}
                     >
-                        Registration Steps
-                    </Typography>
-                    <Stack spacing={0}>
-                        {PRE_LOGIN_STEPS.map((step, index) => {
-                            const isCompleted = index < currentStep;
-                            const isActive = index === currentStep;
+                        <IconCrossSmall />
+                    </IconButton>
+                )}
 
-                            return (
-                                <Box key={step.id} sx={{ position: 'relative' }}>
-                                    {/* Connector line */}
-                                    {index < PRE_LOGIN_STEPS.length - 1 && (
-                                        <Box
-                                            sx={{
-                                                position: 'absolute',
-                                                left: 15,
-                                                top: 40,
-                                                width: 2,
-                                                height: isCompleted ? '100%' : 'calc(100% - 40px)',
-                                                bgcolor: isCompleted
-                                                    ? 'primary.main'
-                                                    : 'grey.300',
-                                                transition: 'background-color 0.3s ease',
-                                                zIndex: 0,
-                                            }}
-                                        />
-                                    )}
-                                    {/* Step content */}
-                                    <Stack
-                                        direction="row"
-                                        spacing={2}
-                                        sx={{
-                                            position: 'relative',
-                                            zIndex: 1,
-                                            py: 1.5,
-                                            alignItems: 'flex-start',
-                                        }}
-                                    >
-                                        {/* Step icon */}
-                                        <Box
-                                            sx={{
-                                                width: 32,
-                                                height: 32,
-                                                borderRadius: '50%',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                bgcolor: isCompleted
-                                                    ? 'primary.main'
-                                                    : isActive
-                                                      ? 'primary.main'
-                                                      : 'grey.200',
-                                                color: isCompleted || isActive ? 'white' : 'grey.500',
-                                                fontWeight: 600,
-                                                fontSize: '0.875rem',
-                                                flexShrink: 0,
-                                                transition: 'all 0.3s ease',
-                                                border: isActive && !isCompleted ? '2px solid' : 'none',
-                                                borderColor: isActive ? 'primary.main' : 'transparent',
-                                            }}
-                                        >
-                                            {isCompleted ? (
-                                                <IconCheckCircle
-                                                    sx={{
-                                                        fontSize: 20,
-                                                        color: 'white',
-                                                    }}
-                                                />
-                                            ) : (
-                                                <Typography
-                                                    variant="body2"
-                                                    sx={{
-                                                        fontWeight: 600,
-                                                        color: 'inherit',
-                                                    }}
-                                                >
-                                                    {index + 1}
-                                                </Typography>
-                                            )}
-                                        </Box>
-                                        {/* Step label */}
-                                        <Box sx={{ flex: 1, pt: 0.5 }}>
-                                            <Typography
-                                                variant="body2"
-                                                sx={{
-                                                    fontWeight: isActive ? 600 : 500,
-                                                    color: isActive
-                                                        ? 'primary.main'
-                                                        : isCompleted
-                                                          ? 'text.primary'
-                                                          : 'text.secondary',
-                                                    mb: 0.5,
-                                                    transition: 'all 0.3s ease',
-                                                }}
-                                            >
-                                                {step.label}
-                                            </Typography>
-                                            <Typography
-                                                variant="caption"
-                                                sx={{
-                                                    color: isActive
-                                                        ? 'text.primary'
-                                                        : 'text.secondary',
-                                                    fontSize: '0.75rem',
-                                                }}
-                                            >
-                                                {step.name}
-                                            </Typography>
-                                        </Box>
-                                    </Stack>
-                                </Box>
-                            );
-                        })}
-                    </Stack>
-                </Box>
-
-                {/* Step content */}
-                <Box
-                    sx={{
-                        flex: 1,
-                        minWidth: 0,
-                        maxWidth: { xs: '100%', md: 600 },
+                <Typography 
+                    variant="h6" 
+                    align="center" 
+                    sx={{ 
+                        mb: 4, 
+                        fontWeight: 700, 
+                        letterSpacing: 1,
+                        textTransform: 'uppercase',
+                        fontSize: { xs: '1rem', md: '1.25rem' },
+                        color: 'white'
                     }}
                 >
+                    Your Nursing Journey
+                </Typography>
+                
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', width: '100%', px: { xs: 0, md: 4 } }}>
+                    {FORM_STEPS.map((step, index) => {
+                        const isActive = index === currentStep;
+                        const isCompleted = index < currentStep;
+                        const isLast = index === FORM_STEPS.length - 1;
+
+                        return (
+                            <Box key={step.id} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, position: 'relative' }}>
+                                {/* Connecting Line */}
+                                {!isLast && (
+                                    <Box 
+                                        sx={{ 
+                                            position: 'absolute', 
+                                            top: 16, 
+                                            left: '50%', 
+                                            width: '100%', 
+                                            height: 2, 
+                                            bgcolor: 'white',
+                                            zIndex: 0 
+                                        }} 
+                                    />
+                                )}
+                                
+                                {/* Circle */}
+                                <Box
+                                    sx={{
+                                        width: 32,
+                                        height: 32,
+                                        borderRadius: '50%',
+                                        bgcolor: isCompleted || isActive ? 'secondary.main' : 'primary.main',
+                                        border: isCompleted || isActive ? 'none' : '2px solid white',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        zIndex: 1,
+                                        mb: 1,
+                                        color: 'white',
+                                        fontWeight: 600,
+                                        transition: 'all 0.3s ease'
+                                    }}
+                                >
+                                    {isCompleted ? (
+                                        <IconCheckCircle sx={{ fontSize: 20, color: 'white' }} />
+                                    ) : isActive ? (
+                                        <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: 'white' }} />
+                                    ) : null}
+                                </Box>
+                                
+                                {/* Label */}
+                                <Typography 
+                                    variant="caption" 
+                                    align="center" 
+                                    sx={{ 
+                                        color: 'white', 
+                                        fontWeight: isActive ? 700 : 400,
+                                        opacity: isActive || isCompleted ? 1 : 0.7,
+                                        display: { xs: 'none', sm: 'block' },
+                                        fontSize: '0.75rem'
+                                    }}
+                                >
+                                    {step.name}
+                                </Typography>
+                            </Box>
+                        );
+                    })}
+                </Box>
+            </Box>
+
+            {/* Form Content */}
+            <Box sx={{ p: { xs: 2, md: 4 }, flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Box sx={{ width: '100%', maxWidth: 600 }}>
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={currentStep}
@@ -1176,56 +1030,46 @@ function MultiStepRegistrationForm({
                             {renderStep()}
                         </motion.div>
                     </AnimatePresence>
-
-                    {/* Navigation buttons */}
-                    <Stack
-                        direction="row"
-                        spacing={2}
-                        sx={{
-                            mt: 4,
-                            position: isMobile ? 'fixed' : 'static',
-                            bottom: isMobile ? 0 : 'auto',
-                            left: isMobile ? 0 : 'auto',
-                            right: isMobile ? 0 : 'auto',
-                            p: isMobile ? 2 : 0,
-                            bgcolor: isMobile ? 'background.paper' : 'transparent',
-                            boxShadow: isMobile ? 3 : 'none',
-                            zIndex: isMobile ? 1000 : 'auto',
-                            justifyContent: 'center',
-                            maxWidth: { xs: '100%', md: 500 },
-                            mx: 'auto',
-                        }}
-                    >
-                        {currentStep > 0 && (
-                            <Button
-                                variant="outlined"
-                                onClick={handleBack}
-                                disabled={isSubmitting}
-                                sx={{ flex: isMobile ? 1 : 'none' }}
-                            >
-                                Back
-                            </Button>
-                        )}
-                        <Button
-                            variant="contained"
-                            onClick={handleNext}
-                            disabled={isSubmitting || (isVerifyingEmail && currentStep === 0)}
-                            sx={{ flex: isMobile ? 1 : 'none' }}
-                            fullWidth={isMobile}
-                        >
-                            {currentStep === 0
-                                ? isVerifyingEmail
-                                    ? 'Sending...'
-                                    : 'Continue'
-                                : currentStep === PRE_LOGIN_STEPS.length - 1
-                                  ? isSubmitting
-                                      ? 'Creating account...'
-                                      : 'Continue'
-                                  : 'Continue'}
-                        </Button>
-                    </Stack>
                 </Box>
-            </Stack>
+
+                {/* Navigation buttons */}
+                <Stack
+                    direction="row"
+                    spacing={2}
+                    sx={{
+                        mt: 5,
+                        justifyContent: 'center',
+                        maxWidth: 600,
+                        mx: 'auto',
+                        width: '100%'
+                    }}
+                >
+                    {currentStep > 0 && (
+                        <Button
+                            variant="outlined"
+                            onClick={handleBack}
+                            disabled={isSubmitting}
+                            size="large"
+                            sx={{ flex: 1, borderRadius: 50, height: 48 }}
+                        >
+                            Back
+                        </Button>
+                    )}
+                    <Button
+                        variant="contained"
+                        onClick={handleNext}
+                        disabled={isSubmitting}
+                        size="large"
+                        sx={{ flex: 1, borderRadius: 50, height: 48, bgcolor: 'primary.main' }}
+                    >
+                        {currentStep === FORM_STEPS.length - 1
+                            ? isSubmitting
+                                ? 'Creating account...'
+                                : 'Create Account'
+                            : 'Next Step'}
+                    </Button>
+                </Stack>
+            </Box>
         </Box>
     );
 }

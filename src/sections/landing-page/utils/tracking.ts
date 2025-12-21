@@ -50,6 +50,10 @@ export const trackApplicationCreated = (jobId: string | number) => {
     trackEvent('application_created', { job_id: jobId });
 };
 
+export const trackLpView = () => {
+    trackEvent('lp_view', {});
+};
+
 export const trackOnboardingStarted = (source: 'cta' | 'apply', jobId?: string | number) => {
     trackEvent('onboarding_started', { source, job_id: jobId });
 };

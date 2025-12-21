@@ -16,13 +16,14 @@ import {
     LogoCarousel,
     ScrollToTop,
 } from './components';
-import { trackPageVisit } from './utils/tracking';
+import { trackPageVisit, trackLpView } from './utils/tracking';
 
 function LandingPage() {
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const utmSource = urlParams.get('utm_source') || urlParams.get('source') || 'direct';
         trackPageVisit('homepage', utmSource);
+        trackLpView();
     }, []);
 
     return (

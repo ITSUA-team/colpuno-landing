@@ -1,11 +1,13 @@
 import { Box, Button } from '@mui/material';
 
 import { useResponsive } from '../../../hooks';
+import { trackCtaUnlockJobsClicked } from '../utils/tracking';
 
 function LandingStickyCTA() {
     const mdDown = useResponsive('down', 768);
 
     const handleClick = () => {
+        trackCtaUnlockJobsClicked();
         const heroSection = document.getElementById('landing-hero');
         if (heroSection) {
             heroSection.scrollIntoView({ behavior: 'smooth' });

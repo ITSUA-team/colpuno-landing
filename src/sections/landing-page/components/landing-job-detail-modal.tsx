@@ -1,9 +1,10 @@
 import { Box, Button, Divider, Stack, Typography } from '@mui/material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import AppRegistration from '../../../AppRegistration';
 import { StyledModal } from '../../../components';
 import type { Job } from '../../../interfaces';
+import { trackJobModalOpened, trackApplyClicked } from '../utils/tracking';
 
 interface LandingJobDetailModalProps {
     job: Job;
@@ -16,12 +17,19 @@ function LandingJobDetailModal({ job, open, onClose }: LandingJobDetailModalProp
     const user = null;
     const [isRegOpen, setIsRegOpen] = useState(false);
 
-    const handleApply = () => {
-        if (user) {
+    useEffect(() => {
+        if (open) {
             const jobId = job['@id']?.split('/').pop() || job.id;
+            trackJobModalOpened(jobId);
+        }
+    }, [open, job]);
+
+    const handleApply = () => {
+        const jobId = job['@id']?.split('/').pop() || job.id;
+        trackApplyClicked(jobId);
+        if (user) {
             window.location.href = `/jobs/${jobId}?openConfirmApplication=1`;
         } else {
-            const jobId = job['@id']?.split('/').pop() || job.id;
             sessionStorage.setItem('pendingJobApplication', jobId.toString());
             onClose();
             setIsRegOpen(true);
@@ -59,9 +67,13 @@ function LandingJobDetailModal({ job, open, onClose }: LandingJobDetailModalProp
         ? 'Required'
         : 'Not required';
 
-    const jobSummary = job.description
-        ? job.description.split('\n').slice(0, 3).join(' ').substring(0, 200) + '...'
-        : 'Job details available after registration.';
+    const cleanDescription = (desc?: string) => {
+        if (!desc) return 'Job details available after registration.';
+        const parts = desc.split(/CONTACT PERSONS/i);
+        return parts[0].trim();
+    };
+
+    const description = cleanDescription(job.description);
 
     return (
         <StyledModal open={open} onClose={onClose}>
@@ -97,12 +109,23 @@ function LandingJobDetailModal({ job, open, onClose }: LandingJobDetailModalProp
 
                 <Box>
                     <Typography variant='subtitle2' sx={{ mb: 1 }}>
-                        Snapshot
+                        Job Description
                     </Typography>
-                    <Typography variant='body2'>
-                        {jobSummary}
+                    <Typography variant='body2' sx={{ whiteSpace: 'pre-line' }}>
+                        {description}
                     </Typography>
                 </Box>
+
+                {job.benefitsDescription && (
+                    <Box>
+                        <Typography variant='subtitle2' sx={{ mb: 1 }}>
+                            Benefits
+                        </Typography>
+                        <Typography variant='body2' sx={{ whiteSpace: 'pre-line' }}>
+                            {job.benefitsDescription}
+                        </Typography>
+                    </Box>
+                )}
 
                 <Box>
                     <Typography variant='subtitle2' sx={{ mb: 1 }}>
@@ -180,15 +203,17 @@ function LandingJobDetailModal({ job, open, onClose }: LandingJobDetailModalProp
                 open={isRegOpen}
                 onClose={() => setIsRegOpen(false)}
                 smallHeightModal={false}
+                noCloseIcon
                 style={{
                     width: { xs: '95%', sm: '90%', md: '750px', lg: '850px' },
                     maxWidth: '900px',
-                    p: { xs: 1.5, sm: 2, md: 2.5 },
+                    p: 0,
                     borderRadius: '16px',
                     maxHeight: { xs: '95vh', md: '90vh' },
+                    overflow: 'hidden'
                 }}
             >
-                <AppRegistration initialEmail='' embedded />
+                <AppRegistration initialEmail='' embedded onClose={() => setIsRegOpen(false)} />
             </StyledModal>
         </StyledModal>
     );
