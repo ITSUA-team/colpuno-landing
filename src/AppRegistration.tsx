@@ -9,9 +9,10 @@ import LandingThemeProvider from './theme';
 interface AppRegistrationProps {
     initialEmail?: string;
     embedded?: boolean;
+    onClose?: () => void;
 }
 
-const AppRegistration = ({ initialEmail = '', embedded = true }: AppRegistrationProps) => {
+const AppRegistration = ({ initialEmail = '', embedded = true, onClose }: AppRegistrationProps) => {
     const [jobId, setJobId] = useState<string | undefined>();
     const [campaignId, setCampaignId] = useState<string | undefined>();
     const [landingPageId, setLandingPageId] = useState<string | undefined>();
@@ -48,6 +49,7 @@ const AppRegistration = ({ initialEmail = '', embedded = true }: AppRegistration
                         jobId={jobId}
                         campaignId={campaignId}
                         landingPageId={landingPageId}
+                        onClose={onClose}
                     />
                 </Box>
             </LocalizationProvider>
