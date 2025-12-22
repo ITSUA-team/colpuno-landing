@@ -115,7 +115,10 @@ function LandingJobs({ config }: LandingJobsProps) {
                 value={tab}
                 onChange={handleTabChange}
                 centered
-                sx={{ mb: 2 }}
+                sx={{
+                    mb: 2,
+                    maxWidth: {xs: '90vw', md: 'inherit'}
+                }}
             >
                 <Tab
                     label={config.jobs.tabs.tab1Label}

@@ -102,6 +102,7 @@ function LandingJobDetailModal({ job, open, onClose, onApplyClick }: LandingJobD
                                     minWidth: 'auto',
                                     px: 2,
                                 },
+                                maxWidth: {xs: '90vw', md: 'inherit'}
                             }}
                         >
                             <Tab label='Job details' value='job-details' />
