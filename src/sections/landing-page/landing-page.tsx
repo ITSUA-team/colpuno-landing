@@ -70,8 +70,7 @@ function LandingPage() {
                         src={Logo.src}
                         alt="Сolpuno – empowering filipino nurses"
                         sx={{
-                            width: { xs: '50%', md: '300px' },
-                            maxWidth: { xs: '100%', md: 480 },
+                            maxHeight: { xs: '50px', md: '80px' },
                             height: 'auto',
                             position: 'relative',
                             display: 'block',
@@ -81,7 +80,7 @@ function LandingPage() {
             </Box>
 
             <Box sx={{
-                        pt: '180px',
+                        pt: {xs: '80px', md: '180px'},
                     }}>
 
                 <LandingHero />

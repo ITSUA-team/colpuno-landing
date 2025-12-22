@@ -14,7 +14,7 @@ const JobSection = ({ title, icon, content }: JobSectionProps) => (
             display: 'flex',
             gap: { xs: '24px', md: '48px' },
             flexWrap: { xs: 'wrap', md: 'nowrap' },
-            alignItems: 'center',
+            alignItems: 'start',
         }}
     >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '16px', width: '240px', flexShrink: 0 }}>

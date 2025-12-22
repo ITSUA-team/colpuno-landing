@@ -275,6 +275,19 @@ const LandingJobsCard = ({ job, index, onClick, onApplyClick, compact, variant =
                                 sx={{ width: '100%' }}
                             >
                                 <Button
+                                    variant='outlined'
+                                    color='primary'
+                                    onClick={onClick}
+                                    sx={{
+                                        textTransform: 'none',
+                                        fontWeight: 600,
+                                        borderRadius: 3,
+                                        flex: 1,
+                                    }}
+                                >
+                                    View details
+                                </Button>
+                                <Button
                                     variant='contained'
                                     color='primary'
                                     onClick={(e) => {
@@ -293,19 +306,6 @@ const LandingJobsCard = ({ job, index, onClick, onApplyClick, compact, variant =
                                     }}
                                 >
                                     Apply now
-                                </Button>
-                                <Button
-                                    variant='outlined'
-                                    color='primary'
-                                    onClick={onClick}
-                                    sx={{
-                                        textTransform: 'none',
-                                        fontWeight: 600,
-                                        borderRadius: 3,
-                                        flex: 1,
-                                    }}
-                                >
-                                    View details
                                 </Button>
                             </Stack>
                         )}

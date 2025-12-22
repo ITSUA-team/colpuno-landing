@@ -117,6 +117,8 @@ function LandingJobDetailModal({ job, open, onClose, onApplyClick }: LandingJobD
                                 backgroundColor: 'common.white',
                                 borderRadius: '16px',
                                 minHeight: 200,
+                                maxHeight: '30vh',
+                                overflowY: 'scroll',
                             }}
                         >
                             {detailTab === 'job-details' && (
@@ -126,13 +128,13 @@ function LandingJobDetailModal({ job, open, onClose, onApplyClick }: LandingJobD
                                         icon={<IconBriefcaseTickRed />} 
                                         content={<JobDescription job={job} />} 
                                     />
-                                    <Divider sx={{ my: 3 }} />
-                                    <JobSection 
+                                    {/* <Divider sx={{ my: 3 }} /> */}
+                                    {/* <JobSection 
                                         title='Salary & Benefits' 
                                         icon={<IconMonyReceiveRed />} 
                                         content={<JobSalary jobOffer={job} />} 
-                                    />
-                                    {job.benefitsDescription && (
+                                    /> */}
+                                    {/* {job.benefitsDescription && (
                                         <>
                                             <Divider sx={{ my: 3 }} />
                                             <JobSection 
@@ -141,7 +143,7 @@ function LandingJobDetailModal({ job, open, onClose, onApplyClick }: LandingJobD
                                                 content={<JobAdditionalBenefits job={job} />} 
                                             />
                                         </>
-                                    )}
+                                    )} */}
                                 </>
                             )}
                             {detailTab === 'requirements' && (
@@ -185,21 +187,19 @@ function LandingJobDetailModal({ job, open, onClose, onApplyClick }: LandingJobD
                     >
                         Back to jobs
                     </Button>
-                    {mainTab === 'job-info' && (
-                        <Button 
-                            variant='contained' 
-                            onClick={handleApply} 
-                            fullWidth
-                            sx={{
-                                textTransform: 'none',
-                                fontWeight: 600,
-                                borderRadius: 999,
-                                px: 3,
-                            }}
-                        >
-                            Apply
-                        </Button>
-                    )}
+                    <Button 
+                        variant='contained' 
+                        onClick={handleApply} 
+                        fullWidth
+                        sx={{
+                            textTransform: 'none',
+                            fontWeight: 600,
+                            borderRadius: 999,
+                            px: 3,
+                        }}
+                    >
+                        Apply
+                    </Button>
                 </Stack>
             </Stack>
         </StyledModal>
