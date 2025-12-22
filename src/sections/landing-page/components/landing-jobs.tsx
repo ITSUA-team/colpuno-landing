@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { SyntheticEvent, useState } from 'react';
 
 import type { PageConfig } from '../../../config';
-import { MIDDLE_EAST_COUNTRIES } from '../../../config';
 import type { Job } from '../../../interfaces';
 import { MOCK_JOBS } from '../../../mock';
 import AppRegistration from '../../../AppRegistration';

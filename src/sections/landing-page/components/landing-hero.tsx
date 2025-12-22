@@ -303,7 +303,7 @@ function LandingHero({ config }: LandingHeroProps) {
                             <Box sx={{ width: '100%', mb: 3 }}>
                                 <JobBadge text="13’000+ Job Vacancies (*)" />
                             </Box>
-                            <LandingJobPreview />
+                            <LandingJobPreview  config={config} />
                         </Box>
                     </Stack>
                     <JobsTicker items={vacancies} />

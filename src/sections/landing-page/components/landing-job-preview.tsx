@@ -2,25 +2,25 @@ import { Box } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
+import type { PageConfig } from '../../../config';
+import type { Job } from '../../../interfaces';
+import { MOCK_JOBS } from '../../../mock';
 import AppRegistration from '../../../AppRegistration';
 import StyledModal from '../../../components/styled-modal';
-import type { Job } from '../../../interfaces';
 import { JobOfferService } from '../../../services';
 import { trackJobView } from '../utils/tracking';
 import LandingJobsCard from './landing-jobs-card';
 import LandingJobDetailModal from './landing-job-detail-modal';
 
-function LandingJobPreview() {
+interface LandingJobsProps {
+    config: PageConfig;
+}
+
+function LandingJobPreview({ config }: LandingJobsProps) {
     const [selectedJob, setSelectedJob] = useState<Job | null>(null);
     const [isRegOpen, setIsRegOpen] = useState(false);
 
-    const { data, isLoading } = useQuery({
-        queryKey: ['landingPageJobs'],
-        queryFn: () => JobOfferService.getJobOffers('1'),
-        staleTime: 5 * 60 * 1000,
-    });
-
-    const jobs: Job[] = data?.member?.slice(0, 3) || [];
+    const jobs: Job[] = MOCK_JOBS.filter(job => config.jobs.national.includes(job.id) || config.jobs.international.includes(job.id)).slice(0, 3) || [];
 
     const handleJobClick = (job: Job) => {
         trackJobView(job.id);
@@ -37,10 +37,8 @@ function LandingJobPreview() {
                     justifyItems: 'center',
                 }}
             >
-                {(isLoading ? [1, 2, 3] : jobs).map((jobOrIndex, index) => {
-                    const job = isLoading
-                        ? undefined
-                        : (jobOrIndex as Job);
+                {(jobs).map((jobOrIndex, index) => {
+                    const job = jobOrIndex as Job;
 
                     if (!job) {
                         return (
