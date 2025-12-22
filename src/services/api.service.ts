@@ -78,24 +78,40 @@ async function apiFetch<T>(
 }
 
 export interface NurseRegistrationData {
-    lookingForJob?: string;
-    nursingStatus?: string;
-    experienceYears?: string;
-    workedSpecialties?: string[];
-    currentLocationCountry?: string;
-    currentLocationRegion?: string;
-    preferredWorkLocation?: string[];
-    preferredCountries?: string[];
-    preferredCountriesOther?: string[];
-    desiredSpecialties?: string[];
-    firstName: string;
-    lastName: string;
-    birthDate?: string;
+    // Account
     email: string;
     password?: string;
-    phone: string;
+    
+    // Personal
+    firstName: string;
+    lastName: string;
+    birthDate?: string; // yyyy-mm-dd format
+    
+    // Location
+    currentLocationCountry?: string; // country code (ph, us, etc.)
+    filipinoNational?: string; // "yes" or "no"
+    
+    // Contact
+    phone?: string;
+    
+    // Nursing Status & Experience
+    nursingStatus?: string; // bsn-student, nle-student, newly-graduated, philippines-experienced, abroad-experienced
+    yearsOfExperience?: string;
+    
+    // Preferences
+    preferredDestination?: string[];
+    preferredWorkLocation?: string[];
+    preferredCountries?: string[];
+    
+    // Job Search
+    lookingForJob?: string; // actively-looking, open-to-opportunities, not-currently-looking
+    jobStartTimeline?: string;
+    
+    // Terms & Source
     termsAccepted?: boolean;
     sourcingCenter?: string;
+    
+    // Additional fields for tracking
     [key: string]: unknown;
 }
 

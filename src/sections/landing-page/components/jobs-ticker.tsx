@@ -156,7 +156,7 @@ function TickerItem({ flag, country, count }: VacancyItem) {
         <div className={styles.item}>
             <span className={styles.flag}>{flag}</span>
             <span className={styles.country}>{country}</span>
-            <span className={styles.count}>{count.toLocaleString()}</span>
+            <span className={styles.count}>~{count.toLocaleString()}</span>
             <span className={styles.label}>vacancies</span>
         </div>
     );

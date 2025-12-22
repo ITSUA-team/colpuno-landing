@@ -25,33 +25,29 @@ function LandingHero() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!email) {
-            setError('Please enter your email address');
-            return;
-        }
-        if (!validateEmail(email)) {
-            setError('Please enter a valid email address');
-            return;
-        }
-
         trackRegStarted(email);
         trackCtaUnlockJobsClicked();
         setIsRegOpen(true);
     };
 
     const vacancies = [
-        { flag: '🇰🇼', country: 'Kuwait', count: 200 },
-        { flag: '🇺🇸', country: 'United States', count: 1500 },
-        { flag: '🇵🇭', country: 'Philippines', count: 1000 },
-        { flag: '🇸🇬', country: 'Singapore', count: 2000 },
-        { flag: '🇳🇱', country: 'Netherlands', count: 10 },
-        { flag: '🇸🇦', country: 'Saudi Arabia', count: 2000 },
-        { flag: '🇶🇦', country: 'Qatar', count: 200 },
-        { flag: '🇦🇺', country: 'Australia', count: 100 },
-        { flag: '🇮🇪', country: 'Ireland', count: 100 },
-        { flag: '🇦🇪', country: 'United Arab Emirates', count: 100 },
-        { flag: '🇬🇺', country: 'Guam', count: 10 },
-        { flag: '🇯🇵', country: 'Japan', count: 20 },
+        { flag: '🇸🇦', country: 'Saudi Arabia', count: 7259 },
+        { flag: '🇺🇸', country: 'United States', count: 911 },
+        { flag: '🇵🇭', country: 'Philippines', count: 451 },
+        { flag: '🇮🇪', country: 'Ireland', count: 90 },
+        { flag: '🇰🇼', country: 'Kuwait', count: 1187 },
+        { flag: '🇶🇦', country: 'Qatar', count: 1028 },
+        { flag: '🇦🇪', country: 'United Arab Emirates', count: 263 },
+        { flag: '🇸🇬', country: 'Singapore', count: 2045 },
+        { flag: '🇵🇬', country: 'Papua New Guinea', count: 82 },
+        { flag: '🇯🇵', country: 'Japan', count: 67 },
+        { flag: '🇸🇷', country: 'Suriname', count: 51 },
+        { flag: '🇨🇦', country: 'Canada', count: 40 },
+        { flag: '🇧🇭', country: 'Bahrain', count: 20 },
+        { flag: '🇴🇲', country: 'Oman', count: 14 },
+        { flag: '🇦🇺', country: 'Australia', count: 10 },
+        { flag: '🇬🇺', country: 'Guam', count: 5 },
+        { flag: '🇳🇱', country: 'Netherlands', count: 4 },
     ];
 
     return (
@@ -317,10 +313,11 @@ function LandingHero() {
                 smallHeightModal={false}
                 noCloseIcon
                 style={{
-                    width: { xs: '95%', sm: '90%', md: '750px', lg: '850px' },
+                    width: { xs: 'calc(100vw - 32px)', sm: '90%', md: '750px', lg: '850px' },
                     maxWidth: '900px',
                     p: 0,
                     borderRadius: '16px',
+                    height: { xs: '95vh', md: 'auto' },
                     maxHeight: { xs: '95vh', md: '90vh' },
                     overflow: 'hidden'
                 }}

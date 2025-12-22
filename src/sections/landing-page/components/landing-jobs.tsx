@@ -295,10 +295,11 @@ function LandingJobs() {
                 smallHeightModal={false}
                 noCloseIcon
                 style={{
-                    width: { xs: '95%', sm: '90%', md: '750px', lg: '850px' },
+                    width: { xs: 'calc(100vw - 32px)', sm: '90%', md: '750px', lg: '850px' },
                     maxWidth: '900px',
                     p: 0,
                     borderRadius: '16px',
+                    height: { xs: '95vh', md: 'auto' },
                     maxHeight: { xs: '95vh', md: '90vh' },
                     overflow: 'hidden',
                     backgroundColor: 'transparent',
