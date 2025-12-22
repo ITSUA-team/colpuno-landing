@@ -1,7 +1,6 @@
 import { Box, Button, Divider, Stack, Typography } from '@mui/material';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
-import AppRegistration from '../../../AppRegistration';
 import { StyledModal } from '../../../components';
 import type { Job } from '../../../interfaces';
 import { trackJobModalOpened, trackApplyClicked } from '../utils/tracking';
@@ -10,12 +9,12 @@ interface LandingJobDetailModalProps {
     job: Job;
     open: boolean;
     onClose: () => void;
+    onApplyClick?: () => void;
 }
 
 
-function LandingJobDetailModal({ job, open, onClose }: LandingJobDetailModalProps) {
+function LandingJobDetailModal({ job, open, onClose, onApplyClick }: LandingJobDetailModalProps) {
     const user = null;
-    const [isRegOpen, setIsRegOpen] = useState(false);
 
     useEffect(() => {
         if (open) {
@@ -25,14 +24,21 @@ function LandingJobDetailModal({ job, open, onClose }: LandingJobDetailModalProp
     }, [open, job]);
 
     const handleApply = () => {
-        const jobId = job['@id']?.split('/').pop() || job.id;
-        trackApplyClicked(jobId);
+        const jobId = job['@id']?.split('/').pop() || job.id?.toString();
+        trackApplyClicked(job.id);
         if (user) {
             window.location.href = `/jobs/${jobId}?openConfirmApplication=1`;
         } else {
-            sessionStorage.setItem('pendingJobApplication', jobId.toString());
-            onClose();
-            setIsRegOpen(true);
+            // Save jobId to sessionStorage
+            if (jobId) {
+                sessionStorage.setItem('pendingJobApplication', jobId);
+            }
+            // Call onApplyClick if provided, otherwise just close
+            if (onApplyClick) {
+                onApplyClick();
+            } else {
+                onClose();
+            }
         }
     };
 
@@ -199,22 +205,6 @@ function LandingJobDetailModal({ job, open, onClose }: LandingJobDetailModalProp
                     </Button>
                 </Stack>
             </Stack>
-            <StyledModal
-                open={isRegOpen}
-                onClose={() => setIsRegOpen(false)}
-                smallHeightModal={false}
-                noCloseIcon
-                style={{
-                    width: { xs: '95%', sm: '90%', md: '750px', lg: '850px' },
-                    maxWidth: '900px',
-                    p: 0,
-                    borderRadius: '16px',
-                    maxHeight: { xs: '95vh', md: '90vh' },
-                    overflow: 'hidden'
-                }}
-            >
-                <AppRegistration initialEmail='' embedded onClose={() => setIsRegOpen(false)} />
-            </StyledModal>
         </StyledModal>
     );
 }

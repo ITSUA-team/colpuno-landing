@@ -4,12 +4,15 @@ import { SyntheticEvent, useState } from 'react';
 
 import type { Job } from '../../../interfaces';
 import { MOCK_JOBS } from '../../../mock';
-import { trackJobView, trackCtaUnlockJobsClicked } from '../utils/tracking';
+import AppRegistration from '../../../AppRegistration';
+import StyledModal from '../../../components/styled-modal';
+import { trackJobView, trackCtaUnlockJobsClicked, trackApplyClicked } from '../utils/tracking';
 import LandingJobsCard from './landing-jobs-card';
 import LandingJobDetailModal from './landing-job-detail-modal';
 
 function LandingJobs() {
     const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+    const [isRegOpen, setIsRegOpen] = useState(false);
     // Simple tabs per spec: National (PH) | International (Preview)
     const [tab, setTab] = useState<'national' | 'international'>('national');
     const allJobs: Job[] = MOCK_JOBS;
@@ -39,6 +42,16 @@ function LandingJobs() {
     const handleJobClick = (job: Job) => {
         trackJobView(job.id);
         setSelectedJob(job);
+    };
+
+    const handleApplyClick = (job: Job) => {
+        const jobId = job['@id']?.split('/').pop() || job.id?.toString();
+        trackApplyClicked(job.id);
+        // Save jobId to sessionStorage so AppRegistration can read it
+        if (jobId) {
+            window.sessionStorage.setItem('pendingJobApplication', jobId);
+        }
+        setIsRegOpen(true);
     };
 
     const formatJobCard = (job: Job) => {
@@ -138,6 +151,7 @@ function LandingJobs() {
                                         job={job}
                                         index={index}
                                         onClick={() => handleJobClick(job)}
+                                        onApplyClick={() => handleApplyClick(job)}
                                     />
                                 </Box>
                             ))}
@@ -258,8 +272,40 @@ function LandingJobs() {
                     job={selectedJob}
                     open={!!selectedJob}
                     onClose={() => setSelectedJob(null)}
+                    onApplyClick={() => {
+                        const jobId = selectedJob['@id']?.split('/').pop() || selectedJob.id?.toString();
+                        if (jobId) {
+                            window.sessionStorage.setItem('pendingJobApplication', jobId);
+                        }
+                        // Close job detail modal first
+                        setSelectedJob(null);
+                        // Then open registration modal with a small delay to ensure smooth transition
+                        setTimeout(() => {
+                            setIsRegOpen(true);
+                        }, 100);
+                    }}
                 />
             )}
+
+            <StyledModal
+                open={isRegOpen}
+                onClose={() => {
+                    setIsRegOpen(false);
+                }}
+                smallHeightModal={false}
+                noCloseIcon
+                style={{
+                    width: { xs: '95%', sm: '90%', md: '750px', lg: '850px' },
+                    maxWidth: '900px',
+                    p: 0,
+                    borderRadius: '16px',
+                    maxHeight: { xs: '95vh', md: '90vh' },
+                    overflow: 'hidden',
+                    backgroundColor: 'transparent',
+                }}
+            >
+                <AppRegistration initialEmail="" embedded onClose={() => setIsRegOpen(false)} />
+            </StyledModal>
         </Box>
     );
 }
