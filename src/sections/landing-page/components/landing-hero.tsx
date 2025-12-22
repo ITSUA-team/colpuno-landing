@@ -7,7 +7,7 @@ import { trackRegStarted, trackCtaUnlockJobsClicked } from '../utils/tracking';
 import LandingJobPreview from './landing-job-preview';
 import IconStar2 from '../../../assets/icon-components/icon-star';
 import { JobBadge } from './index';
-import TrustBadgesImg from '../../../assets/img.png';
+import TrustBadgesImg from '../../../assets/badges.png';
 
 import {
     JobsTicker,

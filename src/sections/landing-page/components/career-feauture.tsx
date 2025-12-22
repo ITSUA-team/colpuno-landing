@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material';
-import CareerSupportImg from '../../../assets/img_1.png';
+import CareerSupportImg from '../../../assets/stats.jpg';
 
 type Props = {
     onRegisterClick?: (source: 'top' | 'bottom') => void;
