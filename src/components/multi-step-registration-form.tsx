@@ -17,8 +17,10 @@ import {
     useMediaQuery,
     useTheme,
 } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import dayjs, { type Dayjs } from 'dayjs';
 import IconVisibility from '../assets/icon-components/icon-visibility';
 import IconVisibilityOff from '../assets/icon-components/icon-visibility-off';
 import IconCheckCircle from '../assets/icon-components/icon-check-circle';
@@ -61,6 +63,7 @@ interface FormData {
     isFilipino: boolean;
     // Step 6 - Contact & Terms
     mobile: string;
+    birthDate: Dayjs | null;
     agreedToTerms: boolean;
     
     // Legacy/Unused but kept for type compatibility if needed temporarily
@@ -104,6 +107,7 @@ function MultiStepRegistrationForm({
         country: 'Philippines',
         isFilipino: false,
         mobile: '',
+        birthDate: null,
         agreedToTerms: false,
         
         // Legacy
@@ -444,6 +448,16 @@ function MultiStepRegistrationForm({
             } else if (!validateMobile(formData.mobile)) {
                 newErrors.mobile = 'Please enter a valid Philippine mobile number';
             }
+            if (!formData.birthDate) {
+                newErrors.birthDate = 'Birth date is required';
+            } else {
+                const age = dayjs().diff(formData.birthDate, 'year');
+                if (age < 18) {
+                    newErrors.birthDate = 'You must be at least 18 years old';
+                } else if (age > 100) {
+                    newErrors.birthDate = 'Please enter a valid birth date';
+                }
+            }
             if (!formData.agreedToTerms) {
                 newErrors.agreedToTerms = 'You must agree to the Privacy Policy and Terms of Service';
             }
@@ -488,6 +502,7 @@ function MultiStepRegistrationForm({
                 country: formData.country,
                 isFilipino: formData.isFilipino,
                 mobile: normalizeMobile(formData.mobile),
+                birthDate: formData.birthDate ? formData.birthDate.format('YYYY-MM-DD') : undefined,
                 termsAccepted: formData.agreedToTerms,
                 sourcingCenter: 'Landing Page Funnel',
                 
@@ -843,6 +858,25 @@ function MultiStepRegistrationForm({
                             A bit more about you
                         </Typography>
                         <Stack spacing={3} sx={{ mt: 3 }}>
+                            <DatePicker
+                                label="Date of birth *"
+                                value={formData.birthDate}
+                                onChange={(newValue) => {
+                                    setFormData({ ...formData, birthDate: newValue });
+                                    setErrors({ ...errors, birthDate: '' });
+                                }}
+                                slotProps={{
+                                    textField: {
+                                        fullWidth: true,
+                                        error: !!errors.birthDate,
+                                        helperText: errors.birthDate,
+                                        required: true,
+                                        sx: { '& .MuiOutlinedInput-root': { borderRadius: 2 } },
+                                    },
+                                }}
+                                maxDate={dayjs().subtract(18, 'year')}
+                                minDate={dayjs().subtract(100, 'year')}
+                            />
                             <TextField
                                 fullWidth
                                 label="What's your phone number?"

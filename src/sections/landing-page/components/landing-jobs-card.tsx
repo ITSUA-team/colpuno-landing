@@ -33,12 +33,13 @@ type Props = {
     job: Job;
     index: number;
     onClick?: () => void;
+    onApplyClick?: () => void;
     compact?: boolean;
     // variant: 'full' — main jobs list, 'preview' — compact cards in hero section
     variant?: 'full' | 'preview';
 };
 
-const LandingJobsCard = ({ job, index, onClick, compact, variant = 'full' }: Props) => {
+const LandingJobsCard = ({ job, index, onClick, onApplyClick, compact, variant = 'full' }: Props) => {
     const theme = useTheme();
     const bgTones = [
         // theme.palette.secondary.lighter,
@@ -276,7 +277,14 @@ const LandingJobsCard = ({ job, index, onClick, compact, variant = 'full' }: Pro
                                 <Button
                                     variant='contained'
                                     color='primary'
-                                    onClick={onClick}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (onApplyClick) {
+                                            onApplyClick();
+                                        } else {
+                                            onClick?.();
+                                        }
+                                    }}
                                     sx={{
                                         textTransform: 'none',
                                         fontWeight: 600,

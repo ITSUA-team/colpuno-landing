@@ -2,6 +2,8 @@ import { Box } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
+import AppRegistration from '../../../AppRegistration';
+import StyledModal from '../../../components/styled-modal';
 import type { Job } from '../../../interfaces';
 import { JobOfferService } from '../../../services';
 import { trackJobView } from '../utils/tracking';
@@ -10,6 +12,7 @@ import LandingJobDetailModal from './landing-job-detail-modal';
 
 function LandingJobPreview() {
     const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+    const [isRegOpen, setIsRegOpen] = useState(false);
 
     const { data, isLoading } = useQuery({
         queryKey: ['landingPageJobs'],
@@ -96,8 +99,38 @@ function LandingJobPreview() {
                     job={selectedJob}
                     open={!!selectedJob}
                     onClose={() => setSelectedJob(null)}
+                    onApplyClick={() => {
+                        const jobId = selectedJob['@id']?.split('/').pop() || selectedJob.id?.toString();
+                        if (jobId) {
+                            window.sessionStorage.setItem('pendingJobApplication', jobId);
+                        }
+                        setSelectedJob(null);
+                        setTimeout(() => {
+                            setIsRegOpen(true);
+                        }, 100);
+                    }}
                 />
             )}
+
+            <StyledModal
+                open={isRegOpen}
+                onClose={() => {
+                    setIsRegOpen(false);
+                }}
+                smallHeightModal={false}
+                noCloseIcon
+                style={{
+                    width: { xs: '95%', sm: '90%', md: '750px', lg: '850px' },
+                    maxWidth: '900px',
+                    p: 0,
+                    borderRadius: '16px',
+                    maxHeight: { xs: '95vh', md: '90vh' },
+                    overflow: 'hidden',
+                    backgroundColor: 'transparent',
+                }}
+            >
+                <AppRegistration initialEmail="" embedded onClose={() => setIsRegOpen(false)} />
+            </StyledModal>
         </>
     );
 }
