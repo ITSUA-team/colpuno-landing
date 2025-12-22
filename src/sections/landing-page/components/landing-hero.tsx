@@ -1,6 +1,7 @@
 import { Box, Button, Stack, TextField, Typography, alpha } from '@mui/material';
 import { useState } from 'react';
 
+import type { PageConfig } from '../../../config';
 import AppRegistration from '../../../AppRegistration';
 import StyledModal from '../../../components/styled-modal';
 import { trackRegStarted, trackCtaUnlockJobsClicked } from '../utils/tracking';
@@ -13,7 +14,11 @@ import {
     JobsTicker,
 } from '../components';
 
-function LandingHero() {
+interface LandingHeroProps {
+    config: PageConfig;
+}
+
+function LandingHero({ config }: LandingHeroProps) {
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
     const [isRegOpen, setIsRegOpen] = useState(false);
@@ -114,7 +119,7 @@ function LandingHero() {
                                         color: 'common.white',
                                     }}
                                 >
-                                    Newly Registered Nurse? Start your career with verified opportunities.
+                                    {config.hero.headline}
                                 </Typography>
 
                                 <Typography
@@ -125,7 +130,7 @@ function LandingHero() {
                                         color: (theme) => theme.palette.font.white60,
                                     }}
                                 >
-                                    A safe, nurse-only career platform for newly registered Filipino nurses. Build an employer-ready profile, apply to verified jobs faster, and get long-term support—free forever.
+                                    {config.hero.subhead}
                                 </Typography>
 
                                 <Box sx={{

@@ -2,6 +2,8 @@ import { Box, Button, Stack, Tab, Tabs, Typography } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SyntheticEvent, useState } from 'react';
 
+import type { PageConfig } from '../../../config';
+import { MIDDLE_EAST_COUNTRIES } from '../../../config';
 import type { Job } from '../../../interfaces';
 import { MOCK_JOBS } from '../../../mock';
 import AppRegistration from '../../../AppRegistration';
@@ -10,31 +12,50 @@ import { trackJobView, trackCtaUnlockJobsClicked, trackApplyClicked } from '../u
 import LandingJobsCard from './landing-jobs-card';
 import LandingJobDetailModal from './landing-job-detail-modal';
 
-function LandingJobs() {
+interface LandingJobsProps {
+    config: PageConfig;
+}
+
+function LandingJobs({ config }: LandingJobsProps) {
     const [selectedJob, setSelectedJob] = useState<Job | null>(null);
     const [isRegOpen, setIsRegOpen] = useState(false);
-    // Simple tabs per spec: National (PH) | International (Preview)
-    const [tab, setTab] = useState<'national' | 'international'>('national');
+    const [tab, setTab] = useState<string>(config.jobs.tabs.tab1Value);
     const allJobs: Job[] = MOCK_JOBS;
 
-    // Backend note: в реальных данных различие National/International будет по country.name или похожему полю.
-    const nationalJobs: Job[] = allJobs.filter(
-        (job) => job.country?.name === 'Philippines',
-    ).slice(0, 10);
+    // Filter jobs based on page variant and tab
+    const getJobsForTab = (tabValue: string): Job[] => {
+        let filteredJobs = allJobs.filter(config.jobs.filterFn);
+        
+        if (config.variant === 'fresh-grads' || config.variant === 'experienced') {
+            if (tabValue === 'national') {
+                filteredJobs = filteredJobs.filter(job => job.country?.name === 'Philippines');
+            } else {
+                filteredJobs = filteredJobs.filter(job => job.country && job.country.name !== 'Philippines');
+            }
+        } else if (config.variant === 'singapore') {
+            if (tabValue === 'singapore') {
+                filteredJobs = filteredJobs.filter(job => job.country?.name === 'Singapore');
+            } else {
+                filteredJobs = filteredJobs.filter(job => job.country && job.country.name !== 'Singapore');
+            }
+        } else if (config.variant === 'middle-east') {
+            if (tabValue === 'middle-east') {
+                filteredJobs = filteredJobs.filter(job => 
+                    job.country && MIDDLE_EAST_COUNTRIES.includes(job.country.name)
+                );
+            } else {
+                filteredJobs = filteredJobs.filter(job => 
+                    job.country && !MIDDLE_EAST_COUNTRIES.includes(job.country.name)
+                );
+            }
+        }
+        
+        return filteredJobs.slice(0, config.jobs.jobsPerTab);
+    };
 
-    let internationalJobs: Job[] = allJobs.filter(
-        (job) => job.country && job.country.name !== 'Philippines',
-    ).slice(0, 10);
+    const currentJobs = getJobsForTab(tab);
 
-    // Mock‑fallback: если нет реальных international в моках, показываем "preview" как вторую выборку из того же списка
-    if (internationalJobs.length === 0 && allJobs.length > 0) {
-        const half = Math.floor(allJobs.length / 2) || 1;
-        internationalJobs = allJobs.slice(half, half + 10);
-    }
-
-    const currentJobs: Job[] = (tab === 'national' ? nationalJobs : internationalJobs).slice(0, 10);
-
-    const handleTabChange = (_e: SyntheticEvent, value: 'national' | 'international') => {
+    const handleTabChange = (_e: SyntheticEvent, value: string) => {
         setTab(value);
         setSelectedJob(null);
     };
@@ -88,7 +109,7 @@ function LandingJobs() {
                     textAlign: 'center',
                 }}
             >
-                Real jobs ready for newly registered nurses (*)
+                {config.jobs.title}
             </Typography>
             <Tabs
                 value={tab}
@@ -97,13 +118,13 @@ function LandingJobs() {
                 sx={{ mb: 2 }}
             >
                 <Tab
-                    label='National (PH)'
-                    value='national'
+                    label={config.jobs.tabs.tab1Label}
+                    value={config.jobs.tabs.tab1Value}
                     sx={{ textTransform: 'none' }}
                 />
                 <Tab
-                    label='International (Preview)'
-                    value='international'
+                    label={config.jobs.tabs.tab2Label}
+                    value={config.jobs.tabs.tab2Value}
                     sx={{ textTransform: 'none' }}
                 />
             </Tabs>
