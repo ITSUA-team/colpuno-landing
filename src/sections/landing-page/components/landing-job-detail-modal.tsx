@@ -59,7 +59,7 @@ function LandingJobDetailModal({ job, open, onClose, onApplyClick }: LandingJobD
             open={open} 
             onClose={onClose}
             style={{
-                width: { xs: '95%', sm: '90%', md: '1130px' },
+                width: { xs: '90%', sm: '90%' },
                 maxWidth: '1130px',
                 p: { xs: '20px', sm: '24px', md: '32px' },
             }}
@@ -173,7 +173,7 @@ function LandingJobDetailModal({ job, open, onClose, onApplyClick }: LandingJobD
                 )}
 
                 {/* Bottom Actions */}
-                <Stack direction='row' spacing={2}>
+                <Stack direction={{xs: 'column', md: 'row'}} spacing={2}>
                     <Button 
                         variant='outlined' 
                         onClick={onClose} 
