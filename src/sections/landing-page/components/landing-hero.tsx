@@ -129,8 +129,7 @@ function LandingHero() {
                                         color: (theme) => theme.palette.font.white60,
                                     }}
                                 >
-                                    COLPUNO helps newly registered Filipino nurses build an employer-ready profile and apply
-                                    to verified job opportunities faster, with less stress and less guessing.
+                                    A safe, nurse-only career platform for newly registered Filipino nurses. Build an employer-ready profile, apply to verified jobs faster, and get long-term support—free forever.
                                 </Typography>
 
                                 <Box sx={{
@@ -301,12 +300,15 @@ function LandingHero() {
                             }}
                         >
                             <Box sx={{ width: '100%', mb: 3 }}>
-                                <JobBadge text="5000+ Job Vacancies" />
+                                <JobBadge text="13’000+ Job Vacancies (*)" />
                             </Box>
                             <LandingJobPreview />
                         </Box>
                     </Stack>
                     <JobsTicker items={vacancies} />
+                    <Typography variant='body1' sx={{ mt: 2, fontSize: '0.75rem', textAlign: 'center', color: 'white' }}>
+                        *** Job openings from DMW-accredited recruiters & national top-tier hospitals verified via rocketnurse.ph or via external sources.
+                    </Typography>
                 </Box>
             </Box>
             <StyledModal

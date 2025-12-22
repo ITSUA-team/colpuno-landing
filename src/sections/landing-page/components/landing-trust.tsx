@@ -24,10 +24,10 @@ function LandingTrust() {
                     <IconCheckCircle sx={{ color: 'primary.main', mt: 0.5, flexShrink: 0 }} />
                     <Box>
                         <Typography variant='subtitle1' fontWeight={600} sx={{ mb: 0.5 }}>
-                            Verified opportunities so you don&apos;t waste time on sketchy posts
+                            Verified opportunities—shared only in a nurse-only, protected space
                         </Typography>
                         <Typography variant='body2' color='text.secondary'>
-                            All job listings are managed under COLPUNO&apos;s partner network.
+                            All roles are vetted through COLPUNO’s partner network, so you can apply with confidence (no sketchy posts).
                         </Typography>
                     </Box>
                 </Stack>
@@ -36,10 +36,10 @@ function LandingTrust() {
                     <IconCheckCircle sx={{ color: 'primary.main', mt: 0.5, flexShrink: 0 }} />
                     <Box>
                         <Typography variant='subtitle1' fontWeight={600} sx={{ mb: 0.5 }}>
-                            One profile. Many opportunities. Build once—use it across jobs
+                            One nurse profile for your whole career. Build once, apply anywhere
                         </Typography>
                         <Typography variant='body2' color='text.secondary'>
-                            Create your profile once and apply to multiple verified positions seamlessly.
+                            Create your profile once (CV, credentials, preferences) and use it to apply to multiple verified roles in minutes.
                         </Typography>
                     </Box>
                 </Stack>
@@ -48,10 +48,10 @@ function LandingTrust() {
                     <IconCheckCircle sx={{ color: 'primary.main', mt: 0.5, flexShrink: 0 }} />
                     <Box>
                         <Typography variant='subtitle1' fontWeight={600} sx={{ mb: 0.5 }}>
-                            Smart matching helps the right job find you (instead of endless scrolling)
+                            Jobs find you. Smart matching based on your profile and preferences
                         </Typography>
                         <Typography variant='body2' color='text.secondary'>
-                            Our algorithm matches you with opportunities that align with your skills and preferences.
+                            Instead of endless scrolling, COLPUNO matches you with opportunities aligned to your skills, location, and goals.
                         </Typography>
                     </Box>
                 </Stack>
@@ -60,10 +60,10 @@ function LandingTrust() {
                     <IconCheckCircle sx={{ color: 'primary.main', mt: 0.5, flexShrink: 0 }} />
                     <Box>
                         <Typography variant='subtitle1' fontWeight={600} sx={{ mb: 0.5 }}>
-                            Career tools and assessments to help you stand out with confidence
+                            Long-term career support to help you grow and stand out
                         </Typography>
                         <Typography variant='body2' color='text.secondary'>
-                            Access professional development resources and assessments to showcase your strengths.
+                            Use career tools and assessments to strengthen your profile, showcase your strengths, and plan your next steps.
                         </Typography>
                     </Box>
                 </Stack>

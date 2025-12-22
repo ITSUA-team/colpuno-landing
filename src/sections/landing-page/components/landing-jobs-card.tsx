@@ -41,9 +41,9 @@ type Props = {
 const LandingJobsCard = ({ job, index, onClick, compact, variant = 'full' }: Props) => {
     const theme = useTheme();
     const bgTones = [
-        theme.palette.secondary.lighter,
+        // theme.palette.secondary.lighter,
         theme.palette.primary.lighter,
-        theme.palette.neutral[100],
+        // theme.palette.neutral[100],
     ];
     
     // Header background color
