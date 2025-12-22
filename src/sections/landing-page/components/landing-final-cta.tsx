@@ -4,8 +4,13 @@ import { useState } from 'react';
 import AppRegistration from '../../../AppRegistration';
 import StyledModal from '../../../components/styled-modal';
 import { trackRegStarted, trackCtaUnlockJobsClicked } from '../utils/tracking';
+import type { PageConfig } from '../../../config';
 
-function LandingFinalCTA() {
+interface LandingFinalCTAProps {
+    config: PageConfig;
+}
+
+function LandingFinalCTA({ config }: LandingFinalCTAProps) {
     const theme = useTheme();
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
@@ -40,7 +45,7 @@ function LandingFinalCTA() {
                     color: 'common.white',
                 }}
             >
-                Ready to start your nursing career with clarity?
+                {config.finalCta.headline}
             </Typography>
 
             <Box

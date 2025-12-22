@@ -1,10 +1,15 @@
 import { Box, Stack, Typography } from '@mui/material';
 import IconCheckCircle from 'src/assets/icon-components/icon-check-circle';
+import type { PageConfig } from '../../../config';
+
+interface LandingTrustProps {
+    config: PageConfig;
+}
 
 /**
  * LandingTrust component - Why COLPUNO trust block
  */
-function LandingTrust() {
+function LandingTrust({ config }: LandingTrustProps) {
     return (
         <Box>
             <Typography
@@ -16,7 +21,7 @@ function LandingTrust() {
                     textAlign: 'center',
                 }}
             >
-                Built for Filipino nurses. Designed for safety.
+                {config.trust.title}
             </Typography>
 
             <Stack spacing={3} sx={{ maxWidth: '800px', mx: 'auto' }}>

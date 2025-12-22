@@ -2,8 +2,13 @@ import { useEffect, useState } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 import CountUp from 'src/components/count-up/count-up';
 import { getProfileProgressDescription } from 'src/utils/functions';
+import type { PageConfig } from '../../../config';
 
-function LandingProfileMotivator() {
+interface LandingProfileMotivatorProps {
+    config: PageConfig;
+}
+
+function LandingProfileMotivator({ config }: LandingProfileMotivatorProps) {
     const profileProgress = 65;
     const [animatedProgress, setAnimatedProgress] = useState(0);
 
@@ -48,7 +53,7 @@ function LandingProfileMotivator() {
                             textAlign: { xs: 'center', md: 'left' },
                         }}
                     >
-                        A stronger profile = better matches
+                        {config.profileMotivator.title}
                     </Typography>
                     <Typography
                         variant="body1"
@@ -58,8 +63,7 @@ function LandingProfileMotivator() {
                             color: 'text.secondary',
                         }}
                     >
-                        Completing your COLPUNO profile helps employers review you faster and improves
-                        match accuracy across verified opportunities.
+                        {config.profileMotivator.copy}
                     </Typography>
                     <Stack spacing={1.25} sx={{ mt: 1 }}>
                         {benefits.map((text, index) => (
