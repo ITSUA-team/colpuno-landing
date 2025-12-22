@@ -209,8 +209,9 @@ function LandingPage() {
                     </Box>
                 </Box>
 
-                <LandingFooter />
-
+                <Box sx={{ mt: { xs: 4, md: 6 } }}>
+                    <LandingFooter />
+                </Box>
                 <LandingStickyCTA />
             </Box>
             <ScrollToTop />

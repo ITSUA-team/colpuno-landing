@@ -294,7 +294,7 @@ function RegistrationForm({ initialEmail = '', embedded = false }: RegistrationF
             const pendingJobId = window.sessionStorage.getItem('pendingJobApplication');
 
             if (pendingJobId) {
-                window.location.href = `/jobs/${encodeURIComponent(
+                window.location.href = `https://www.colpuno.com/jobs/${encodeURIComponent(
                     pendingJobId
                 )}?openConfirmApplication=1`;
             } else {

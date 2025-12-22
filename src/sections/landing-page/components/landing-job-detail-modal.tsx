@@ -1,9 +1,19 @@
-import { Box, Button, Divider, Stack, Typography } from '@mui/material';
-import { useEffect } from 'react';
+import { Box, Button, Divider, Stack, Tab, Tabs, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 
 import { StyledModal } from '../../../components';
+import { IconBriefcaseTickRed, IconMonyReceiveRed, IconMedalStarRed } from '../../../assets/icon-components';
 import type { Job } from '../../../interfaces';
 import { trackJobModalOpened, trackApplyClicked } from '../utils/tracking';
+import JobSection from './job-section';
+import JobDescription from './job-description';
+import JobSalary from './job-salary';
+import JobInfoHero from './job-info-hero';
+import JobRequirements from './job-requirements';
+import JobWorkplace from './job-workplace';
+import JobAdditionalInfo from './job-additional-info';
+import JobAdditionalBenefits from './job-additional-benefits';
+import CompanyDetails from './company-details';
 
 interface LandingJobDetailModalProps {
     job: Job;
@@ -15,6 +25,8 @@ interface LandingJobDetailModalProps {
 
 function LandingJobDetailModal({ job, open, onClose, onApplyClick }: LandingJobDetailModalProps) {
     const user = null;
+    const [mainTab, setMainTab] = useState<'job-info' | 'company-details'>('job-info');
+    const [detailTab, setDetailTab] = useState<'job-details' | 'requirements' | 'workplace' | 'additional-info'>('job-details');
 
     useEffect(() => {
         if (open) {
@@ -27,7 +39,7 @@ function LandingJobDetailModal({ job, open, onClose, onApplyClick }: LandingJobD
         const jobId = job['@id']?.split('/').pop() || job.id?.toString();
         trackApplyClicked(job.id);
         if (user) {
-            window.location.href = `/jobs/${jobId}?openConfirmApplication=1`;
+            window.location.href = `https://www.colpuno.com/jobs/${encodeURIComponent(jobId)}?openConfirmApplication=1`;
         } else {
             // Save jobId to sessionStorage
             if (jobId) {
@@ -42,140 +54,123 @@ function LandingJobDetailModal({ job, open, onClose, onApplyClick }: LandingJobD
         }
     };
 
-    const facilityType = job.facilityTypeExperience?.name || 'Not specified';
-    const location = job.region?.name || job.country?.name || 'Location TBD';
-    const employmentType = job.jobType || 'Full-time';
-
-    const shifts = job.jobShiftPatterns?.map((sp: any) => sp.shiftPattern?.name).filter(Boolean).join(', ') || 'Not specified';
-
-    const startDate = job.startDate;
-    let startWindow = 'TBD';
-    if (startDate) {
-        const date = new Date(startDate);
-        const now = new Date();
-        const diffMonths = (date.getFullYear() - now.getFullYear()) * 12 + (date.getMonth() - now.getMonth());
-        if (diffMonths <= 0) {
-            startWindow = 'Immediate';
-        } else if (diffMonths <= 1) {
-            startWindow = 'This month';
-        } else if (diffMonths <= 3) {
-            startWindow = 'Q1';
-        }
-    }
-
-    const prcLicense = job.jobRequiredLicences?.some((lic: any) =>
-        lic.licence?.name?.toLowerCase().includes('prc')
-    ) ? 'Required' : 'Preferred';
-
-    const isEntryLevel = !job.yearsOfExperience || job.yearsOfExperience === 0;
-
-    const experienceRequired = job.yearsOfExperience && job.yearsOfExperience > 0
-        ? 'Required'
-        : 'Not required';
-
-    const cleanDescription = (desc?: string) => {
-        if (!desc) return 'Job details available after registration.';
-        const parts = desc.split(/CONTACT PERSONS/i);
-        return parts[0].trim();
-    };
-
-    const description = cleanDescription(job.description);
-
     return (
-        <StyledModal open={open} onClose={onClose}>
+        <StyledModal 
+            open={open} 
+            onClose={onClose}
+            style={{
+                width: { xs: '95%', sm: '90%', md: '1130px' },
+                maxWidth: '1130px',
+                p: { xs: '20px', sm: '24px', md: '32px' },
+            }}
+        >
             <Stack spacing={3}>
-                {/* Module 2A — Job Detail Modal (copy + structure) */}
-                <Box>
-                    <Typography variant='h5' sx={{ mb: 1 }}>
-                        {job.title}
-                    </Typography>
-                    <Typography variant='body2'>
-                        {location} • {facilityType} • {employmentType}
-                    </Typography>
-                    {isEntryLevel && (
-                        <Box
+                {/* Top Tabs: Job info / Company details */}
+                <Tabs
+                    value={mainTab}
+                    onChange={(e, newValue) => setMainTab(newValue)}
+                    sx={{
+                        borderBottom: 1,
+                        borderColor: 'divider',
+                        '& .MuiTab-root': {
+                            textTransform: 'none',
+                            fontWeight: 600,
+                        },
+                    }}
+                >
+                    <Tab label='Job info' value='job-info' />
+                    <Tab label='Company details' value='company-details' />
+                </Tabs>
+
+                {mainTab === 'job-info' && (
+                    <>
+                        {/* Job Info Hero Box */}
+                        <JobInfoHero job={job} onApply={handleApply} />
+
+                        {/* Detail Tabs */}
+                        <Tabs
+                            value={detailTab}
+                            onChange={(e, newValue) => setDetailTab(newValue)}
+                            variant='scrollable'
+                            scrollButtons='auto'
                             sx={{
-                                mt: 1.5,
-                                display: 'inline-flex',
-                                px: 1.5,
-                                py: 0.5,
-                                borderRadius: 999,
-                                bgcolor: 'success.50',
-                                color: 'success.800',
-                                fontSize: 12,
-                                fontWeight: 600,
+                                borderBottom: 1,
+                                borderColor: 'divider',
+                                '& .MuiTab-root': {
+                                    textTransform: 'none',
+                                    fontWeight: 600,
+                                    minWidth: 'auto',
+                                    px: 2,
+                                },
                             }}
                         >
-                            Entry-level friendly — no prior experience required
+                            <Tab label='Job details' value='job-details' />
+                            <Tab label='Requirements' value='requirements' />
+                            <Tab label='Workplace' value='workplace' />
+                            <Tab label='Additional info' value='additional-info' />
+                        </Tabs>
+
+                        {/* Detail Content */}
+                        <Box
+                            sx={{
+                                p: { xs: '10px', sm: '15px', lg: '32px' },
+                                backgroundColor: 'common.white',
+                                borderRadius: '16px',
+                                minHeight: 200,
+                            }}
+                        >
+                            {detailTab === 'job-details' && (
+                                <>
+                                    <JobSection 
+                                        title='Job Basics' 
+                                        icon={<IconBriefcaseTickRed />} 
+                                        content={<JobDescription job={job} />} 
+                                    />
+                                    <Divider sx={{ my: 3 }} />
+                                    <JobSection 
+                                        title='Salary & Benefits' 
+                                        icon={<IconMonyReceiveRed />} 
+                                        content={<JobSalary jobOffer={job} />} 
+                                    />
+                                    {job.benefitsDescription && (
+                                        <>
+                                            <Divider sx={{ my: 3 }} />
+                                            <JobSection 
+                                                title='Additional Benefits' 
+                                                icon={<IconMedalStarRed />} 
+                                                content={<JobAdditionalBenefits job={job} />} 
+                                            />
+                                        </>
+                                    )}
+                                </>
+                            )}
+                            {detailTab === 'requirements' && (
+                                <JobRequirements job={job} />
+                            )}
+                            {detailTab === 'workplace' && (
+                                <JobWorkplace job={job} />
+                            )}
+                            {detailTab === 'additional-info' && (
+                                <JobAdditionalInfo job={job} />
+                            )}
                         </Box>
-                    )}
-                </Box>
+                    </>
+                )}
 
-                <Divider />
-
-                <Box>
-                    <Typography variant='subtitle2' sx={{ mb: 1 }}>
-                        Job Description
-                    </Typography>
-                    <Typography variant='body2' sx={{ whiteSpace: 'pre-line' }}>
-                        {description}
-                    </Typography>
-                </Box>
-
-                {job.benefitsDescription && (
-                    <Box>
-                        <Typography variant='subtitle2' sx={{ mb: 1 }}>
-                            Benefits
-                        </Typography>
-                        <Typography variant='body2' sx={{ whiteSpace: 'pre-line' }}>
-                            {job.benefitsDescription}
-                        </Typography>
+                {mainTab === 'company-details' && (
+                    <Box
+                        sx={{
+                            p: { xs: '10px', sm: '15px', lg: '32px' },
+                            backgroundColor: 'common.white',
+                            borderRadius: '16px',
+                            minHeight: 200,
+                        }}
+                    >
+                        <CompanyDetails job={job} />
                     </Box>
                 )}
 
-                <Box>
-                    <Typography variant='subtitle2' sx={{ mb: 1 }}>
-                        Quick requirements:
-                    </Typography>
-                    <Stack spacing={1}>
-                        <Typography variant='body2'>
-                            <strong>PRC License:</strong> {prcLicense}
-                        </Typography>
-                        <Typography variant='body2'>
-                            <strong>Experience:</strong> {experienceRequired}
-                        </Typography>
-                        <Typography variant='body2'>
-                            <strong>Documents:</strong> CV, PRC ID (upload now or later if available)
-                        </Typography>
-                        {shifts !== 'Not specified' && (
-                            <Typography variant='body2'>
-                                <strong>Shift:</strong> {shifts}
-                            </Typography>
-                        )}
-                        <Typography variant='body2'>
-                            <strong>Start window:</strong> {startWindow}
-                        </Typography>
-                    </Stack>
-                </Box>
-
-                <Box
-                    sx={{
-                        backgroundColor: 'primary.lighter',
-                        p: 2,
-                        borderRadius: 2,
-                    }}
-                >
-                    <Typography variant='body2' sx={{ mb: 0.5 }}>
-                        What happens next:
-                    </Typography>
-                    <Typography variant='body2'>
-                        Click Apply to start onboarding. After you verify your email and create your account, you&apos;ll
-                        return to confirm your application.
-                    </Typography>
-                </Box>
-
-                {/* Login‑related microcopy скрываем в V1, как обсуждали */}
-
+                {/* Bottom Actions */}
                 <Stack direction='row' spacing={2}>
                     <Button 
                         variant='outlined' 
@@ -190,19 +185,21 @@ function LandingJobDetailModal({ job, open, onClose, onApplyClick }: LandingJobD
                     >
                         Back to jobs
                     </Button>
-                    <Button 
-                        variant='contained' 
-                        onClick={handleApply} 
-                        fullWidth
-                        sx={{
-                            textTransform: 'none',
-                            fontWeight: 600,
-                            borderRadius: 999,
-                            px: 3,
-                        }}
-                    >
-                        Apply
-                    </Button>
+                    {mainTab === 'job-info' && (
+                        <Button 
+                            variant='contained' 
+                            onClick={handleApply} 
+                            fullWidth
+                            sx={{
+                                textTransform: 'none',
+                                fontWeight: 600,
+                                borderRadius: 999,
+                                px: 3,
+                            }}
+                        >
+                            Apply
+                        </Button>
+                    )}
                 </Stack>
             </Stack>
         </StyledModal>
