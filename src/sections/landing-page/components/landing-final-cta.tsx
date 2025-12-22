@@ -18,15 +18,6 @@ function LandingFinalCTA() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!email) {
-            setError('Please enter your email address');
-            return;
-        }
-        if (!validateEmail(email)) {
-            setError('Please enter a valid email address');
-            return;
-        }
-
         trackRegStarted(email);
         trackCtaUnlockJobsClicked();
         setIsRegOpen(true);
