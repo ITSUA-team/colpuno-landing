@@ -687,8 +687,9 @@ function MultiStepRegistrationForm({
                         fontWeight: 600, 
                         textAlign: 'left', 
                         color: 'text.primary',
-                        fontSize: { xs: '1.5rem', md: '1.75rem' },
-                        lineHeight: 1.3
+                        fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' },
+                        lineHeight: 1.3,
+                        wordBreak: 'break-word',
                     }}
                 >
                     {restOfQuestion}{' '}
@@ -1325,6 +1326,7 @@ function MultiStepRegistrationForm({
         <Box
             sx={{
                 width: '100%',
+                maxWidth: '100%',
                 height: '100%',
                 maxHeight: { xs: '100%', md: '90vh' },
                 mx: 'auto',
@@ -1334,10 +1336,11 @@ function MultiStepRegistrationForm({
                 borderRadius: 2,
                 overflow: 'hidden',
                 boxShadow: 3,
+                boxSizing: 'border-box',
             }}
         >
             {/* Header with Linear Progress Bar */}
-            <Box sx={{ bgcolor: 'primary.main', color: 'white', px: { xs: 3, md: 4 }, py: { xs: 2.5, md: 3 }, position: 'relative' }}>
+            <Box sx={{ bgcolor: 'primary.main', color: 'white', px: { xs: 2, sm: 3, md: 4 }, py: { xs: 2, sm: 2.5, md: 3 }, position: 'relative' }}>
                 {onClose && (
                     <IconButton 
                         onClick={onClose}
@@ -1407,10 +1410,11 @@ function MultiStepRegistrationForm({
             {/* Form Content - Scrollable */}
             <Box 
                 sx={{ 
-                    p: { xs: 3, md: 4 }, 
+                    p: { xs: 2, sm: 3, md: 4 }, 
                     pb: 2,
                     flex: 1, 
                     overflowY: 'auto',
+                    overflowX: 'hidden',
                     minHeight: 0, // Important for flex scroll
                 }}
             >
@@ -1441,9 +1445,9 @@ function MultiStepRegistrationForm({
             >
                 <Stack
                     direction="row"
-                    spacing={2}
+                    spacing={{ xs: 1.5, sm: 2 }}
                     sx={{
-                        justifyContent: 'flex-end',
+                        justifyContent: currentStep > 0 ? 'space-between' : 'flex-end',
                         maxWidth: 500,
                         mx: 'auto',
                         width: '100%'
@@ -1456,13 +1460,15 @@ function MultiStepRegistrationForm({
                             disabled={isSubmitting}
                             size="large"
                             sx={{ 
-                                minWidth: 120,
+                                minWidth: { xs: 100, sm: 120 },
+                                flex: { xs: 1, sm: 'unset' },
                                 borderRadius: 1, 
-                                height: 48,
+                                height: { xs: 44, sm: 48 },
                                 textTransform: 'none',
                                 fontWeight: 500,
                                 borderColor: 'grey.300',
                                 color: 'text.primary',
+                                fontSize: { xs: '0.875rem', sm: '1rem' },
                                 '&:hover': {
                                     borderColor: 'grey.400',
                                     bgcolor: 'grey.50'
@@ -1478,12 +1484,14 @@ function MultiStepRegistrationForm({
                         disabled={isSubmitting}
                         size="large"
                         sx={{ 
-                            minWidth: 120,
+                            minWidth: { xs: 100, sm: 120 },
+                            flex: { xs: currentStep > 0 ? 1 : 'unset', sm: 'unset' },
                             borderRadius: 1, 
-                            height: 48, 
+                            height: { xs: 44, sm: 48 }, 
                             bgcolor: 'primary.main',
                             textTransform: 'none',
                             fontWeight: 600,
+                            fontSize: { xs: '0.875rem', sm: '1rem' },
                             '&:hover': {
                                 bgcolor: 'primary.dark'
                             }
