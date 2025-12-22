@@ -17,8 +17,8 @@ export interface PageConfig {
             tab2Label: string;
             tab2Value: string;
         };
-        filterFn: (job: Job) => boolean;
-        jobsPerTab: number;
+        national: number[];
+        international: number[];
     };
     trust: {
         title: string;
@@ -53,8 +53,8 @@ export const PAGE_CONFIGS: Record<PageVariant, PageConfig> = {
                 tab2Label: 'International (Preview)',
                 tab2Value: 'international',
             },
-            filterFn: (job: Job) => (job.yearsOfExperience || 0) === 0,
-            jobsPerTab: 2,
+            national: [121, 183],
+            international: [92, 102],
         },
         trust: {
             title: 'Built for Filipino nurses. Designed for safety.',
@@ -92,8 +92,8 @@ export const PAGE_CONFIGS: Record<PageVariant, PageConfig> = {
                 tab2Label: 'International (Preview)',
                 tab2Value: 'international',
             },
-            filterFn: (job: Job) => (job.yearsOfExperience || 0) >= 1,
-            jobsPerTab: 5,
+            national: [80, 91, 109, 203, 204],
+            international: [93, 104, 196, 83, 76],
         },
         trust: {
             title: 'Built for Filipino nurses. Designed for safety.',
@@ -131,8 +131,8 @@ export const PAGE_CONFIGS: Record<PageVariant, PageConfig> = {
                 tab2Label: 'International (Preview)',
                 tab2Value: 'international',
             },
-            filterFn: (job: Job) => (job.yearsOfExperience || 0) >= 1,
-            jobsPerTab: 5,
+            national: [80, 91, 109, 203, 204],
+            international: [93, 104, 196, 83, 76],
         },
         trust: {
             title: 'Built for nurses. Designed for safety.',
@@ -170,8 +170,8 @@ export const PAGE_CONFIGS: Record<PageVariant, PageConfig> = {
                 tab2Label: 'International (Preview)',
                 tab2Value: 'international',
             },
-            filterFn: (job: Job) => (job.yearsOfExperience || 0) >= 1,
-            jobsPerTab: 5,
+            national: [80, 91, 109, 203, 204],
+            international: [93, 104, 196, 83, 76],
         },
         trust: {
             title: 'Built for nurses. Designed for safety.',

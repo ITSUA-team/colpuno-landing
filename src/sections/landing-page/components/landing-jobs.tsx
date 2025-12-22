@@ -24,33 +24,15 @@ function LandingJobs({ config }: LandingJobsProps) {
 
     // Filter jobs based on page variant and tab
     const getJobsForTab = (tabValue: string): Job[] => {
-        let filteredJobs = allJobs.filter(config.jobs.filterFn);
+        let filteredJobs;
         
-        if (config.variant === 'fresh-grads' || config.variant === 'experienced') {
-            if (tabValue === 'national') {
-                filteredJobs = filteredJobs.filter(job => job.country?.name === 'Philippines');
-            } else {
-                filteredJobs = filteredJobs.filter(job => job.country && job.country.name !== 'Philippines');
-            }
-        } else if (config.variant === 'singapore') {
-            if (tabValue === 'singapore') {
-                filteredJobs = filteredJobs.filter(job => job.country?.name === 'Singapore');
-            } else {
-                filteredJobs = filteredJobs.filter(job => job.country && job.country.name !== 'Singapore');
-            }
-        } else if (config.variant === 'middle-east') {
-            if (tabValue === 'middle-east') {
-                filteredJobs = filteredJobs.filter(job => 
-                    job.country && MIDDLE_EAST_COUNTRIES.includes(job.country.name)
-                );
-            } else {
-                filteredJobs = filteredJobs.filter(job => 
-                    job.country && !MIDDLE_EAST_COUNTRIES.includes(job.country.name)
-                );
-            }
+        if (tabValue === 'national') {
+            filteredJobs = allJobs.filter(job => config.jobs.national.includes(job.id));
+        } else {
+            filteredJobs = allJobs.filter(job => config.jobs.international.includes(job.id));
         }
         
-        return filteredJobs.slice(0, config.jobs.jobsPerTab);
+        return filteredJobs;
     };
 
     const currentJobs = getJobsForTab(tab);
