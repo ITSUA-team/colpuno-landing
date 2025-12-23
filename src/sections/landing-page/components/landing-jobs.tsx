@@ -18,7 +18,11 @@ interface LandingJobsProps {
 function LandingJobs({ config }: LandingJobsProps) {
     const [selectedJob, setSelectedJob] = useState<Job | null>(null);
     const [isRegOpen, setIsRegOpen] = useState(false);
-    const [tab, setTab] = useState<string>(config.jobs.tabs.tab1Value);
+    // Set initial tab to international if national is empty
+    const initialTab = config.jobs.national.length > 0
+        ? config.jobs.tabs.tab1Value
+        : config.jobs.tabs.tab2Value;
+    const [tab, setTab] = useState<string>(initialTab);
     const allJobs: Job[] = MOCK_JOBS;
 
     // Filter jobs based on page variant and tab
@@ -101,16 +105,16 @@ function LandingJobs({ config }: LandingJobsProps) {
                     maxWidth: {xs: '90vw', md: 'inherit'}
                 }}
             >
-                <Tab
+                {config.jobs.national.length > 0 && (<Tab
                     label={config.jobs.tabs.tab1Label}
                     value={config.jobs.tabs.tab1Value}
                     sx={{ textTransform: 'none' }}
-                />
-                <Tab
+                />)}
+                {config.jobs.international.length > 0 && (<Tab
                     label={config.jobs.tabs.tab2Label}
                     value={config.jobs.tabs.tab2Value}
                     sx={{ textTransform: 'none' }}
-                />
+                />)}
             </Tabs>
             {/* Module 2 — Jobs Preview on Page (copy from spec) */}
             <Typography variant='body1' sx={{ mb: 2, textAlign: 'center' }}>
