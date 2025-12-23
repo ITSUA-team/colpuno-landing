@@ -11,7 +11,6 @@ import JobSalary from './job-salary';
 import JobInfoHero from './job-info-hero';
 import JobRequirements from './job-requirements';
 import JobWorkplace from './job-workplace';
-import JobAdditionalInfo from './job-additional-info';
 import JobAdditionalBenefits from './job-additional-benefits';
 import CompanyDetails from './company-details';
 
@@ -26,7 +25,7 @@ interface LandingJobDetailModalProps {
 function LandingJobDetailModal({ job, open, onClose, onApplyClick }: LandingJobDetailModalProps) {
     const user = null;
     const [mainTab, setMainTab] = useState<'job-info' | 'company-details'>('job-info');
-    const [detailTab, setDetailTab] = useState<'job-details' | 'requirements' | 'workplace' | 'additional-info'>('job-details');
+    const [detailTab, setDetailTab] = useState<'job-details' | 'requirements' | 'workplace'>('job-details');
 
     useEffect(() => {
         if (open) {
@@ -59,7 +58,7 @@ function LandingJobDetailModal({ job, open, onClose, onApplyClick }: LandingJobD
             open={open} 
             onClose={onClose}
             style={{
-                width: { xs: '90%', sm: '90%' },
+                width: { xs: '95%', sm: '90%', md: '1130px' },
                 maxWidth: '1130px',
                 p: { xs: '20px', sm: '24px', md: '32px' },
             }}
@@ -108,7 +107,6 @@ function LandingJobDetailModal({ job, open, onClose, onApplyClick }: LandingJobD
                             <Tab label='Job details' value='job-details' />
                             <Tab label='Requirements' value='requirements' />
                             <Tab label='Workplace' value='workplace' />
-                            <Tab label='Additional info' value='additional-info' />
                         </Tabs>
 
                         {/* Detail Content */}
@@ -117,9 +115,8 @@ function LandingJobDetailModal({ job, open, onClose, onApplyClick }: LandingJobD
                                 p: { xs: '10px', sm: '15px', lg: '32px' },
                                 backgroundColor: 'common.white',
                                 borderRadius: '16px',
-                                minHeight: 200,
-                                maxHeight: '30vh',
-                                overflowY: 'scroll',
+                                height: '500px',
+                                overflowY: 'auto',
                             }}
                         >
                             {detailTab === 'job-details' && (
@@ -152,9 +149,6 @@ function LandingJobDetailModal({ job, open, onClose, onApplyClick }: LandingJobD
                             )}
                             {detailTab === 'workplace' && (
                                 <JobWorkplace job={job} />
-                            )}
-                            {detailTab === 'additional-info' && (
-                                <JobAdditionalInfo job={job} />
                             )}
                         </Box>
                     </>
