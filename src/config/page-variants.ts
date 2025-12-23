@@ -135,7 +135,7 @@ export const PAGE_CONFIGS: Record<PageVariant, PageConfig> = {
                 tab2Value: 'international',
             },
             national: [],
-            international: [93, 104, 196, 83, 76],
+            international: [104, 118, 196, 208, 83, 207, 263],
         },
         trust: {
             title: 'Built for Filipino nurses. Designed for safety.',
@@ -175,7 +175,7 @@ export const PAGE_CONFIGS: Record<PageVariant, PageConfig> = {
                 tab2Value: 'international',
             },
             national: [],
-            international: [93, 104, 196, 83, 76],
+            international: [118, 196, 208, 83, 207, 263],
         },
         trust: {
             title: 'Built for Filipino nurses. Designed for safety.',

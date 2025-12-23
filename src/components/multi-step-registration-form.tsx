@@ -115,14 +115,9 @@ function MultiStepRegistrationForm({
         lastName: '',
         jobSearchStatus: '',
         nursingStatus: '',
-        country: '',
         currentLocationRegion: '',
-        isFilipino: false,
-        mobile: '',
         birthDate: null,
         mobile: '',
-        nursingStatus: '',
-        jobSearchStatus: '',
         agreedToTerms: false,
         
         // Hidden / Defaults for API compatibility
@@ -544,12 +539,8 @@ function MultiStepRegistrationForm({
                 lastName: formData.lastName,
                 lookingForJob: formData.jobSearchStatus,
                 nursingStatus: formData.nursingStatus,
-                phone: formData.mobile ? normalizeMobile(formData.mobile) : '',
                 birthDate: formData.birthDate ? formData.birthDate.format('YYYY-MM-DD') : undefined,
                 currentLocationCountry: formData.country,
-                lookingForJob: formData.jobSearchStatus,
-                nursingStatus: formData.nursingStatus,
-                
                 phone: formData.mobile ? normalizeMobile(formData.mobile) : undefined,
                 
                 // Optional/Hidden fields (sending empty/defaults if not collected in 6 steps)

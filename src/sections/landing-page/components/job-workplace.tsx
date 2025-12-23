@@ -33,36 +33,36 @@ const JobWorkplace = ({ job }: JobWorkplaceProps) => {
     );
 
     // Accommodation & Conditions Content
-    const accommodationContent = (
-        <Stack sx={{ gap: '16px', width: '100%' }}>
-            {job.accommodationCapability !== undefined && (
-                <Stack sx={{ flexDirection: 'row', gap: '8px', width: '100%', alignItems: 'center' }}>
-                    <Typography variant='body1'>Accommodation: </Typography>
-                    <Typography variant='body1' fontWeight={700}>
-                        {job.accommodationCapability ? 'Available' : 'Not available'}
-                    </Typography>
-                </Stack>
-            )}
+    // const accommodationContent = (
+    //     <Stack sx={{ gap: '16px', width: '100%' }}>
+    //         {job.accommodationCapability !== undefined && (
+    //             <Stack sx={{ flexDirection: 'row', gap: '8px', width: '100%', alignItems: 'center' }}>
+    //                 <Typography variant='body1'>Accommodation: </Typography>
+    //                 <Typography variant='body1' fontWeight={700}>
+    //                     {job.accommodationCapability ? 'Available' : 'Not available'}
+    //                 </Typography>
+    //             </Stack>
+    //         )}
 
-            {job.workloadIntensity && (
-                <Stack sx={{ flexDirection: 'row', gap: '8px', width: '100%', alignItems: 'center' }}>
-                    <Typography variant='body1'>Workload intensity: </Typography>
-                    <Typography variant='body1' fontWeight={700}>
-                        {job.workloadIntensity}
-                    </Typography>
-                </Stack>
-            )}
+    //         {job.workloadIntensity && (
+    //             <Stack sx={{ flexDirection: 'row', gap: '8px', width: '100%', alignItems: 'center' }}>
+    //                 <Typography variant='body1'>Workload intensity: </Typography>
+    //                 <Typography variant='body1' fontWeight={700}>
+    //                     {job.workloadIntensity}
+    //                 </Typography>
+    //             </Stack>
+    //         )}
 
-            {job.genderPreference && job.genderPreference !== 'Any' && (
-                <Stack sx={{ flexDirection: 'row', gap: '8px', width: '100%', alignItems: 'center' }}>
-                    <Typography variant='body1'>Gender preference: </Typography>
-                    <Typography variant='body1' fontWeight={700}>
-                        {job.genderPreference}
-                    </Typography>
-                </Stack>
-            )}
-        </Stack>
-    );
+    //         {job.genderPreference && job.genderPreference !== 'Any' && (
+    //             <Stack sx={{ flexDirection: 'row', gap: '8px', width: '100%', alignItems: 'center' }}>
+    //                 <Typography variant='body1'>Gender preference: </Typography>
+    //                 <Typography variant='body1' fontWeight={700}>
+    //                     {job.genderPreference}
+    //                 </Typography>
+    //             </Stack>
+    //         )}
+    //     </Stack>
+    // );
 
     const hasWorksite = job.workplace || job.internationalWorkEnvironment;
     const hasAccommodation = job.accommodationCapability !== undefined || job.workloadIntensity || (job.genderPreference && job.genderPreference !== 'Any');

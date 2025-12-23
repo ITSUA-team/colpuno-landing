@@ -220,14 +220,14 @@ const LandingJobsCard = ({ job, index, onClick, onApplyClick, compact, variant =
                         sx={{ mb: 3 }}
                     >
                         {/* Posted Date */}
-                        <Stack direction='row' alignItems='center' spacing={1}>
+                        {/* <Stack direction='row' alignItems='center' spacing={1}>
                             <Box sx={{ color: 'text.secondary', display: 'flex' }}>
                                 <IconWatch />
                             </Box>
                             <Typography variant='body2' sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
                                 Posted {dayjs(job.createdAt).fromNow()}
                             </Typography>
-                        </Stack>
+                        </Stack> */}
 
                         {/* Country / Location */}
                         <Stack direction='row' alignItems='center' spacing={1}>

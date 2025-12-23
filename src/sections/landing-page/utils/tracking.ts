@@ -14,7 +14,12 @@ const initMixpanel = () => {
     if (isMixpanelInitialized) return;
     if (typeof window === 'undefined') return;
 
-    mixpanel.init('3864adab461bca7ac6860f25e7dba29a', {
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const mixpanelToken = isLocalhost
+        ? '11955f3dcf8d2d4bb0ffca64e1e7c288' // dev/localhost
+        : '3864adab461bca7ac6860f25e7dba29a'; // prod
+
+    mixpanel.init(mixpanelToken, {
         autocapture: true,
         record_sessions_percent: 100,
         api_host: 'https://api-eu.mixpanel.com',

@@ -78,23 +78,23 @@ const JobRequirements = ({ job }: JobRequirementsProps) => {
                 </Stack>
             )}
 
-            {job.maxGapInPractice !== undefined && job.maxGapInPractice !== null && (
+            {/* {job.maxGapInPractice !== undefined && job.maxGapInPractice !== null && (
                 <Stack sx={{ flexDirection: 'row', gap: '8px', width: '100%', alignItems: 'center' }}>
                     <Typography variant='body1'>Max Gap in Practice: </Typography>
                     <Typography variant='body1' fontWeight={700}>
                         {job.maxGapInPractice} months
                     </Typography>
                 </Stack>
-            )}
+            )} */}
 
-            {job.isLeadershipRole !== undefined && (
+            {/* {job.isLeadershipRole !== undefined && (
                 <Stack sx={{ flexDirection: 'row', gap: '8px', width: '100%', alignItems: 'center' }}>
                     <Typography variant='body1'>Leadership Role: </Typography>
                     <Typography variant='body1' fontWeight={700}>
                         {job.isLeadershipRole ? 'Yes' : 'No'}
                     </Typography>
                 </Stack>
-            )}
+            )} */}
         </Stack>
     );
 
