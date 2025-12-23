@@ -1,6 +1,7 @@
 import { Box, Button, Stack, TextField, Typography, alpha } from '@mui/material';
 import { useState } from 'react';
 
+import type { PageConfig } from '../../../config';
 import AppRegistration from '../../../AppRegistration';
 import StyledModal from '../../../components/styled-modal';
 import { trackRegStarted, trackCtaUnlockJobsClicked } from '../utils/tracking';
@@ -13,7 +14,11 @@ import {
     JobsTicker,
 } from '../components';
 
-function LandingHero() {
+interface LandingHeroProps {
+    config: PageConfig;
+}
+
+function LandingHero({ config }: LandingHeroProps) {
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
     const [isRegOpen, setIsRegOpen] = useState(false);
@@ -25,33 +30,29 @@ function LandingHero() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!email) {
-            setError('Please enter your email address');
-            return;
-        }
-        if (!validateEmail(email)) {
-            setError('Please enter a valid email address');
-            return;
-        }
-
         trackRegStarted(email);
         trackCtaUnlockJobsClicked();
         setIsRegOpen(true);
     };
 
     const vacancies = [
-        { flag: '🇰🇼', country: 'Kuwait', count: 200 },
-        { flag: '🇺🇸', country: 'United States', count: 1500 },
-        { flag: '🇵🇭', country: 'Philippines', count: 1000 },
-        { flag: '🇸🇬', country: 'Singapore', count: 2000 },
-        { flag: '🇳🇱', country: 'Netherlands', count: 10 },
-        { flag: '🇸🇦', country: 'Saudi Arabia', count: 2000 },
-        { flag: '🇶🇦', country: 'Qatar', count: 200 },
-        { flag: '🇦🇺', country: 'Australia', count: 100 },
-        { flag: '🇮🇪', country: 'Ireland', count: 100 },
-        { flag: '🇦🇪', country: 'United Arab Emirates', count: 100 },
-        { flag: '🇬🇺', country: 'Guam', count: 10 },
-        { flag: '🇯🇵', country: 'Japan', count: 20 },
+        { flag: '🇸🇦', country: 'Saudi Arabia', count: 7259 },
+        { flag: '🇺🇸', country: 'United States', count: 911 },
+        { flag: '🇵🇭', country: 'Philippines', count: 451 },
+        { flag: '🇮🇪', country: 'Ireland', count: 90 },
+        { flag: '🇰🇼', country: 'Kuwait', count: 1187 },
+        { flag: '🇶🇦', country: 'Qatar', count: 1028 },
+        { flag: '🇦🇪', country: 'United Arab Emirates', count: 263 },
+        { flag: '🇸🇬', country: 'Singapore', count: 2045 },
+        { flag: '🇵🇬', country: 'Papua New Guinea', count: 82 },
+        { flag: '🇯🇵', country: 'Japan', count: 67 },
+        { flag: '🇸🇷', country: 'Suriname', count: 51 },
+        { flag: '🇨🇦', country: 'Canada', count: 40 },
+        { flag: '🇧🇭', country: 'Bahrain', count: 20 },
+        { flag: '🇴🇲', country: 'Oman', count: 14 },
+        { flag: '🇦🇺', country: 'Australia', count: 10 },
+        { flag: '🇬🇺', country: 'Guam', count: 5 },
+        { flag: '🇳🇱', country: 'Netherlands', count: 4 },
     ];
 
     return (
@@ -118,8 +119,22 @@ function LandingHero() {
                                         color: 'common.white',
                                     }}
                                 >
-                                    Newly Registered Nurse? Start your career with verified opportunities.
+                                    {config.hero.headline}
                                 </Typography>
+
+                                {config.hero.usp && (
+                                <Typography
+                                    variant='body1'
+                                    sx={{
+                                        mb: 3,
+                                        fontSize: { xs: '16px', md: '18px' },
+                                        fontWeight: 'bold',
+                                        color: 'common.white',
+                                    }}
+                                >
+                                    {config.hero.usp}
+                                </Typography>
+                                )}
 
                                 <Typography
                                     variant='body1'
@@ -129,7 +144,7 @@ function LandingHero() {
                                         color: (theme) => theme.palette.font.white60,
                                     }}
                                 >
-                                    A safe, nurse-only career platform for newly registered Filipino nurses. Build an employer-ready profile, apply to verified jobs faster, and get long-term support—free forever.
+                                    {config.hero.subhead}
                                 </Typography>
 
                                 <Box sx={{
@@ -302,7 +317,7 @@ function LandingHero() {
                             <Box sx={{ width: '100%', mb: 3 }}>
                                 <JobBadge text="13’000+ Job Vacancies (*)" />
                             </Box>
-                            <LandingJobPreview />
+                            <LandingJobPreview  config={config} />
                         </Box>
                     </Stack>
                     <JobsTicker items={vacancies} />
@@ -317,10 +332,11 @@ function LandingHero() {
                 smallHeightModal={false}
                 noCloseIcon
                 style={{
-                    width: { xs: '95%', sm: '90%', md: '750px', lg: '850px' },
+                    width: { xs: 'calc(100vw - 32px)', sm: '90%', md: '750px', lg: '850px' },
                     maxWidth: '900px',
                     p: 0,
                     borderRadius: '16px',
+                    height: { xs: '95vh', md: 'auto' },
                     maxHeight: { xs: '95vh', md: '90vh' },
                     overflow: 'hidden'
                 }}

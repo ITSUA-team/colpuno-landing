@@ -4,8 +4,13 @@ import { useState } from 'react';
 import AppRegistration from '../../../AppRegistration';
 import StyledModal from '../../../components/styled-modal';
 import { trackRegStarted, trackCtaUnlockJobsClicked } from '../utils/tracking';
+import type { PageConfig } from '../../../config';
 
-function LandingFinalCTA() {
+interface LandingFinalCTAProps {
+    config: PageConfig;
+}
+
+function LandingFinalCTA({ config }: LandingFinalCTAProps) {
     const theme = useTheme();
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
@@ -18,15 +23,6 @@ function LandingFinalCTA() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!email) {
-            setError('Please enter your email address');
-            return;
-        }
-        if (!validateEmail(email)) {
-            setError('Please enter a valid email address');
-            return;
-        }
-
         trackRegStarted(email);
         trackCtaUnlockJobsClicked();
         setIsRegOpen(true);
@@ -49,7 +45,7 @@ function LandingFinalCTA() {
                     color: 'common.white',
                 }}
             >
-                Ready to start your nursing career with clarity?
+                {config.finalCta.headline}
             </Typography>
 
             <Box
@@ -85,16 +81,6 @@ function LandingFinalCTA() {
                     </Typography>
                 )}
 
-                <Typography variant="body2" sx={{ color: 'white', my: 2 }}>
-                    If you have any questions, feel free to contact us:{' '}
-                    <Link
-                        sx={{ textDecoration: 'none', color: 'white' }}
-                        href="mailto:info@colpuno.com"
-                    >
-                        info@colpuno.com
-                    </Link>
-                </Typography>
-
                 <Button
                     type='submit'
                     variant='contained'
@@ -106,6 +92,20 @@ function LandingFinalCTA() {
                 >
                     Unlock jobs
                 </Button>
+
+                <Typography variant="body2" sx={{ color: 'white', mt: 4 }}>
+                    If you have any questions, feel free to contact us:{' '}
+                    <Link
+                        sx={{ textDecoration: 'none', color: 'white' }}
+                        href="mailto:info@colpuno.com"
+                    >
+                        info@colpuno.com
+                    </Link>
+                </Typography>
+
+                <Typography variant="body2" sx={{ color: 'white' }}>
+                    You’ll receive a verification <strong>email link</strong>. Check Spam/Promotions if needed.
+                </Typography>
             </Box>
             <StyledModal
                 open={isRegOpen}
@@ -113,10 +113,11 @@ function LandingFinalCTA() {
                 smallHeightModal={false}
                 noCloseIcon
                 style={{
-                    width: { xs: '95%', sm: '90%', md: '750px', lg: '850px' },
+                    width: { xs: 'calc(100vw - 32px)', sm: '90%', md: '750px', lg: '850px' },
                     maxWidth: '900px',
                     p: 0,
                     borderRadius: '16px',
+                    height: { xs: '95vh', md: 'auto' },
                     maxHeight: { xs: '95vh', md: '90vh' },
                     overflow: 'hidden'
                 }}

@@ -2,6 +2,7 @@ import { Box, Button, Stack, Tab, Tabs, Typography } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SyntheticEvent, useState } from 'react';
 
+import type { PageConfig } from '../../../config';
 import type { Job } from '../../../interfaces';
 import { MOCK_JOBS } from '../../../mock';
 import AppRegistration from '../../../AppRegistration';
@@ -10,31 +11,36 @@ import { trackJobView, trackCtaUnlockJobsClicked, trackApplyClicked } from '../u
 import LandingJobsCard from './landing-jobs-card';
 import LandingJobDetailModal from './landing-job-detail-modal';
 
-function LandingJobs() {
+interface LandingJobsProps {
+    config: PageConfig;
+}
+
+function LandingJobs({ config }: LandingJobsProps) {
     const [selectedJob, setSelectedJob] = useState<Job | null>(null);
     const [isRegOpen, setIsRegOpen] = useState(false);
-    // Simple tabs per spec: National (PH) | International (Preview)
-    const [tab, setTab] = useState<'national' | 'international'>('national');
+    // Set initial tab to international if national is empty
+    const initialTab = config.jobs.national.length > 0
+        ? config.jobs.tabs.tab1Value
+        : config.jobs.tabs.tab2Value;
+    const [tab, setTab] = useState<string>(initialTab);
     const allJobs: Job[] = MOCK_JOBS;
 
-    // Backend note: в реальных данных различие National/International будет по country.name или похожему полю.
-    const nationalJobs: Job[] = allJobs.filter(
-        (job) => job.country?.name === 'Philippines',
-    ).slice(0, 10);
+    // Filter jobs based on page variant and tab
+    const getJobsForTab = (tabValue: string): Job[] => {
+        let filteredJobs;
+        
+        if (tabValue === 'national') {
+            filteredJobs = allJobs.filter(job => config.jobs.national.includes(job.id));
+        } else {
+            filteredJobs = allJobs.filter(job => config.jobs.international.includes(job.id));
+        }
+        
+        return filteredJobs;
+    };
 
-    let internationalJobs: Job[] = allJobs.filter(
-        (job) => job.country && job.country.name !== 'Philippines',
-    ).slice(0, 10);
+    const currentJobs = getJobsForTab(tab);
 
-    // Mock‑fallback: если нет реальных international в моках, показываем "preview" как вторую выборку из того же списка
-    if (internationalJobs.length === 0 && allJobs.length > 0) {
-        const half = Math.floor(allJobs.length / 2) || 1;
-        internationalJobs = allJobs.slice(half, half + 10);
-    }
-
-    const currentJobs: Job[] = (tab === 'national' ? nationalJobs : internationalJobs).slice(0, 10);
-
-    const handleTabChange = (_e: SyntheticEvent, value: 'national' | 'international') => {
+    const handleTabChange = (_e: SyntheticEvent, value: string) => {
         setTab(value);
         setSelectedJob(null);
     };
@@ -88,24 +94,27 @@ function LandingJobs() {
                     textAlign: 'center',
                 }}
             >
-                Real jobs ready for newly registered nurses (*)
+                {config.jobs.title}
             </Typography>
             <Tabs
                 value={tab}
                 onChange={handleTabChange}
                 centered
-                sx={{ mb: 2 }}
+                sx={{
+                    mb: 2,
+                    maxWidth: {xs: '90vw', md: 'inherit'}
+                }}
             >
-                <Tab
-                    label='National (PH)'
-                    value='national'
+                {config.jobs.national.length > 0 && (<Tab
+                    label={config.jobs.tabs.tab1Label}
+                    value={config.jobs.tabs.tab1Value}
                     sx={{ textTransform: 'none' }}
-                />
-                <Tab
-                    label='International (Preview)'
-                    value='international'
+                />)}
+                {config.jobs.international.length > 0 && (<Tab
+                    label={config.jobs.tabs.tab2Label}
+                    value={config.jobs.tabs.tab2Value}
                     sx={{ textTransform: 'none' }}
-                />
+                />)}
             </Tabs>
             {/* Module 2 — Jobs Preview on Page (copy from spec) */}
             <Typography variant='body1' sx={{ mb: 2, textAlign: 'center' }}>
@@ -295,10 +304,11 @@ function LandingJobs() {
                 smallHeightModal={false}
                 noCloseIcon
                 style={{
-                    width: { xs: '95%', sm: '90%', md: '750px', lg: '850px' },
+                    width: { xs: 'calc(100vw - 32px)', sm: '90%', md: '750px', lg: '850px' },
                     maxWidth: '900px',
                     p: 0,
                     borderRadius: '16px',
+                    height: { xs: '95vh', md: 'auto' },
                     maxHeight: { xs: '95vh', md: '90vh' },
                     overflow: 'hidden',
                     backgroundColor: 'transparent',

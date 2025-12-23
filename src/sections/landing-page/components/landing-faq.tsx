@@ -11,8 +11,13 @@ import {
 import { useState } from 'react';
 
 import { IconAccordionExpended, IconPlus } from '../../../assets';
+import type { PageConfig } from '../../../config';
 
-function LandingFAQ() {
+interface LandingFAQProps {
+    config: PageConfig;
+}
+
+function LandingFAQ({ config }: LandingFAQProps) {
     const theme = useTheme();
     const [expanded, setExpanded] = useState<string | false>(false);
 
@@ -104,9 +109,9 @@ function LandingFAQ() {
                         'panel1'
                     )}
                     {renderAccordion(
-                        "I'm a fresh grad. Can I still apply?",
+                        config.faq.freshGradQuestion,
                         <Typography variant="body2" sx={{ color: theme.palette.font.black60 }}>
-                            Yes. This page is built for newly registered nurses, and job requirements will show if experience is needed.
+                            {config.faq.freshGradAnswer}
                         </Typography>,
                         'panel2'
                     )}

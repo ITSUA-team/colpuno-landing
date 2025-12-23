@@ -1,6 +1,7 @@
 import { Box, Container } from '@mui/material';
 import { useEffect } from 'react';
 
+import type { PageConfig } from '../../config';
 import Logo from '../../assets/logo-white.png';
 import {
     CareerFeatures,
@@ -18,7 +19,11 @@ import {
 } from './components';
 import { trackPageVisit, trackLpView } from './utils/tracking';
 
-function LandingPage() {
+interface LandingPageProps {
+    config: PageConfig;
+}
+
+function LandingPage({ config }: LandingPageProps) {
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const utmSource = urlParams.get('utm_source') || urlParams.get('source') || 'direct';
@@ -70,8 +75,7 @@ function LandingPage() {
                         src={Logo.src}
                         alt="Сolpuno – empowering filipino nurses"
                         sx={{
-                            width: { xs: '50%', md: '300px' },
-                            maxWidth: { xs: '100%', md: 480 },
+                            maxHeight: { xs: '50px', md: '80px' },
                             height: 'auto',
                             position: 'relative',
                             display: 'block',
@@ -81,10 +85,10 @@ function LandingPage() {
             </Box>
 
             <Box sx={{
-                        pt: '180px',
+                        pt: {xs: '80px', md: '180px'},
                     }}>
 
-                <LandingHero />
+                <LandingHero config={config} />
 
                 {/* Career features */}
                 <Box sx={{ p: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'center' }}>
@@ -116,7 +120,7 @@ function LandingPage() {
                             py: { xs: 3, md: 4 },
                         }}
                     >
-                        <LandingJobs />
+                        <LandingJobs config={config} />
                     </Box>
                 </Box>
 
@@ -131,7 +135,7 @@ function LandingPage() {
                             py: { xs: 3, md: 4 },
                         }}
                     >
-                        <LandingTrust />
+                        <LandingTrust config={config} />
                     </Box>
                 </Box>
 
@@ -176,7 +180,7 @@ function LandingPage() {
                             py: { xs: 3, md: 4 },
                         }}
                     >
-                        <LandingProfileMotivator />
+                        <LandingProfileMotivator config={config} />
                     </Box>
                 </Box>
                 <Box sx={{ p: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'center' }}>
@@ -190,7 +194,7 @@ function LandingPage() {
                             py: { xs: 3, md: 4 },
                         }}
                     >
-                        <LandingFAQ />
+                        <LandingFAQ config={config} />
                     </Box>
                 </Box>
 
@@ -205,7 +209,7 @@ function LandingPage() {
                             py: { xs: 3, md: 4 },
                         }}
                     >
-                        <LandingFinalCTA />
+                        <LandingFinalCTA config={config} />
                     </Box>
                 </Box>
 
