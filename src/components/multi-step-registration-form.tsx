@@ -60,6 +60,7 @@ interface FormData {
     nursingStatus: string;
     // Step 5 - Location
     country: string;
+    currentLocationRegion: string;
     isFilipino: boolean;
     // Step 6 - Contact & Terms
     mobile: string;
@@ -105,6 +106,7 @@ function MultiStepRegistrationForm({
         jobSearchStatus: '',
         nursingStatus: '',
         country: 'Philippines',
+        currentLocationRegion: '',
         isFilipino: false,
         mobile: '',
         birthDate: null,
@@ -126,6 +128,10 @@ function MultiStepRegistrationForm({
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [provinces, setProvinces] = useState<Array<{ id: string; name: string }>>([]);
     const [cities, setCities] = useState<Array<{ id: string; name: string }>>([]);
+    const [regions, setRegions] = useState<Array<{ id: string; name: string }>>([]);
+    const [otherCountries, setOtherCountries] = useState<Array<{ id: string; name: string; code?: string }>>([]);
+    const [countries, setCountries] = useState<Array<{ id: string; name: string; code?: string }>>([]);
+    const [loadingRegions, setLoadingRegions] = useState(false);
 
     // Static fallback list of Philippines provinces
     const PH_PROVINCES = [
@@ -351,6 +357,80 @@ function MultiStepRegistrationForm({
         loadCities();
     }, [formData.province]);
 
+    // Load countries list on mount
+    useEffect(() => {
+        const loadCountries = async () => {
+            try {
+                const response = await getOnboardData('countries');
+                if (response.data && Array.isArray(response.data)) {
+                    setCountries(
+                        response.data.map((item: any) => ({
+                            id: item.id?.toString() || '',
+                            name: item.name || '',
+                            code: item.code || '',
+                        }))
+                    );
+                }
+            } catch (error) {
+                console.warn('Failed to load countries from API:', error);
+            }
+        };
+        loadCountries();
+    }, []);
+
+    // Load regions or other countries when country changes
+    useEffect(() => {
+        const loadRegionsOrCountries = async () => {
+            setRegions([]);
+            setOtherCountries([]);
+            setFormData(prev => ({ ...prev, currentLocationRegion: '' }));
+
+            if (!formData.country) return;
+
+            setLoadingRegions(true);
+
+            try {
+                // Find country ID
+                const countryData = countries.find(c => c.name === formData.country);
+                const countryId = countryData?.id;
+
+                if (formData.country === 'Other') {
+                    // Load list of other countries
+                    const response = await getOnboardData('countries');
+                    if (response.data && Array.isArray(response.data)) {
+                        // Filter out main countries that are already in the dropdown
+                        const mainCountries = ['Philippines', 'United States', 'United Kingdom', 'Canada', 'Australia', 'United Arab Emirates', 'Saudi Arabia'];
+                        const filtered = response.data
+                            .filter((item: any) => !mainCountries.includes(item.name))
+                            .map((item: any) => ({
+                                id: item.id?.toString() || '',
+                                name: item.name || '',
+                                code: item.code || '',
+                            }));
+                        setOtherCountries(filtered);
+                    }
+                } else if (countryId) {
+                    // Try to load regions for any country
+                    const response = await getOnboardData('regions', countryId);
+                    if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+                        setRegions(
+                            response.data.map((item: any) => ({
+                                id: item.id?.toString() || item.code || '',
+                                name: item.name || '',
+                            }))
+                        );
+                    }
+                }
+            } catch (error) {
+                console.warn('Failed to load regions/countries from API:', error);
+            } finally {
+                setLoadingRegions(false);
+            }
+        };
+
+        loadRegionsOrCountries();
+    }, [formData.country, countries]);
+
     // Track onboarding started
     useEffect(() => {
         if (currentStep === 0) {
@@ -438,6 +518,18 @@ function MultiStepRegistrationForm({
             if (!formData.country) {
                 newErrors.country = 'Please select your country';
             }
+            // Validate region if available for the selected country
+            if (formData.country && formData.country !== 'Other' && regions.length > 0) {
+                if (!formData.currentLocationRegion) {
+                    newErrors.currentLocationRegion = 'Please select a region';
+                }
+            }
+            // Validate other country if "Other" is selected
+            if (formData.country === 'Other' && otherCountries.length > 0) {
+                if (!formData.currentLocationRegion) {
+                    newErrors.currentLocationRegion = 'Please select a country';
+                }
+            }
             if (!formData.isFilipino) {
                 newErrors.isFilipino = 'You must confirm that you are a Filipino national';
             }
@@ -492,6 +584,7 @@ function MultiStepRegistrationForm({
         setSubmitError(null);
 
         try {
+            // Determine country and region values - only include if not empty
             const registrationData: NurseRegistrationData = {
                 email: formData.email,
                 password: formData.password,
@@ -513,6 +606,23 @@ function MultiStepRegistrationForm({
                 // Add UTM parameters
                 ...utmParams,
             };
+
+            // Add currentLocationCountry and currentLocationRegion only if they have values
+            if (formData.country === 'Other') {
+                // For "Other", use the selected country ID as currentLocationCountry
+                if (formData.currentLocationRegion && formData.currentLocationRegion.trim()) {
+                    registrationData.currentLocationCountry = formData.currentLocationRegion.trim();
+                }
+            } else {
+                // For regular countries, use country name
+                if (formData.country && formData.country.trim()) {
+                    registrationData.currentLocationCountry = formData.country.trim();
+                }
+                // Add region if available and not empty
+                if (formData.currentLocationRegion && formData.currentLocationRegion.trim()) {
+                    registrationData.currentLocationRegion = formData.currentLocationRegion.trim();
+                }
+            }
 
             const response = await registerNurse(registrationData);
 
@@ -806,11 +916,12 @@ function MultiStepRegistrationForm({
                                 label="Country *"
                                 value={formData.country}
                                 onChange={(e) => {
-                                    setFormData({ ...formData, country: e.target.value });
-                                    setErrors({ ...errors, country: '' });
+                                    setFormData({ ...formData, country: e.target.value, currentLocationRegion: '' });
+                                    setErrors({ ...errors, country: '', currentLocationRegion: '' });
                                 }}
                                 error={!!errors.country}
                                 helperText={errors.country}
+                                disabled={loadingRegions}
                                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                             >
                                 <MenuItem value="Philippines">Philippines</MenuItem>
@@ -822,6 +933,56 @@ function MultiStepRegistrationForm({
                                 <MenuItem value="Saudi Arabia">Saudi Arabia</MenuItem>
                                 <MenuItem value="Other">Other</MenuItem>
                             </TextField>
+
+                            {/* Region field - shown for any country that has regions */}
+                            {formData.country && formData.country !== 'Other' && regions.length > 0 && (
+                                <TextField
+                                    select
+                                    fullWidth
+                                    label="Region *"
+                                    value={formData.currentLocationRegion}
+                                    onChange={(e) => {
+                                        setFormData({ ...formData, currentLocationRegion: e.target.value });
+                                        setErrors({ ...errors, currentLocationRegion: '' });
+                                    }}
+                                    error={!!errors.currentLocationRegion}
+                                    helperText={errors.currentLocationRegion}
+                                    disabled={loadingRegions}
+                                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                                >
+                                    <MenuItem value="">Select region</MenuItem>
+                                    {regions.map((region) => (
+                                        <MenuItem key={region.id} value={region.id}>
+                                            {region.name}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            )}
+
+                            {/* Other countries field - shown only when "Other" is selected */}
+                            {formData.country === 'Other' && otherCountries.length > 0 && (
+                                <TextField
+                                    select
+                                    fullWidth
+                                    label="Select country *"
+                                    value={formData.currentLocationRegion}
+                                    onChange={(e) => {
+                                        setFormData({ ...formData, currentLocationRegion: e.target.value });
+                                        setErrors({ ...errors, currentLocationRegion: '' });
+                                    }}
+                                    error={!!errors.currentLocationRegion}
+                                    helperText={errors.currentLocationRegion}
+                                    disabled={loadingRegions}
+                                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                                >
+                                    <MenuItem value="">Select country</MenuItem>
+                                    {otherCountries.map((country) => (
+                                        <MenuItem key={country.id} value={country.id}>
+                                            {country.name}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            )}
 
                             <Box
                                 sx={{
