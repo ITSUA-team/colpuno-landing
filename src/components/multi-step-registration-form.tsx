@@ -47,7 +47,7 @@ interface MultiStepRegistrationFormProps {
     onClose?: () => void;
 }
 
-interface FormData {
+interface RegistrationFormData {
     // Step 1 - Account
     email: string;
     password: string;
@@ -67,6 +67,11 @@ interface FormData {
     mobile: string;
     birthDate: Dayjs | null;
     agreedToTerms: boolean;
+    
+    // Hidden / Defaults for API compatibility
+    yearsOfExperience: string;
+    preferredDestination: string[];
+    jobStartTimeline: string;
     
     // Legacy/Unused but kept for type compatibility if needed temporarily
     emailVerified: boolean;
@@ -98,7 +103,7 @@ function MultiStepRegistrationForm({
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [currentStep, setCurrentStep] = useState(0);
-    const [formData, setFormData] = useState<FormData>({
+    const [formData, setFormData] = useState<RegistrationFormData>({
         email: initialEmail,
         password: '',
         confirmPassword: '',
@@ -106,14 +111,19 @@ function MultiStepRegistrationForm({
         lastName: '',
         jobSearchStatus: '',
         nursingStatus: '',
-        country: 'Philippines',
+        country: '',
         currentLocationRegion: '',
         isFilipino: false,
         mobile: '',
         birthDate: null,
         agreedToTerms: false,
         
-        // Legacy
+        // Hidden / Defaults for API compatibility
+        yearsOfExperience: '',
+        preferredDestination: [],
+        jobStartTimeline: '',
+        
+        // Legacy/Unused
         emailVerified: false,
         journeyStage: '',
         province: '',
@@ -122,7 +132,7 @@ function MultiStepRegistrationForm({
         optInWhatsApp: false,
         optInMessenger: false,
     });
-    const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
+    const [errors, setErrors] = useState<Partial<Record<keyof RegistrationFormData, string>>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
@@ -473,7 +483,7 @@ function MultiStepRegistrationForm({
     };
 
     const validateStep = (step: number): boolean => {
-        const newErrors: Partial<Record<keyof FormData, string>> = {};
+        const newErrors: Partial<Record<keyof RegistrationFormData, string>> = {};
 
         if (step === 0) {
             // Step 1 - Account
@@ -591,11 +601,9 @@ function MultiStepRegistrationForm({
                 password: formData.password,
                 firstName: formData.firstName,
                 lastName: formData.lastName,
-                jobSearchStatus: formData.jobSearchStatus,
+                lookingForJob: formData.jobSearchStatus,
                 nursingStatus: formData.nursingStatus,
-                country: formData.country,
-                isFilipino: formData.isFilipino,
-                mobile: normalizeMobile(formData.mobile),
+                phone: formData.mobile ? normalizeMobile(formData.mobile) : '',
                 birthDate: formData.birthDate ? formData.birthDate.format('YYYY-MM-DD') : undefined,
                 termsAccepted: formData.agreedToTerms,
                 sourcingCenter: 'Landing Page Funnel',
