@@ -81,16 +81,6 @@ function LandingFinalCTA({ config }: LandingFinalCTAProps) {
                     </Typography>
                 )}
 
-                <Typography variant="body2" sx={{ color: 'white', my: 2 }}>
-                    If you have any questions, feel free to contact us:{' '}
-                    <Link
-                        sx={{ textDecoration: 'none', color: 'white' }}
-                        href="mailto:info@colpuno.com"
-                    >
-                        info@colpuno.com
-                    </Link>
-                </Typography>
-
                 <Button
                     type='submit'
                     variant='contained'
@@ -102,6 +92,20 @@ function LandingFinalCTA({ config }: LandingFinalCTAProps) {
                 >
                     Unlock jobs
                 </Button>
+
+                <Typography variant="body2" sx={{ color: 'white', mt: 4 }}>
+                    If you have any questions, feel free to contact us:{' '}
+                    <Link
+                        sx={{ textDecoration: 'none', color: 'white' }}
+                        href="mailto:info@colpuno.com"
+                    >
+                        info@colpuno.com
+                    </Link>
+                </Typography>
+
+                <Typography variant="body2" sx={{ color: 'white' }}>
+                    You’ll receive a verification <strong>email link</strong>. Check Spam/Promotions if needed.
+                </Typography>
             </Box>
             <StyledModal
                 open={isRegOpen}

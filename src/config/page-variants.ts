@@ -7,6 +7,7 @@ export interface PageConfig {
     title: string;
     hero: {
         headline: string;
+        usp?: string;
         subhead: string;
     };
     jobs: {
@@ -82,6 +83,7 @@ export const PAGE_CONFIGS: Record<PageVariant, PageConfig> = {
         title: 'COLPUNO | Experienced nurses',
         hero: {
             headline: 'Experienced Nurse? Get hired to verified roles that match your background.',
+            usp: 'A nurse-only career platform built to support you long-term. Stays FREE - always.',
             subhead: 'COLPUNO helps experienced Filipino nurses move forward with a profile that matches you to safe and verified opportunities.',
         },
         jobs: {
@@ -120,8 +122,9 @@ export const PAGE_CONFIGS: Record<PageVariant, PageConfig> = {
         variant: 'singapore',
         title: 'COLPUNO | Singapore nurses',
         hero: {
-            headline: 'Singapore-based nurse? Match with verified roles that fit your schedule and skills.',
-            subhead: 'COLPUNO helps nurses in Singapore build an employer-ready profile and apply to verified job opportunities faster so you can focus on your future, not chasing unclear job posts.',
+            headline: 'Singapore-based Filipino nurse? Match with verified roles that fit your schedule and skills.',
+            usp: 'More than listings. COLPUNO is a nurse-first platform where your profile helps jobs find you.',
+            subhead: 'COLPUNO helps Filipino nurses in Singapore build an employer-ready profile and apply to verified job opportunities faster so you can focus on your future, not chasing unclear job posts.',
         },
         jobs: {
             title: 'Verified nursing roles in Singapore',
@@ -159,8 +162,9 @@ export const PAGE_CONFIGS: Record<PageVariant, PageConfig> = {
         variant: 'middle-east',
         title: 'COLPUNO | Middle East nurses',
         hero: {
-            headline: 'Middle East-based nurse? Match with verified roles that match your experience.',
-            subhead: 'COLPUNO helps nurses in the Middle East build an employer-ready profile and apply to verified job opportunities faster, so you can move to your next role with confidence.',
+            headline: 'Middle East-based Filipino nurse? Match with verified roles that match your experience.',
+            usp: 'More than listings, COLPUNO is a nurse-only platform built for trust, protection, and better-fit roles.',
+            subhead: 'COLPUNO helps Filipino nurses in the Middle East build an employer-ready profile and apply to verified job opportunities faster, so you can move to your next role with confidence.',
         },
         jobs: {
             title: 'Verified nursing roles for Middle East-based nurses',

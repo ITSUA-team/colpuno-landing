@@ -122,6 +122,20 @@ function LandingHero({ config }: LandingHeroProps) {
                                     {config.hero.headline}
                                 </Typography>
 
+                                {config.hero.usp && (
+                                <Typography
+                                    variant='body1'
+                                    sx={{
+                                        mb: 3,
+                                        fontSize: { xs: '16px', md: '18px' },
+                                        fontWeight: 'bold',
+                                        color: 'common.white',
+                                    }}
+                                >
+                                    {config.hero.usp}
+                                </Typography>
+                                )}
+
                                 <Typography
                                     variant='body1'
                                     sx={{
