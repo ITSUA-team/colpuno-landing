@@ -541,16 +541,17 @@ function MultiStepRegistrationForm({
                 nursingStatus: formData.nursingStatus,
                 birthDate: formData.birthDate ? formData.birthDate.format('YYYY-MM-DD') : undefined,
                 currentLocationCountry: formData.country,
+                filipinoNational: formData.isFilipino ? 'yes' : 'no',
                 phone: formData.mobile ? normalizeMobile(formData.mobile) : undefined,
-                
+
                 // Optional/Hidden fields (sending empty/defaults if not collected in 6 steps)
                 yearsOfExperience: formData.yearsOfExperience,
                 preferredDestination: formData.preferredDestination,
                 jobStartTimeline: formData.jobStartTimeline,
-                
+
                 termsAccepted: formData.agreedToTerms,
                 sourcingCenter: 'Landing Page Funnel',
-                
+
                 ...(jobId && { job_id: jobId }),
                 ...(campaignId && { campaign_id: campaignId }),
                 ...(landingPageId && { landing_page_id: landingPageId }),
