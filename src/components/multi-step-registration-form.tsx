@@ -36,6 +36,7 @@ import {
     trackOnboardingStarted,
     trackOnboardingStepCompleted,
     trackRegCompleted,
+    trackOnboardingFinished,
 } from '../sections/landing-page/utils/tracking';
 
 interface MultiStepRegistrationFormProps {
@@ -47,7 +48,7 @@ interface MultiStepRegistrationFormProps {
     onClose?: () => void;
 }
 
-interface FormData {
+interface RegistrationFormData {
     // Step 1 - Account
     email: string;
     password: string;
@@ -61,6 +62,7 @@ interface FormData {
     nursingStatus: string;
     // Step 5 - Location
     country: string;
+    currentLocationRegion: string;
     isFilipino: boolean;
     // Step 6 - Contact & Terms
     mobile: string;
@@ -72,7 +74,7 @@ interface FormData {
     preferredDestination: string[];
     jobStartTimeline: string;
     
-    // Legacy/Unused
+    // Legacy/Unused but kept for type compatibility if needed temporarily
     emailVerified: boolean;
     journeyStage: string;
     province: string;
@@ -103,7 +105,7 @@ function MultiStepRegistrationForm({
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [currentStep, setCurrentStep] = useState(0);
-    const [formData, setFormData] = useState<FormData>({
+    const [formData, setFormData] = useState<RegistrationFormData>({
         email: initialEmail,
         password: '',
         confirmPassword: '',
@@ -111,18 +113,24 @@ function MultiStepRegistrationForm({
         isFilipino: false,
         firstName: '',
         lastName: '',
+        jobSearchStatus: '',
+        nursingStatus: '',
+        country: '',
+        currentLocationRegion: '',
+        isFilipino: false,
+        mobile: '',
         birthDate: null,
         mobile: '',
         nursingStatus: '',
         jobSearchStatus: '',
         agreedToTerms: false,
         
-        // Defaults for hidden fields
+        // Hidden / Defaults for API compatibility
         yearsOfExperience: '',
         preferredDestination: [],
         jobStartTimeline: '',
         
-        // Legacy
+        // Legacy/Unused
         emailVerified: false,
         journeyStage: '',
         province: '',
@@ -131,12 +139,103 @@ function MultiStepRegistrationForm({
         optInWhatsApp: false,
         optInMessenger: false,
     });
-    const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
+    const [errors, setErrors] = useState<Partial<Record<keyof RegistrationFormData, string>>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [countries, setCountries] = useState<Array<{ code: string; name: string }>>([]);
+    const [provinces, setProvinces] = useState<Array<{ id: string; name: string }>>([]);
+    const [cities, setCities] = useState<Array<{ id: string; name: string }>>([]);
+    const [regions, setRegions] = useState<Array<{ id: string; name: string }>>([]);
+    const [otherCountries, setOtherCountries] = useState<Array<{ id: string; name: string; code?: string }>>([]);
+    const [countries, setCountries] = useState<Array<{ id: string; name: string; code?: string }>>([]);
+    const [loadingRegions, setLoadingRegions] = useState(false);
+
+    // Static fallback list of Philippines provinces
+    const PH_PROVINCES = [
+        { id: 'metro-manila', name: 'Metro Manila' },
+        { id: 'abra', name: 'Abra' },
+        { id: 'agusan-del-norte', name: 'Agusan del Norte' },
+        { id: 'agusan-del-sur', name: 'Agusan del Sur' },
+        { id: 'aklan', name: 'Aklan' },
+        { id: 'albay', name: 'Albay' },
+        { id: 'antique', name: 'Antique' },
+        { id: 'apayao', name: 'Apayao' },
+        { id: 'aurora', name: 'Aurora' },
+        { id: 'basilan', name: 'Basilan' },
+        { id: 'bataan', name: 'Bataan' },
+        { id: 'batanes', name: 'Batanes' },
+        { id: 'batangas', name: 'Batangas' },
+        { id: 'benguet', name: 'Benguet' },
+        { id: 'biliran', name: 'Biliran' },
+        { id: 'bohol', name: 'Bohol' },
+        { id: 'bukidnon', name: 'Bukidnon' },
+        { id: 'bulacan', name: 'Bulacan' },
+        { id: 'cagayan', name: 'Cagayan' },
+        { id: 'camarines-norte', name: 'Camarines Norte' },
+        { id: 'camarines-sur', name: 'Camarines Sur' },
+        { id: 'camiguin', name: 'Camiguin' },
+        { id: 'capiz', name: 'Capiz' },
+        { id: 'catanduanes', name: 'Catanduanes' },
+        { id: 'cavite', name: 'Cavite' },
+        { id: 'cebu', name: 'Cebu' },
+        { id: 'compostela-valley', name: 'Compostela Valley' },
+        { id: 'cotabato', name: 'Cotabato' },
+        { id: 'davao-del-norte', name: 'Davao del Norte' },
+        { id: 'davao-del-sur', name: 'Davao del Sur' },
+        { id: 'davao-occidental', name: 'Davao Occidental' },
+        { id: 'davao-oriental', name: 'Davao Oriental' },
+        { id: 'dinagat-islands', name: 'Dinagat Islands' },
+        { id: 'eastern-samar', name: 'Eastern Samar' },
+        { id: 'guimaras', name: 'Guimaras' },
+        { id: 'ifugao', name: 'Ifugao' },
+        { id: 'ilocos-norte', name: 'Ilocos Norte' },
+        { id: 'ilocos-sur', name: 'Ilocos Sur' },
+        { id: 'iloilo', name: 'Iloilo' },
+        { id: 'isabela', name: 'Isabela' },
+        { id: 'kalinga', name: 'Kalinga' },
+        { id: 'la-union', name: 'La Union' },
+        { id: 'laguna', name: 'Laguna' },
+        { id: 'lanao-del-norte', name: 'Lanao del Norte' },
+        { id: 'lanao-del-sur', name: 'Lanao del Sur' },
+        { id: 'leyte', name: 'Leyte' },
+        { id: 'maguindanao', name: 'Maguindanao' },
+        { id: 'marinduque', name: 'Marinduque' },
+        { id: 'masbate', name: 'Masbate' },
+        { id: 'misamis-occidental', name: 'Misamis Occidental' },
+        { id: 'misamis-oriental', name: 'Misamis Oriental' },
+        { id: 'mountain-province', name: 'Mountain Province' },
+        { id: 'negros-occidental', name: 'Negros Occidental' },
+        { id: 'negros-oriental', name: 'Negros Oriental' },
+        { id: 'northern-samar', name: 'Northern Samar' },
+        { id: 'nueva-ecija', name: 'Nueva Ecija' },
+        { id: 'nueva-vizcaya', name: 'Nueva Vizcaya' },
+        { id: 'occidental-mindoro', name: 'Occidental Mindoro' },
+        { id: 'oriental-mindoro', name: 'Oriental Mindoro' },
+        { id: 'palawan', name: 'Palawan' },
+        { id: 'pampanga', name: 'Pampanga' },
+        { id: 'pangasinan', name: 'Pangasinan' },
+        { id: 'quezon', name: 'Quezon' },
+        { id: 'quirino', name: 'Quirino' },
+        { id: 'rizal', name: 'Rizal' },
+        { id: 'romblon', name: 'Romblon' },
+        { id: 'samar', name: 'Samar' },
+        { id: 'sarangani', name: 'Sarangani' },
+        { id: 'siquijor', name: 'Siquijor' },
+        { id: 'sorsogon', name: 'Sorsogon' },
+        { id: 'south-cotabato', name: 'South Cotabato' },
+        { id: 'southern-leyte', name: 'Southern Leyte' },
+        { id: 'sultan-kudarat', name: 'Sultan Kudarat' },
+        { id: 'sulu', name: 'Sulu' },
+        { id: 'surigao-del-norte', name: 'Surigao del Norte' },
+        { id: 'surigao-del-sur', name: 'Surigao del Sur' },
+        { id: 'tarlac', name: 'Tarlac' },
+        { id: 'tawi-tawi', name: 'Tawi-Tawi' },
+        { id: 'zambales', name: 'Zambales' },
+        { id: 'zamboanga-del-norte', name: 'Zamboanga del Norte' },
+        { id: 'zamboanga-del-sur', name: 'Zamboanga del Sur' },
+        { id: 'zamboanga-sibugay', name: 'Zamboanga Sibugay' },
+    ];
 
     // Load countries on mount - RESTORED ORIGINAL LOGIC
     useEffect(() => {
@@ -192,6 +291,121 @@ function MultiStepRegistrationForm({
         loadCountries();
     }, []);
 
+    // Load cities when province changes
+    useEffect(() => {
+        const loadCities = async () => {
+            if (!formData.province) {
+                setCities([]);
+                return;
+            }
+            try {
+                const response = await getOnboardData('regions', formData.province);
+                if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+                    setCities(
+                        response.data.map((item: any) => ({
+                            id: item.id || item.code || '',
+                            name: item.name || '',
+                        }))
+                    );
+                } else {
+                    // Use static fallback if API returns empty or fails
+                    const fallbackCities = PH_CITIES_BY_PROVINCE[formData.province] || [];
+                    if (fallbackCities.length > 0) {
+                        setCities(fallbackCities);
+                    } else {
+                        // If no static data, add a generic option
+                        setCities([{ id: 'other', name: 'Other (Please specify)' }]);
+                    }
+                }
+            } catch (error) {
+                // Use static fallback if API fails
+                console.warn('Failed to load cities from API, using fallback:', error);
+                const fallbackCities = PH_CITIES_BY_PROVINCE[formData.province] || [];
+                if (fallbackCities.length > 0) {
+                    setCities(fallbackCities);
+                } else {
+                    // If no static data, add a generic option
+                    setCities([{ id: 'other', name: 'Other (Please specify)' }]);
+                }
+            }
+        };
+        loadCities();
+    }, [formData.province]);
+
+    // Load countries list on mount
+    useEffect(() => {
+        const loadCountries = async () => {
+            try {
+                const response = await getOnboardData('countries');
+                if (response.data && Array.isArray(response.data)) {
+                    setCountries(
+                        response.data.map((item: any) => ({
+                            id: item.id?.toString() || '',
+                            name: item.name || '',
+                            code: item.code || '',
+                        }))
+                    );
+                }
+            } catch (error) {
+                console.warn('Failed to load countries from API:', error);
+            }
+        };
+        loadCountries();
+    }, []);
+
+    // Load regions or other countries when country changes
+    useEffect(() => {
+        const loadRegionsOrCountries = async () => {
+            setRegions([]);
+            setOtherCountries([]);
+            setFormData(prev => ({ ...prev, currentLocationRegion: '' }));
+
+            if (!formData.country) return;
+
+            setLoadingRegions(true);
+
+            try {
+                // Find country ID
+                const countryData = countries.find(c => c.name === formData.country);
+                const countryId = countryData?.id;
+
+                if (formData.country === 'Other') {
+                    // Load list of other countries
+                    const response = await getOnboardData('countries');
+                    if (response.data && Array.isArray(response.data)) {
+                        // Filter out main countries that are already in the dropdown
+                        const mainCountries = ['Philippines', 'United States', 'United Kingdom', 'Canada', 'Australia', 'United Arab Emirates', 'Saudi Arabia'];
+                        const filtered = response.data
+                            .filter((item: any) => !mainCountries.includes(item.name))
+                            .map((item: any) => ({
+                                id: item.id?.toString() || '',
+                                name: item.name || '',
+                                code: item.code || '',
+                            }));
+                        setOtherCountries(filtered);
+                    }
+                } else if (countryId) {
+                    // Try to load regions for any country
+                    const response = await getOnboardData('regions', countryId);
+                    if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+                        setRegions(
+                            response.data.map((item: any) => ({
+                                id: item.id?.toString() || item.code || '',
+                                name: item.name || '',
+                            }))
+                        );
+                    }
+                }
+            } catch (error) {
+                console.warn('Failed to load regions/countries from API:', error);
+            } finally {
+                setLoadingRegions(false);
+            }
+        };
+
+        loadRegionsOrCountries();
+    }, [formData.country, countries]);
+
     // Track onboarding started
     useEffect(() => {
         if (currentStep === 0) {
@@ -225,7 +439,7 @@ function MultiStepRegistrationForm({
 
     // Validation for 6 Steps
     const validateStep = (step: number): boolean => {
-        const newErrors: Partial<Record<keyof FormData, string>> = {};
+        const newErrors: Partial<Record<keyof RegistrationFormData, string>> = {};
 
         if (step === 0) {
             // Step 1 - Account
@@ -256,9 +470,24 @@ function MultiStepRegistrationForm({
         
         } else if (step === 4) {
             // Step 5 - Location
-            if (!formData.country) newErrors.country = 'Please select your country';
-            if (!formData.isFilipino) newErrors.isFilipino = 'You must confirm that you are a Filipino national';
-        
+            if (!formData.country) {
+                newErrors.country = 'Please select your country';
+            }
+            // Validate region if available for the selected country
+            if (formData.country && formData.country !== 'Other' && regions.length > 0) {
+                if (!formData.currentLocationRegion) {
+                    newErrors.currentLocationRegion = 'Please select a region';
+                }
+            }
+            // Validate other country if "Other" is selected
+            if (formData.country === 'Other' && otherCountries.length > 0) {
+                if (!formData.currentLocationRegion) {
+                    newErrors.currentLocationRegion = 'Please select a country';
+                }
+            }
+            if (!formData.isFilipino) {
+                newErrors.isFilipino = 'You must confirm that you are a Filipino national';
+            }
         } else if (step === 5) {
             // Step 6 - Contact & Terms (Birthdate, Mobile, Terms)
             if (!formData.birthDate) {
@@ -307,13 +536,15 @@ function MultiStepRegistrationForm({
         setSubmitError(null);
 
         try {
+            // Determine country and region values - only include if not empty
             const registrationData: NurseRegistrationData = {
                 email: formData.email,
                 password: formData.password,
                 firstName: formData.firstName,
                 lastName: formData.lastName,
-                
-                filipinoNational: formData.isFilipino ? 'yes' : 'no',
+                lookingForJob: formData.jobSearchStatus,
+                nursingStatus: formData.nursingStatus,
+                phone: formData.mobile ? normalizeMobile(formData.mobile) : '',
                 birthDate: formData.birthDate ? formData.birthDate.format('YYYY-MM-DD') : undefined,
                 currentLocationCountry: formData.country,
                 lookingForJob: formData.jobSearchStatus,
@@ -334,6 +565,23 @@ function MultiStepRegistrationForm({
                 ...(landingPageId && { landing_page_id: landingPageId }),
                 ...utmParams,
             };
+
+            // Add currentLocationCountry and currentLocationRegion only if they have values
+            if (formData.country === 'Other') {
+                // For "Other", use the selected country ID as currentLocationCountry
+                if (formData.currentLocationRegion && formData.currentLocationRegion.trim()) {
+                    registrationData.currentLocationCountry = formData.currentLocationRegion.trim();
+                }
+            } else {
+                // For regular countries, use country name
+                if (formData.country && formData.country.trim()) {
+                    registrationData.currentLocationCountry = formData.country.trim();
+                }
+                // Add region if available and not empty
+                if (formData.currentLocationRegion && formData.currentLocationRegion.trim()) {
+                    registrationData.currentLocationRegion = formData.currentLocationRegion.trim();
+                }
+            }
 
             const response = await registerNurse(registrationData);
 
@@ -357,6 +605,7 @@ function MultiStepRegistrationForm({
                 trackRegCompleted(formData.email);
             }
             trackOnboardingStepCompleted('REG_COMPLETED');
+            trackOnboardingFinished();
 
             if (jobId) {
                 window.location.href = `https://www.colpuno.com/jobs/${encodeURIComponent(jobId)}?openConfirmApplication=1`;
@@ -365,6 +614,8 @@ function MultiStepRegistrationForm({
             }
         } catch (error) {
             trackOnboardingStepCompleted('REG_COMPLETED');
+            trackOnboardingFinished();
+            
             if (jobId) {
                 window.location.href = `https://www.colpuno.com/jobs/${encodeURIComponent(jobId)}?openConfirmApplication=1`;
             } else {
@@ -629,34 +880,88 @@ function MultiStepRegistrationForm({
                     <Box sx={{ width: '100%' }}>
                         {renderQuestionTitle(currentQuestion)}
                         <Stack spacing={3}>
-                            <FormControl fullWidth error={!!errors.country}>
-                                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>Country *</Typography>
-                                <Select
-                                    value={formData.country}
-                                    onChange={(e) => {
-                                        setFormData({ ...formData, country: e.target.value });
-                                        setErrors({ ...errors, country: '' });
-                                    }}
-                                    displayEmpty
-                                    MenuProps={{
-                                        PaperProps: {
-                                            style: { maxHeight: 300 },
-                                        },
-                                    }}
-                                    sx={{ 
-                                        borderRadius: 1,
-                                        '& .MuiSelect-select': { color: formData.country ? 'inherit' : 'text.secondary' }
-                                    }}
-                                >
-                                    <MenuItem value="" disabled>Select your country</MenuItem>
-                                    {countries.map((country) => (
-                                        <MenuItem key={country.code} value={country.code}>{country.name}</MenuItem>
-                                    ))}
-                                </Select>
-                                {errors.country && <FormHelperText>{errors.country}</FormHelperText>}
-                            </FormControl>
+                            <TextField
+                                select
+                                fullWidth
+                                label="Country *"
+                                value={formData.country}
+                                onChange={(e) => {
+                                    setFormData({ ...formData, country: e.target.value, currentLocationRegion: '' });
+                                    setErrors({ ...errors, country: '', currentLocationRegion: '' });
+                                }}
+                                error={!!errors.country}
+                                helperText={errors.country}
+                                disabled={loadingRegions}
+                                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                            >
+                                <MenuItem value="Philippines">Philippines</MenuItem>
+                                <MenuItem value="United States">United States</MenuItem>
+                                <MenuItem value="United Kingdom">United Kingdom</MenuItem>
+                                <MenuItem value="Canada">Canada</MenuItem>
+                                <MenuItem value="Australia">Australia</MenuItem>
+                                <MenuItem value="United Arab Emirates">United Arab Emirates</MenuItem>
+                                <MenuItem value="Saudi Arabia">Saudi Arabia</MenuItem>
+                                <MenuItem value="Other">Other</MenuItem>
+                            </TextField>
 
-                            <Box sx={{ border: '1px solid', borderColor: errors.isFilipino ? 'error.main' : 'grey.300', borderRadius: 1, p: 2, bgcolor: 'background.paper' }}>
+                            {/* Region field - shown for any country that has regions */}
+                            {formData.country && formData.country !== 'Other' && regions.length > 0 && (
+                                <TextField
+                                    select
+                                    fullWidth
+                                    label="Region *"
+                                    value={formData.currentLocationRegion}
+                                    onChange={(e) => {
+                                        setFormData({ ...formData, currentLocationRegion: e.target.value });
+                                        setErrors({ ...errors, currentLocationRegion: '' });
+                                    }}
+                                    error={!!errors.currentLocationRegion}
+                                    helperText={errors.currentLocationRegion}
+                                    disabled={loadingRegions}
+                                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                                >
+                                    <MenuItem value="">Select region</MenuItem>
+                                    {regions.map((region) => (
+                                        <MenuItem key={region.id} value={region.id}>
+                                            {region.name}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            )}
+
+                            {/* Other countries field - shown only when "Other" is selected */}
+                            {formData.country === 'Other' && otherCountries.length > 0 && (
+                                <TextField
+                                    select
+                                    fullWidth
+                                    label="Select country *"
+                                    value={formData.currentLocationRegion}
+                                    onChange={(e) => {
+                                        setFormData({ ...formData, currentLocationRegion: e.target.value });
+                                        setErrors({ ...errors, currentLocationRegion: '' });
+                                    }}
+                                    error={!!errors.currentLocationRegion}
+                                    helperText={errors.currentLocationRegion}
+                                    disabled={loadingRegions}
+                                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                                >
+                                    <MenuItem value="">Select country</MenuItem>
+                                    {otherCountries.map((country) => (
+                                        <MenuItem key={country.id} value={country.id}>
+                                            {country.name}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            )}
+
+                            <Box
+                                sx={{
+                                    border: '1px solid',
+                                    borderColor: errors.isFilipino ? 'error.main' : 'grey.300',
+                                    borderRadius: 2,
+                                    p: 2,
+                                }}
+                            >
                                 <FormControlLabel
                                     control={
                                         <Checkbox

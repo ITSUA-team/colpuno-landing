@@ -62,6 +62,10 @@ export const trackOnboardingStepCompleted = (stepName: string) => {
     trackEvent('onboarding_step_completed', { step_name: stepName });
 };
 
+export const trackOnboardingFinished = () => {
+    trackEvent('onboarding_finished', {});
+};
+
 export const trackEmailVerificationSent = () => {
     trackEvent('email_verification_sent', {});
 };
