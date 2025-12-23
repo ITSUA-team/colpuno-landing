@@ -35,6 +35,7 @@ import {
     trackOnboardingStarted,
     trackOnboardingStepCompleted,
     trackRegCompleted,
+    trackOnboardingFinished,
 } from '../sections/landing-page/utils/tracking';
 
 interface MultiStepRegistrationFormProps {
@@ -653,6 +654,7 @@ function MultiStepRegistrationForm({
                 trackRegCompleted(formData.email);
             }
             trackOnboardingStepCompleted('REG_COMPLETED');
+            trackOnboardingFinished();
 
             // Apply routing: after registration (or network error), redirect to login or job page
             if (jobId) {
@@ -666,6 +668,7 @@ function MultiStepRegistrationForm({
             // Even on error, redirect to login page
             // User can try to log in with the credentials they entered
             trackOnboardingStepCompleted('REG_COMPLETED');
+            trackOnboardingFinished();
             
             if (jobId) {
                 window.location.href = `https://www.colpuno.com/jobs/${encodeURIComponent(jobId)}?openConfirmApplication=1`;
