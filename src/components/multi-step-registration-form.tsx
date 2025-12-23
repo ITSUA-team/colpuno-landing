@@ -141,205 +141,62 @@ function MultiStepRegistrationForm({
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [provinces, setProvinces] = useState<Array<{ id: string; name: string }>>([]);
     const [cities, setCities] = useState<Array<{ id: string; name: string }>>([]);
-    const [regions, setRegions] = useState<Array<{ id: string; name: string }>>([]);
-    const [otherCountries, setOtherCountries] = useState<Array<{ id: string; name: string; code?: string }>>([]);
-    const [countries, setCountries] = useState<Array<{ id: string; name: string; code?: string }>>([]);
+    const [regions, setRegions] = useState<Array<{ id: string; name: string; code: string }>>([]);
+    const [otherCountries, setOtherCountries] = useState<Array<{ id: string; name: string; code: string }>>([]);
+    const [countries, setCountries] = useState<Array<{ id: string; name: string; code: string }>>([]);
     const [loadingRegions, setLoadingRegions] = useState(false);
+    // Cache for regions by country ID to avoid refetching
+    const [regionsCache, setRegionsCache] = useState<Record<string, Array<{ id: string; name: string; code: string }>>>({});
 
-    // Static fallback list of Philippines provinces
-    const PH_PROVINCES = [
-        { id: 'metro-manila', name: 'Metro Manila' },
-        { id: 'abra', name: 'Abra' },
-        { id: 'agusan-del-norte', name: 'Agusan del Norte' },
-        { id: 'agusan-del-sur', name: 'Agusan del Sur' },
-        { id: 'aklan', name: 'Aklan' },
-        { id: 'albay', name: 'Albay' },
-        { id: 'antique', name: 'Antique' },
-        { id: 'apayao', name: 'Apayao' },
-        { id: 'aurora', name: 'Aurora' },
-        { id: 'basilan', name: 'Basilan' },
-        { id: 'bataan', name: 'Bataan' },
-        { id: 'batanes', name: 'Batanes' },
-        { id: 'batangas', name: 'Batangas' },
-        { id: 'benguet', name: 'Benguet' },
-        { id: 'biliran', name: 'Biliran' },
-        { id: 'bohol', name: 'Bohol' },
-        { id: 'bukidnon', name: 'Bukidnon' },
-        { id: 'bulacan', name: 'Bulacan' },
-        { id: 'cagayan', name: 'Cagayan' },
-        { id: 'camarines-norte', name: 'Camarines Norte' },
-        { id: 'camarines-sur', name: 'Camarines Sur' },
-        { id: 'camiguin', name: 'Camiguin' },
-        { id: 'capiz', name: 'Capiz' },
-        { id: 'catanduanes', name: 'Catanduanes' },
-        { id: 'cavite', name: 'Cavite' },
-        { id: 'cebu', name: 'Cebu' },
-        { id: 'compostela-valley', name: 'Compostela Valley' },
-        { id: 'cotabato', name: 'Cotabato' },
-        { id: 'davao-del-norte', name: 'Davao del Norte' },
-        { id: 'davao-del-sur', name: 'Davao del Sur' },
-        { id: 'davao-occidental', name: 'Davao Occidental' },
-        { id: 'davao-oriental', name: 'Davao Oriental' },
-        { id: 'dinagat-islands', name: 'Dinagat Islands' },
-        { id: 'eastern-samar', name: 'Eastern Samar' },
-        { id: 'guimaras', name: 'Guimaras' },
-        { id: 'ifugao', name: 'Ifugao' },
-        { id: 'ilocos-norte', name: 'Ilocos Norte' },
-        { id: 'ilocos-sur', name: 'Ilocos Sur' },
-        { id: 'iloilo', name: 'Iloilo' },
-        { id: 'isabela', name: 'Isabela' },
-        { id: 'kalinga', name: 'Kalinga' },
-        { id: 'la-union', name: 'La Union' },
-        { id: 'laguna', name: 'Laguna' },
-        { id: 'lanao-del-norte', name: 'Lanao del Norte' },
-        { id: 'lanao-del-sur', name: 'Lanao del Sur' },
-        { id: 'leyte', name: 'Leyte' },
-        { id: 'maguindanao', name: 'Maguindanao' },
-        { id: 'marinduque', name: 'Marinduque' },
-        { id: 'masbate', name: 'Masbate' },
-        { id: 'misamis-occidental', name: 'Misamis Occidental' },
-        { id: 'misamis-oriental', name: 'Misamis Oriental' },
-        { id: 'mountain-province', name: 'Mountain Province' },
-        { id: 'negros-occidental', name: 'Negros Occidental' },
-        { id: 'negros-oriental', name: 'Negros Oriental' },
-        { id: 'northern-samar', name: 'Northern Samar' },
-        { id: 'nueva-ecija', name: 'Nueva Ecija' },
-        { id: 'nueva-vizcaya', name: 'Nueva Vizcaya' },
-        { id: 'occidental-mindoro', name: 'Occidental Mindoro' },
-        { id: 'oriental-mindoro', name: 'Oriental Mindoro' },
-        { id: 'palawan', name: 'Palawan' },
-        { id: 'pampanga', name: 'Pampanga' },
-        { id: 'pangasinan', name: 'Pangasinan' },
-        { id: 'quezon', name: 'Quezon' },
-        { id: 'quirino', name: 'Quirino' },
-        { id: 'rizal', name: 'Rizal' },
-        { id: 'romblon', name: 'Romblon' },
-        { id: 'samar', name: 'Samar' },
-        { id: 'sarangani', name: 'Sarangani' },
-        { id: 'siquijor', name: 'Siquijor' },
-        { id: 'sorsogon', name: 'Sorsogon' },
-        { id: 'south-cotabato', name: 'South Cotabato' },
-        { id: 'southern-leyte', name: 'Southern Leyte' },
-        { id: 'sultan-kudarat', name: 'Sultan Kudarat' },
-        { id: 'sulu', name: 'Sulu' },
-        { id: 'surigao-del-norte', name: 'Surigao del Norte' },
-        { id: 'surigao-del-sur', name: 'Surigao del Sur' },
-        { id: 'tarlac', name: 'Tarlac' },
-        { id: 'tawi-tawi', name: 'Tawi-Tawi' },
-        { id: 'zambales', name: 'Zambales' },
-        { id: 'zamboanga-del-norte', name: 'Zamboanga del Norte' },
-        { id: 'zamboanga-del-sur', name: 'Zamboanga del Sur' },
-        { id: 'zamboanga-sibugay', name: 'Zamboanga Sibugay' },
-    ];
+    // Countries to prefetch regions for (most popular)
+    const PREFETCH_COUNTRY_IDS = ['175', '238']; // Philippines, United States
 
-    // Load countries on mount - RESTORED ORIGINAL LOGIC
+    // Load all countries on mount + prefetch regions for popular countries
     useEffect(() => {
         const loadCountries = async () => {
             try {
                 const response = await getOnboardData('countries');
-                console.log('Countries API response:', response);
-                
-                // API returns data directly or in response.data
                 const countriesData = response.data || response;
                 
                 if (countriesData && Array.isArray(countriesData) && countriesData.length > 0) {
                     const mappedCountries = countriesData.map((item: any) => ({
-                        code: (item.code || '').toLowerCase(),
+                        id: item.id?.toString() || '',
+                        code: item.code || '',
                         name: item.name || '',
-                    })).filter((c: any) => c.code && c.name);
+                    })).filter((c: any) => c.id && c.code && c.name);
                     
-                    console.log('Mapped countries:', mappedCountries.length);
                     setCountries(mappedCountries);
-                } else {
-                    console.warn('No countries data received, using fallback');
-                    // Fallback countries
-                    setCountries([
-                        { code: 'ph', name: 'Philippines' },
-                        { code: 'us', name: 'United States' },
-                        { code: 'gb', name: 'United Kingdom' },
-                        { code: 'ca', name: 'Canada' },
-                        { code: 'au', name: 'Australia' },
-                        { code: 'ae', name: 'United Arab Emirates' },
-                        { code: 'sa', name: 'Saudi Arabia' },
-                        { code: 'sg', name: 'Singapore' },
-                        { code: 'jp', name: 'Japan' },
-                        { code: 'de', name: 'Germany' },
-                    ]);
-                }
-            } catch (error) {
-                console.warn('Failed to load countries from API:', error);
-                // Fallback countries
-                setCountries([
-                    { code: 'ph', name: 'Philippines' },
-                    { code: 'us', name: 'United States' },
-                    { code: 'gb', name: 'United Kingdom' },
-                    { code: 'ca', name: 'Canada' },
-                    { code: 'au', name: 'Australia' },
-                    { code: 'ae', name: 'United Arab Emirates' },
-                    { code: 'sa', name: 'Saudi Arabia' },
-                    { code: 'sg', name: 'Singapore' },
-                    { code: 'jp', name: 'Japan' },
-                    { code: 'de', name: 'Germany' },
-                ]);
-            }
-        };
-        loadCountries();
-    }, []);
+                    
+                    // Filter out main countries for "Other" dropdown
+                    const mainCountryNames = ['Philippines', 'United States', 'United Kingdom', 'Canada', 'Australia', 'United Arab Emirates', 'Saudi Arabia'];
+                    const otherCountriesList = mappedCountries.filter((c: any) => !mainCountryNames.includes(c.name));
+                    setOtherCountries(otherCountriesList);
 
-    // Load cities when province changes
-    useEffect(() => {
-        const loadCities = async () => {
-            if (!formData.province) {
-                setCities([]);
-                return;
-            }
-            try {
-                const response = await getOnboardData('regions', formData.province);
-                if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-                    setCities(
-                        response.data.map((item: any) => ({
-                            id: item.id || item.code || '',
-                            name: item.name || '',
-                        }))
-                    );
-                } else {
-                    // Use static fallback if API returns empty or fails
-                    const fallbackCities = PH_CITIES_BY_PROVINCE[formData.province] || [];
-                    if (fallbackCities.length > 0) {
-                        setCities(fallbackCities);
-                    } else {
-                        // If no static data, add a generic option
-                        setCities([{ id: 'other', name: 'Other (Please specify)' }]);
-                    }
-                }
-            } catch (error) {
-                // Use static fallback if API fails
-                console.warn('Failed to load cities from API, using fallback:', error);
-                const fallbackCities = PH_CITIES_BY_PROVINCE[formData.province] || [];
-                if (fallbackCities.length > 0) {
-                    setCities(fallbackCities);
-                } else {
-                    // If no static data, add a generic option
-                    setCities([{ id: 'other', name: 'Other (Please specify)' }]);
-                }
-            }
-        };
-        loadCities();
-    }, [formData.province]);
-
-    // Load countries list on mount
-    useEffect(() => {
-        const loadCountries = async () => {
-            try {
-                const response = await getOnboardData('countries');
-                if (response.data && Array.isArray(response.data)) {
-                    setCountries(
-                        response.data.map((item: any) => ({
-                            id: item.id?.toString() || '',
-                            name: item.name || '',
-                            code: item.code || '',
-                        }))
-                    );
+                    // Prefetch regions for popular countries (PH and US)
+                    const prefetchRegions = async () => {
+                        const cache: Record<string, Array<{ id: string; name: string; code: string }>> = {};
+                        await Promise.all(
+                            PREFETCH_COUNTRY_IDS.map(async (countryId) => {
+                                try {
+                                    const regionsResponse = await getOnboardData('regions', countryId);
+                                    if (regionsResponse.data && Array.isArray(regionsResponse.data) && regionsResponse.data.length > 0) {
+                                        cache[countryId] = regionsResponse.data.map((item: any) => ({
+                                            id: item.id?.toString() || '',
+                                            code: item.code || '',
+                                            name: item.name || '',
+                                        }));
+                                    } else {
+                                        cache[countryId] = [];
+                                    }
+                                } catch (error) {
+                                    console.warn(`Failed to prefetch regions for country ${countryId}:`, error);
+                                    cache[countryId] = [];
+                                }
+                            })
+                        );
+                        setRegionsCache(cache);
+                    };
+                    prefetchRegions();
                 }
             } catch (error) {
                 console.warn('Failed to load countries from API:', error);
@@ -348,58 +205,60 @@ function MultiStepRegistrationForm({
         loadCountries();
     }, []);
 
-    // Load regions or other countries when country changes
+    // Load regions when country changes - check cache first, then fetch if needed
     useEffect(() => {
-        const loadRegionsOrCountries = async () => {
-            setRegions([]);
-            setOtherCountries([]);
+        const loadRegions = async () => {
             setFormData(prev => ({ ...prev, currentLocationRegion: '' }));
 
-            if (!formData.country) return;
+            if (!formData.country || formData.country === 'Other') {
+                setRegions([]);
+                setLoadingRegions(false);
+                return;
+            }
 
+            // Find country ID from loaded countries list
+            const countryData = countries.find(c => c.name === formData.country);
+            if (!countryData?.id) {
+                setRegions([]);
+                setLoadingRegions(false);
+                return;
+            }
+
+            // Check cache first - instant display for prefetched countries
+            if (regionsCache[countryData.id] !== undefined) {
+                setRegions(regionsCache[countryData.id]);
+                setLoadingRegions(false);
+                return;
+            }
+
+            // Not in cache - fetch from API
+            setRegions([]);
             setLoadingRegions(true);
 
             try {
-                // Find country ID
-                const countryData = countries.find(c => c.name === formData.country);
-                const countryId = countryData?.id;
-
-                if (formData.country === 'Other') {
-                    // Load list of other countries
-                    const response = await getOnboardData('countries');
-                    if (response.data && Array.isArray(response.data)) {
-                        // Filter out main countries that are already in the dropdown
-                        const mainCountries = ['Philippines', 'United States', 'United Kingdom', 'Canada', 'Australia', 'United Arab Emirates', 'Saudi Arabia'];
-                        const filtered = response.data
-                            .filter((item: any) => !mainCountries.includes(item.name))
-                            .map((item: any) => ({
-                                id: item.id?.toString() || '',
-                                name: item.name || '',
-                                code: item.code || '',
-                            }));
-                        setOtherCountries(filtered);
-                    }
-                } else if (countryId) {
-                    // Try to load regions for any country
-                    const response = await getOnboardData('regions', countryId);
-                    if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-                        setRegions(
-                            response.data.map((item: any) => ({
-                                id: item.id?.toString() || item.code || '',
-                                name: item.name || '',
-                            }))
-                        );
-                    }
-                }
+                const response = await getOnboardData('regions', countryData.id);
+                const regionsList = response.data && Array.isArray(response.data) && response.data.length > 0
+                    ? response.data.map((item: any) => ({
+                        id: item.id?.toString() || '',
+                        code: item.code || '',
+                        name: item.name || '',
+                    }))
+                    : [];
+                
+                // Update cache for future use
+                setRegionsCache(prev => ({ ...prev, [countryData.id]: regionsList }));
+                setRegions(regionsList);
             } catch (error) {
-                console.warn('Failed to load regions/countries from API:', error);
+                console.warn('Failed to load regions from API:', error);
+                setRegionsCache(prev => ({ ...prev, [countryData.id]: [] }));
+                setRegions([]);
             } finally {
                 setLoadingRegions(false);
             }
         };
 
-        loadRegionsOrCountries();
-    }, [formData.country, countries]);
+        loadRegions();
+    }, [formData.country, countries, regionsCache]);
 
     // Track onboarding started
     useEffect(() => {
@@ -531,7 +390,22 @@ function MultiStepRegistrationForm({
         setSubmitError(null);
 
         try {
-            // Determine country and region values - only include if not empty
+            // Get country code from the selected country name
+            const getCountryCode = (countryName: string): string => {
+                const country = countries.find(c => c.name === countryName);
+                return country?.code?.toLowerCase() || countryName.toLowerCase();
+            };
+
+            // Determine country code to send
+            let countryCode = '';
+            if (formData.country === 'Other' && formData.currentLocationRegion) {
+                // For "Other", currentLocationRegion contains the selected country code
+                const selectedOtherCountry = otherCountries.find(c => c.code === formData.currentLocationRegion);
+                countryCode = selectedOtherCountry?.code?.toLowerCase() || formData.currentLocationRegion.toLowerCase();
+            } else if (formData.country) {
+                countryCode = getCountryCode(formData.country);
+            }
+
             const registrationData: NurseRegistrationData = {
                 email: formData.email,
                 password: formData.password,
@@ -540,7 +414,7 @@ function MultiStepRegistrationForm({
                 lookingForJob: formData.jobSearchStatus,
                 nursingStatus: formData.nursingStatus,
                 birthDate: formData.birthDate ? formData.birthDate.format('YYYY-MM-DD') : undefined,
-                currentLocationCountry: formData.country,
+                currentLocationCountry: countryCode,
                 filipinoNational: formData.isFilipino ? 'yes' : 'no',
                 phone: formData.mobile ? normalizeMobile(formData.mobile) : undefined,
 
@@ -558,22 +432,15 @@ function MultiStepRegistrationForm({
                 ...utmParams,
             };
 
-            // Add currentLocationCountry and currentLocationRegion only if they have values
-            if (formData.country === 'Other') {
-                // For "Other", use the selected country ID as currentLocationCountry
-                if (formData.currentLocationRegion && formData.currentLocationRegion.trim()) {
-                    registrationData.currentLocationCountry = formData.currentLocationRegion.trim();
-                }
-            } else {
-                // For regular countries, use country name
-                if (formData.country && formData.country.trim()) {
-                    registrationData.currentLocationCountry = formData.country.trim();
-                }
-                // Add region if available and not empty
-                if (formData.currentLocationRegion && formData.currentLocationRegion.trim()) {
-                    registrationData.currentLocationRegion = formData.currentLocationRegion.trim();
-                }
+            // Add region code if available (only for PH and US)
+            if (formData.country !== 'Other' && formData.currentLocationRegion) {
+                // currentLocationRegion contains the region code (e.g., "PH-NCR", "US-CA")
+                registrationData.currentLocationRegion = formData.currentLocationRegion;
             }
+
+            // DEBUG: Log what we're sending
+            console.log('=== REGISTRATION DATA BEING SENT ===');
+            console.log(JSON.stringify(registrationData, null, 2));
 
             const response = await registerNurse(registrationData);
 
@@ -896,7 +763,7 @@ function MultiStepRegistrationForm({
                                 <MenuItem value="Other">Other</MenuItem>
                             </TextField>
 
-                            {/* Region field - shown for any country that has regions */}
+                            {/* Region field - shown only for countries with regions (PH, US) */}
                             {formData.country && formData.country !== 'Other' && regions.length > 0 && (
                                 <TextField
                                     select
@@ -912,9 +779,9 @@ function MultiStepRegistrationForm({
                                     disabled={loadingRegions}
                                     sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                                 >
-                                    <MenuItem value="">Select region</MenuItem>
+                                    <MenuItem value="">Select a region</MenuItem>
                                     {regions.map((region) => (
-                                        <MenuItem key={region.id} value={region.id}>
+                                        <MenuItem key={region.code} value={region.code}>
                                             {region.name}
                                         </MenuItem>
                                     ))}
@@ -939,7 +806,7 @@ function MultiStepRegistrationForm({
                                 >
                                     <MenuItem value="">Select country</MenuItem>
                                     {otherCountries.map((country) => (
-                                        <MenuItem key={country.id} value={country.id}>
+                                        <MenuItem key={country.code} value={country.code}>
                                             {country.name}
                                         </MenuItem>
                                     ))}
