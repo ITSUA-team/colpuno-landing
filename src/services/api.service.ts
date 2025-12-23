@@ -89,6 +89,7 @@ export interface NurseRegistrationData {
     
     // Location
     currentLocationCountry?: string; // country code (ph, us, etc.)
+    currentLocationRegion?: string; // region code (PH-NCR, US-CA, etc.)
     filipinoNational?: string; // "yes" or "no"
     
     // Contact
