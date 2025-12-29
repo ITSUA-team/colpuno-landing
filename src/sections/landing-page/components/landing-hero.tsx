@@ -1,4 +1,4 @@
-import { Box, Button, Stack, TextField, Typography, alpha } from '@mui/material';
+import { Box, Button, Stack, TextField, Typography, alpha, keyframes } from '@mui/material';
 import { useState } from 'react';
 
 import type { PageConfig } from '../../../config';
@@ -27,6 +27,13 @@ function LandingHero({ config }: LandingHeroProps) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(emailValue);
     };
+
+    const pulse = keyframes`
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+        10% { transform: scale(1.02); box-shadow: 0 0 0 6px rgba(255, 215, 0, 0); }
+        20% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+    `;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -73,7 +80,7 @@ function LandingHero({ config }: LandingHeroProps) {
                     sx={{
                         maxWidth: 1260,
                         mx: 'auto',
-                        p: { xs: 3, md: 4 },
+                        p: { xs: 0, md: 4 },
                         borderRadius: 3,
                         background: (theme) => `linear-gradient(0deg, ${theme.palette.secondary.main} -54.4%, ${theme.palette.primary.main} 100%)`,
                         position: 'relative',
@@ -82,7 +89,7 @@ function LandingHero({ config }: LandingHeroProps) {
                         overflow: 'hidden',
                     }}
                 >
-                    <Box sx={{ position: 'absolute', top: '29px', left: '47px' }}>
+                    <Box sx={{ position: 'absolute', top: '29px', left: '47px', display: { xs: 'none', md: 'block' } }}>
                         <IconStar2 />
                     </Box>
 
@@ -123,17 +130,17 @@ function LandingHero({ config }: LandingHeroProps) {
                                 </Typography>
 
                                 {config.hero.usp && (
-                                <Typography
-                                    variant='body1'
-                                    sx={{
-                                        mb: 3,
-                                        fontSize: { xs: '16px', md: '18px' },
-                                        fontWeight: 'bold',
-                                        color: 'common.white',
-                                    }}
-                                >
-                                    {config.hero.usp}
-                                </Typography>
+                                    <Typography
+                                        variant='body1'
+                                        sx={{
+                                            mb: 3,
+                                            fontSize: { xs: '16px', md: '18px' },
+                                            fontWeight: 'bold',
+                                            color: 'common.white',
+                                        }}
+                                    >
+                                        {config.hero.usp}
+                                    </Typography>
                                 )}
 
                                 <Typography
@@ -155,8 +162,8 @@ function LandingHero({ config }: LandingHeroProps) {
                                     backgroundColor: 'primary.dark',
                                     borderRadius: '16px',
                                     justifyContent: 'center',
-                                     }}>
-                                    <Box component='form' onSubmit={handleSubmit} sx={{ maxWidth: '395px', width: '100%', textAlign: 'center' }}>
+                                }}>
+                                    <Box component='form' onSubmit={handleSubmit} sx={{ width: '100%', textAlign: 'center' }}>
 
                                         {/* Email entry (starts onboarding) */}
                                         <TextField
@@ -184,12 +191,45 @@ function LandingHero({ config }: LandingHeroProps) {
                                             fullWidth
                                             sx={{
                                                 mt: 2,
+                                                animation: `${pulse} 3s infinite ease-in-out`,
                                             }}
                                         >
                                             Unlock jobs
                                         </Button>
                                     </Box>
                                     <Stack spacing={1.25}>
+                                        {/* Time reducer */}
+                                        <Box sx={{ textAlign: 'center', pt: 0.5 }}>
+                                            <Typography
+                                                variant='caption'
+                                                sx={{
+                                                    color: 'common.white',
+                                                    fontSize: '0.8125rem',
+                                                    fontWeight: 600,
+                                                }}
+                                            >
+                                                It takes 2 minutes to get started.
+                                            </Typography>
+                                        </Box>
+                                        {/* Trust badges */}
+                                        <Box
+                                            sx={{
+                                                mt: 1.5,
+                                                justifyContent: 'center',
+                                            }}
+                                        >
+                                            <Box
+                                                component="img"
+                                                src={typeof TrustBadgesImg === 'string' ? TrustBadgesImg : (TrustBadgesImg as any).src}
+                                                alt="Free to join, data protected, verified job listings"
+                                                sx={{
+                                                    maxWidth: 360,
+                                                    width: '100%',
+                                                    height: 'auto',
+                                                }}
+                                            />
+                                        </Box>
+                                        {/* Log in */}
                                         <Typography
                                             variant='body1'
                                             sx={{
@@ -229,79 +269,6 @@ function LandingHero({ config }: LandingHeroProps) {
                                         >
                                             By continuing, you&apos;ll receive a verification email link and updates from COLPUNO.
                                         </Typography>
-                                        {/* Time reducer отдельной строкой */}
-                                        <Box sx={{ textAlign: 'center', pt: 0.5 }}>
-                                            <Typography
-                                                variant='caption'
-                                                sx={{
-                                                    color: 'common.white',
-                                                    fontSize: '0.8125rem',
-                                                    fontWeight: 600,
-                                                }}
-                                            >
-                                                It takes 2 minutes to get started.
-                                            </Typography>
-                                        </Box>
-                                        {/* Trust badges — текстовые (mobile) + графические (desktop) */}
-                                        {/* Mobile: текстовые бейджи */}
-                                        <Stack
-                                            direction='row'
-                                            spacing={1}
-                                            justifyContent='center'
-                                            flexWrap='wrap'
-                                            sx={{ pt: 0.5, display: { xs: 'flex', md: 'none' } }}
-                                        >
-                                            {[
-                                                'Free to join',
-                                                'Data-protected',
-                                                'Verified job listings',
-                                            ].map((label) => (
-                                                <Box
-                                                    key={label}
-                                                    sx={{
-                                                        px: 1.5,
-                                                        py: 0.5,
-                                                        borderRadius: 999,
-                                                        border: '1px solid',
-                                                        borderColor: (theme) =>
-                                                            alpha(theme.palette.common.white, 0.18),
-                                                        backgroundColor: (theme) =>
-                                                            alpha(theme.palette.common.black, 0.16),
-                                                    }}
-                                                >
-                                                    <Typography
-                                                        variant='caption'
-                                                        sx={{
-                                                            color: (theme) => theme.palette.font.white60,
-                                                            fontSize: '0.75rem',
-                                                            fontWeight: 500,
-                                                        }}
-                                                    >
-                                                        {label}
-                                                    </Typography>
-                                                </Box>
-                                            ))}
-                                        </Stack>
-                                        {/* Desktop: стикеры‑бейджи картинкой */}
-                                        <Box
-                                            sx={{
-                                                mt: 1.5,
-                                                display: { xs: 'none', md: 'flex' },
-                                                justifyContent: 'center',
-                                            }}
-                                        >
-                                            <Box
-                                                component="img"
-                                                src={typeof TrustBadgesImg === 'string' ? TrustBadgesImg : (TrustBadgesImg as any).src}
-                                                alt="Free to join, data protected, verified job listings"
-                                                sx={{
-                                                    maxWidth: 360,
-                                                    width: '100%',
-                                                    height: 'auto',
-                                                    borderRadius: 2,
-                                                }}
-                                            />
-                                        </Box>
                                     </Stack>
                                 </Box>
                             </Box>
@@ -314,14 +281,14 @@ function LandingHero({ config }: LandingHeroProps) {
                                 p: { xs: 2, md: 3 },
                             }}
                         >
-                            <Box sx={{ width: '100%', mb: 3 }}>
+                            <Box id="job-vacancies-badge" sx={{ width: '100%', mb: 3 }}>
                                 <JobBadge text="13’000+ Job Vacancies (*)" />
                             </Box>
-                            <LandingJobPreview  config={config} />
+                            <LandingJobPreview config={config} />
                         </Box>
                     </Stack>
                     <JobsTicker items={vacancies} />
-                    <Typography variant='body1' sx={{ mt: 2, fontSize: '0.75rem', textAlign: 'center', color: 'white' }}>
+                    <Typography variant='body1' sx={{ p: 2, fontSize: '0.75rem', textAlign: 'center', color: 'white' }}>
                         *** Job openings from DMW-accredited recruiters & national top-tier hospitals verified via rocketnurse.ph or via external sources.
                     </Typography>
                 </Box>
@@ -336,9 +303,10 @@ function LandingHero({ config }: LandingHeroProps) {
                     maxWidth: '900px',
                     p: 0,
                     borderRadius: '16px',
-                    height: { xs: '95vh', md: 'auto' },
-                    maxHeight: { xs: '95vh', md: '90vh' },
-                    overflow: 'hidden'
+                    height: 'auto',
+                    maxHeight: { xs: 'calc(100vh - 32px)', md: '90vh' },
+                    overflow: 'hidden',
+                    overflowY: 'auto'
                 }}
             >
                 <AppRegistration initialEmail={email} embedded onClose={() => setIsRegOpen(false)} />

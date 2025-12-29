@@ -1,10 +1,28 @@
 import { Box, Button } from '@mui/material';
+import { useEffect, useState } from 'react';
 
 import { useResponsive } from '../../../hooks';
 import { trackCtaUnlockJobsClicked } from '../utils/tracking';
 
 function LandingStickyCTA() {
     const mdDown = useResponsive('down', 768);
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const badgeElement = document.getElementById('job-vacancies-badge');
+            if (badgeElement) {
+                const rect = badgeElement.getBoundingClientRect();
+                setIsVisible(rect.top < window.innerHeight);
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        // Check initial state
+        handleScroll();
+
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const handleClick = () => {
         trackCtaUnlockJobsClicked();
@@ -13,7 +31,7 @@ function LandingStickyCTA() {
             heroSection.scrollIntoView({ behavior: 'smooth' });
         }
     };
-    if (!mdDown) {
+    if (!mdDown || !isVisible) {
         return null;
     }
 
@@ -25,7 +43,8 @@ function LandingStickyCTA() {
                 left: 0,
                 right: 0,
                 backgroundColor: 'transparent',
-                p: 2,
+                px: 3,
+                py: 1,
                 zIndex: 1000,
             }}
         >

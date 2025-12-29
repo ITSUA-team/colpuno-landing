@@ -35,8 +35,8 @@ function ScrollToTop() {
         <Box
             sx={{
                 position: 'fixed',
-                bottom: { xs: 24, md: 32 },
-                right: { xs: 16, md: 24 },
+                bottom: { xs: 8, md: 12 },
+                right: { xs: 8, md: 12 },
                 zIndex: 1000,
             }}
         >
