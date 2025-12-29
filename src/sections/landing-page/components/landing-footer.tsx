@@ -90,13 +90,13 @@ const SealContainer = styled(Box)(({ theme }) => ({
 }));
 
 const LandingFooter: React.FC = () => {
-  return (
+    return (
     <StyledFooter>
       <Container maxWidth="lg">
         <Grid 
           container 
           spacing={4} 
-          sx={{ 
+            sx={{
             mb: 3,
             justifyContent: { xs: 'center', md: 'flex-start' },
             textAlign: { xs: 'center', md: 'left' },
@@ -169,14 +169,14 @@ const LandingFooter: React.FC = () => {
           <Grid item xs={12} sm={6} md={4}>
             <FooterSection sx={{ alignItems: { xs: 'center', md: 'flex-start' } }}>
               <FooterTitle variant="h6">Follow Us</FooterTitle>
-              <Box
+            <Box
                 sx={{
                   display: 'flex',
                   flexWrap: 'wrap',
                   gap: 1,
                   justifyContent: { xs: 'center', md: 'flex-start' },
-                }}
-              >
+                    }}
+                >
                 <FooterLink
                   href="https://www.facebook.com/profile.php?id=61572945996479"
                   target="_blank"
@@ -204,13 +204,13 @@ const LandingFooter: React.FC = () => {
                 More about COLPUNO
               </FooterTitle>
               <Box
-                sx={{
+                        sx={{
                   display: 'flex',
                   flexWrap: 'wrap',
                   gap: 1,
                   justifyContent: { xs: 'center', md: 'flex-start' },
-                }}
-              >
+                        }}
+                    >
                 <FooterLink
                   href="https://www.colpuno.com/faq"
                   target="_blank"
@@ -229,24 +229,24 @@ const LandingFooter: React.FC = () => {
                   href="https://www.colpuno.com/privacy-notice"
                   target="_blank"
                   rel="noopener"
-                >
-                  Privacy Notice
+                        >
+                            Privacy Notice
                 </FooterLink>
                 <FooterLink
                   href="https://www.colpuno.com/disclaimer"
                   target="_blank"
                   rel="noopener"
-                >
-                  Disclaimer
+                        >
+                            Disclaimer
                 </FooterLink>
                 <FooterLink
                   href="https://www.colpuno.com/imprint"
                   target="_blank"
                   rel="noopener"
-                >
-                  Imprint
+                        >
+                            Imprint
                 </FooterLink>
-              </Box>
+            </Box>
             </FooterSection>
           </Grid>
         </Grid>
@@ -259,7 +259,7 @@ const LandingFooter: React.FC = () => {
         </FooterBottom>
       </Container>
     </StyledFooter>
-  );
+    );
 };
 
 export default LandingFooter;
